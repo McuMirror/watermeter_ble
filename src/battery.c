@@ -4,8 +4,8 @@
 
 #include "battery.h"
 
-uint16_t battery_mv;         /* 2200 ... 3100 mv                 */
-uint8_t  battery_level;      /* 0 ... 100 %                      */
+_attribute_data_retention_ uint16_t battery_mv;         /* 2200 ... 3100 mv                 */
+_attribute_data_retention_ uint8_t  battery_level;      /* 0 ... 100 %                      */
 
 
 // 2200..3100 mv - 0..100%
@@ -28,8 +28,7 @@ void low_vbat(void) {
 
 _attribute_ram_code_ void check_battery(void) {
 
-    battery_mv = 2600;
-//    battery_mv = get_battery_mv();
+    battery_mv = get_battery_mv();
     if (battery_mv < 2000) {
         low_vbat();
     }
