@@ -25,14 +25,14 @@
 #define PB6_DATA_OUT            OFF
 #define PB6_OUTPUT_ENABLE       OFF
 #define PB6_FUNC                AS_GPIO
-//#define PULL_WAKEUP_SRC_PB6     PM_PIN_PULLUP_1M
+#define PULL_WAKEUP_SRC_PB6     PM_PIN_PULLUP_1M
 
 #define COLD_GPIO               GPIO_PB7
 #define PB7_INPUT_ENABLE        ON
 #define PB7_DATA_OUT            OFF
 #define PB7_OUTPUT_ENABLE       OFF
 #define PB7_FUNC                AS_GPIO
-//#define PULL_WAKEUP_SRC_PB7     PM_PIN_PULLUP_1M
+#define PULL_WAKEUP_SRC_PB7     PM_PIN_PULLUP_1M
 
 #define GPIO_VBAT               GPIO_PC4
 #define PC4_INPUT_ENABLE        OFF
