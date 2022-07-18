@@ -83,11 +83,11 @@ void clear_config() {
 }
 
 void add_hotwater(uint32_t count) {
-    watermeter_config.hot_water += count;
+    watermeter_config.hot_water += (count * watermeter_config.liters_per_pulse);
 }
 
 void add_coldwater(uint32_t count) {
-    watermeter_config.cold_water += count;
+    watermeter_config.cold_water += (count * watermeter_config.liters_per_pulse);
 }
 
 uint32_t get_hotwater() {
