@@ -5,6 +5,7 @@
 #include "stack/ble/ble.h"
 #include "drivers/8258/pm.h"
 
+#include "ble.h"
 #include "app.h"
 #include "app_att.h"
 #include "battery.h"
@@ -26,25 +27,7 @@ _attribute_data_retention_ uint8_t   ble_name[32]; /* = {0x12, 0x09,
                                                      'W', 'a', 't', 'e', 'r', 'm', 'e', 't', 'e', 'r',
                                                      '_', '0', '0', '0', '0', '0', '0',};*/
 
-//_attribute_data_retention_ uint8_t advertising_data[] = {
-//        21, 0x16, 0x1C, 0x18,                   /* Description   */
-//        0x00, 0x00, 0x00, 0x00, 0x00, 0x00,     /* MAC Address   */
-//        0xcc,                                   /* Battery Level */
-//        0xdd, 0xdd,                             /* Battery mv    */
-//        0x00, 0x00, 0x00, 0x00,                 /* Hot counter   */
-//        0x00, 0x00, 0x00, 0x00,                 /* Cold counter  */
-//        0x00                                    /* Count         */
-//};
-//
-
-_attribute_data_retention_ uint8_t advertising_data[] = {
-    0x05, 0x09, 'V', 'H', 'I', 'D',
-    0x02, 0x01, 0x05,                          // BLE limited discoverable mode and BR/EDR not supported
-    0x03, 0x02, 0x0F, 0x18,        // incomplete list of service class UUIDs (0x1812, 0x180F)
-};
-
-
-
+_attribute_data_retention_ adv_data_t advertising_data;
 
 _attribute_data_retention_ uint8_t mac_public[6], mac_random_static[6];
 _attribute_data_retention_ uint8_t ble_connected = 0;
@@ -155,12 +138,33 @@ __attribute__((optimize("-Os"))) void init_ble(void) {
     /// if bls_ll_setAdvParam( OWN_ADDRESS_RANDOM ) ->  blc_ll_setRandomAddr(mac_random_static);
     get_ble_name();
 
-    advertising_data[4] = mac_public[5];
-    advertising_data[5] = mac_public[4];
-    advertising_data[6] = mac_public[3];
-    advertising_data[7] = mac_public[2];
-    advertising_data[8] = mac_public[1];
-    advertising_data[9] = mac_public[0];
+    advertising_data.flg_size  = 0x02;
+    advertising_data.flg_type  = 0x01;
+    advertising_data.flg       = 0x06;
+
+    advertising_data.head.size = sizeof(adv_head_uuid16_t) + 3 + sizeof(adv_battery_t) + sizeof(adv_counter_t)*2 - 1;
+    advertising_data.head.type =  GAP_ADTYPE_SERVICE_DATA_UUID_16BIT;
+    advertising_data.head.UUID = ADV_HA_BLE_NS_UUID16;
+
+    advertising_data.type_len  = HaBleType_uint | (sizeof(advertising_data.id) + sizeof(advertising_data.pid));
+    advertising_data.id        = HaBleID_PacketId;
+    advertising_data.pid       = 0;
+
+    advertising_data.adv_battery.type_len = HaBleType_uint |
+            (sizeof(advertising_data.adv_battery.id) + sizeof(advertising_data.adv_battery.level));
+    advertising_data.adv_battery.id       = HaBleID_battery;
+    battery_level = get_battery_level(get_battery_mv());
+    advertising_data.adv_battery.level = battery_level;
+
+    advertising_data.adv_hot.type_len = HaBleType_uint |
+            (sizeof(advertising_data.adv_hot.id) + sizeof(advertising_data.adv_hot.counter));
+    advertising_data.adv_hot.id  = HaBleID_count;
+    advertising_data.adv_hot.counter = get_hotwater();
+
+    advertising_data.adv_cold.type_len = HaBleType_uint |
+            (sizeof(advertising_data.adv_cold.id) + sizeof(advertising_data.adv_cold.counter));
+    advertising_data.adv_cold.id  = HaBleID_count;
+    advertising_data.adv_cold.counter = get_coldwater();
 
     ////// Controller Initialization  //////////
     blc_ll_initBasicMCU();                      //mandatory
@@ -203,26 +207,10 @@ __attribute__((optimize("-Os"))) void init_ble(void) {
 
 }
 
-void set_adv_data(uint32_t hot, uint32_t cold, uint8_t battery_level, uint16_t battery_mv) {
+void set_adv_data() {
+    advertising_data.pid = (advertising_data.pid+1) & 0xFF;
 
-//    advertising_data[10] = battery_level;
-//
-//    advertising_data[11] = battery_mv >> 8;
-//    advertising_data[12] = battery_mv & 0xff;
-//
-//    advertising_data[13] = (hot >> 24) & 0xff;
-//    advertising_data[14] = (hot >> 16) & 0xff;
-//    advertising_data[15] = (hot >> 8) & 0xff;
-//    advertising_data[16] = hot & 0xff;
-//
-//    advertising_data[13] = (cold >> 24) & 0xff;
-//    advertising_data[14] = (cold >> 16) & 0xff;
-//    advertising_data[15] = (cold >> 8) & 0xff;
-//    advertising_data[16] = cold & 0xff;
-//
-//    advertising_data[21]++;
-
-    bls_ll_setAdvData((uint8_t*)advertising_data, sizeof(advertising_data));
+    bls_ll_setAdvData((uint8_t*)&advertising_data, sizeof(adv_data_t));
 }
 
 void ble_send_battery() {
