@@ -86,8 +86,8 @@ void main_loop (void) {
         send_battery = 1;
     }
 
-    if (battery_level != advertising_data.adv_battery.level) {
-        advertising_data.adv_battery.level = battery_level;
+    if (battery_level != adv_data.adv_battery.level) {
+        adv_data.adv_battery.level = battery_level;
         set_adv_data();
     }
 
