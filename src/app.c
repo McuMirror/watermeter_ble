@@ -86,19 +86,24 @@ void main_loop (void) {
         send_battery = 1;
     }
 
-    if((blc_ll_getCurrentState() & BLS_LINK_STATE_CONN) && blc_ll_getTxFifoNumber() < 9){
-        if (send_battery) {
-            printf("ble_connected\r\n");
-            ble_send_battery();
-            send_battery = 0;
-        }
+    if (battery_level != advertising_data.adv_battery.level) {
+        advertising_data.adv_battery.level = battery_level;
+        set_adv_data();
     }
 
-    if ((clock_time() - advertise_begin_tick) > AVD_PERIOD*CLOCK_SYS_CLOCK_1MS) {
-        set_adv_data(get_hotwater(), get_coldwater(), battery_level, battery_mv);
-        advertise_begin_tick = clock_time();
-        printf("%u - avd start\r\n", clock_time());
-    }
+//    if((blc_ll_getCurrentState() & BLS_LINK_STATE_CONN) && blc_ll_getTxFifoNumber() < 9){
+//        if (send_battery) {
+//            printf("ble_connected\r\n");
+//            ble_send_battery();
+//            send_battery = 0;
+//        }
+//    }
+
+//    if ((clock_time() - advertise_begin_tick) > AVD_PERIOD*CLOCK_SYS_CLOCK_1MS) {
+//        set_adv_data();
+//        advertise_begin_tick = clock_time();
+//        printf("%u - avd start\r\n", clock_time());
+//    }
 
     blt_sdk_main_loop();
     blt_pm_proc();
