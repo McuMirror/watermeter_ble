@@ -30,8 +30,6 @@ void user_init_normal(void)
     printf("Start user_init_normal()\r\n");
 #endif /* UART_PRINT_DEBUG_ENABLE */
 
-    battery_mv = 3100;
-
     adc_power_on_sar_adc(OFF);
     check_battery();
 	random_generator_init();  //this is must
@@ -42,12 +40,13 @@ void user_init_normal(void)
     }
 
     init_ble();
+
 }
 
 _attribute_ram_code_ void user_init_deepRetn(void) {
 
 #if UART_PRINT_DEBUG_ENABLE
-    printf("%u Start user_init_deepRetn()\r\n", ++deepRetn_count);
+//    printf("%u Start user_init_deepRetn()\r\n", ++deepRetn_count);
 #endif /* UART_PRINT_DEBUG_ENABLE */
 
 	blc_ll_initBasicMCU();   //mandatory
@@ -79,14 +78,23 @@ _attribute_data_retention_ uint8_t send_hot     = 0;
 _attribute_data_retention_ uint8_t send_cold    = 0;
 
 void main_loop (void) {
+
+    if (task_counters()) {
+        adv_data.adv_hot.counter  = get_hotwater();
+        adv_data.adv_cold.counter = get_coldwater();
+        set_adv_data();
+    }
+
     if ((clock_time() - battery_measure_tick) > BATTERY_MEAS_PERIOD*CLOCK_SYS_CLOCK_1MS) {
         check_battery();
-        printf("%u - check battery - %u\r\n", clock_time(), battery_level);
         battery_measure_tick = clock_time();
         send_battery = 1;
     }
 
     if (battery_level != adv_data.adv_battery.level) {
+#if UART_PRINT_DEBUG_ENABLE
+        printf("b_level - %u, adv_ b_level - %u\r\n", battery_level, adv_data.adv_battery.level);
+#endif /* UART_PRINT_DEBUG_ENABLE */
         adv_data.adv_battery.level = battery_level;
         set_adv_data();
     }
