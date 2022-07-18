@@ -60,13 +60,27 @@ _attribute_ram_code_ void blt_pm_proc(void)
     }
 }
 
+_attribute_ram_code_ static void suspend_enter_cb(u8 e, u8 *p, int n) {
+    (void) e; (void) p; (void) n;
+    if (!ble_connected) {
+        cpu_set_gpio_wakeup(HOT_GPIO, Level_Low, 1);  // pad wakeup deepsleep enable
+        cpu_set_gpio_wakeup(COLD_GPIO, Level_Low, 1);  // pad wakeup deepsleep enable
+        bls_pm_setWakeupSource(PM_WAKEUP_PAD | PM_WAKEUP_TIMER);  // gpio pad wakeup suspend/deepsleep
+    } else {
+        cpu_set_gpio_wakeup(HOT_GPIO, Level_Low, 0);  // pad wakeup suspend/deepsleep disable
+        cpu_set_gpio_wakeup(COLD_GPIO, Level_Low, 0);  // pad wakeup suspend/deepsleep disable
+    }
+}
+
+
+
 void ble_disconnect_callback(uint8_t e,uint8_t *p, int n)
 {
     ble_connected = 0;
     ota_is_working = 0;
 }
 
-_attribute_ram_code_ void user_set_rf_power (uint8_t e, uint8_t *p, int n)
+_attribute_ram_code_ void suspend_exit_cb (uint8_t e, uint8_t *p, int n)
 {
     rf_set_power_level_index (RF_POWER_P3p01dBm);
 }
@@ -153,8 +167,7 @@ __attribute__((optimize("-Os"))) void init_ble(void) {
     adv_data.adv_battery.type_len = HaBleType_uint |
             (sizeof(adv_data.adv_battery.id) + sizeof(adv_data.adv_battery.level));
     adv_data.adv_battery.id       = HaBleID_battery;
-    battery_level = get_battery_level(get_battery_mv());
-    adv_data.adv_battery.level = battery_level;
+    adv_data.adv_battery.level = 0;
 
     adv_data.adv_hot.type_len = HaBleType_uint |
             (sizeof(adv_data.adv_hot.id) + sizeof(adv_data.adv_hot.counter));
@@ -188,7 +201,8 @@ __attribute__((optimize("-Os"))) void init_ble(void) {
                        BLT_ENABLE_ADV_ALL, ADV_FP_NONE);
     bls_ll_setAdvEnable(BLC_ADV_ENABLE);
     rf_set_power_level_index(MY_RF_POWER_INDEX);
-    bls_app_registerEventCallback(BLT_EV_FLAG_SUSPEND_EXIT, &user_set_rf_power);
+    bls_app_registerEventCallback(BLT_EV_FLAG_SUSPEND_ENTER, &suspend_enter_cb);
+    bls_app_registerEventCallback(BLT_EV_FLAG_SUSPEND_EXIT, &suspend_exit_cb);
     bls_app_registerEventCallback(BLT_EV_FLAG_CONNECT, &ble_connect_callback);
     bls_app_registerEventCallback(BLT_EV_FLAG_TERMINATE, &ble_disconnect_callback);
 
@@ -208,6 +222,11 @@ __attribute__((optimize("-Os"))) void init_ble(void) {
 }
 
 void set_adv_data() {
+
+#if UART_PRINT_DEBUG_ENABLE
+    printf("set_adv_data()\r\n");
+#endif /* UART_PRINT_DEBUG_ENABLE */
+
     adv_data.pid = (adv_data.pid+1) & 0xFF;
 
     bls_ll_setAdvData((uint8_t*)&adv_data, sizeof(adv_data_t));
