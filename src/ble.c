@@ -27,7 +27,7 @@ _attribute_data_retention_ uint8_t   ble_name[32]; /* = {0x12, 0x09,
                                                      'W', 'a', 't', 'e', 'r', 'm', 'e', 't', 'e', 'r',
                                                      '_', '0', '0', '0', '0', '0', '0',};*/
 
-_attribute_data_retention_ adv_data_t advertising_data;
+_attribute_data_retention_ adv_data_t adv_data;
 
 _attribute_data_retention_ uint8_t mac_public[6], mac_random_static[6];
 _attribute_data_retention_ uint8_t ble_connected = 0;
@@ -138,33 +138,33 @@ __attribute__((optimize("-Os"))) void init_ble(void) {
     /// if bls_ll_setAdvParam( OWN_ADDRESS_RANDOM ) ->  blc_ll_setRandomAddr(mac_random_static);
     get_ble_name();
 
-    advertising_data.flg_size  = 0x02;
-    advertising_data.flg_type  = 0x01;
-    advertising_data.flg       = 0x06;
+    adv_data.flg_size  = 0x02;
+    adv_data.flg_type  = 0x01;
+    adv_data.flg       = 0x06;
 
-    advertising_data.head.size = sizeof(adv_head_uuid16_t) + 3 + sizeof(adv_battery_t) + sizeof(adv_counter_t)*2 - 1;
-    advertising_data.head.type =  GAP_ADTYPE_SERVICE_DATA_UUID_16BIT;
-    advertising_data.head.UUID = ADV_HA_BLE_NS_UUID16;
+    adv_data.head.size = sizeof(adv_head_uuid16_t) + 3 + sizeof(adv_battery_t) + sizeof(adv_counter_t)*2 - 1;
+    adv_data.head.type =  GAP_ADTYPE_SERVICE_DATA_UUID_16BIT;
+    adv_data.head.UUID = ADV_HA_BLE_NS_UUID16;
 
-    advertising_data.type_len  = HaBleType_uint | (sizeof(advertising_data.id) + sizeof(advertising_data.pid));
-    advertising_data.id        = HaBleID_PacketId;
-    advertising_data.pid       = 0;
+    adv_data.type_len  = HaBleType_uint | (sizeof(adv_data.id) + sizeof(adv_data.pid));
+    adv_data.id        = HaBleID_PacketId;
+    adv_data.pid       = 0;
 
-    advertising_data.adv_battery.type_len = HaBleType_uint |
-            (sizeof(advertising_data.adv_battery.id) + sizeof(advertising_data.adv_battery.level));
-    advertising_data.adv_battery.id       = HaBleID_battery;
+    adv_data.adv_battery.type_len = HaBleType_uint |
+            (sizeof(adv_data.adv_battery.id) + sizeof(adv_data.adv_battery.level));
+    adv_data.adv_battery.id       = HaBleID_battery;
     battery_level = get_battery_level(get_battery_mv());
-    advertising_data.adv_battery.level = battery_level;
+    adv_data.adv_battery.level = battery_level;
 
-    advertising_data.adv_hot.type_len = HaBleType_uint |
-            (sizeof(advertising_data.adv_hot.id) + sizeof(advertising_data.adv_hot.counter));
-    advertising_data.adv_hot.id  = HaBleID_count;
-    advertising_data.adv_hot.counter = get_hotwater();
+    adv_data.adv_hot.type_len = HaBleType_uint |
+            (sizeof(adv_data.adv_hot.id) + sizeof(adv_data.adv_hot.counter));
+    adv_data.adv_hot.id  = HaBleID_count;
+    adv_data.adv_hot.counter = get_hotwater();
 
-    advertising_data.adv_cold.type_len = HaBleType_uint |
-            (sizeof(advertising_data.adv_cold.id) + sizeof(advertising_data.adv_cold.counter));
-    advertising_data.adv_cold.id  = HaBleID_count;
-    advertising_data.adv_cold.counter = get_coldwater();
+    adv_data.adv_cold.type_len = HaBleType_uint |
+            (sizeof(adv_data.adv_cold.id) + sizeof(adv_data.adv_cold.counter));
+    adv_data.adv_cold.id  = HaBleID_count;
+    adv_data.adv_cold.counter = get_coldwater();
 
     ////// Controller Initialization  //////////
     blc_ll_initBasicMCU();                      //mandatory
@@ -208,9 +208,9 @@ __attribute__((optimize("-Os"))) void init_ble(void) {
 }
 
 void set_adv_data() {
-    advertising_data.pid = (advertising_data.pid+1) & 0xFF;
+    adv_data.pid = (adv_data.pid+1) & 0xFF;
 
-    bls_ll_setAdvData((uint8_t*)&advertising_data, sizeof(adv_data_t));
+    bls_ll_setAdvData((uint8_t*)&adv_data, sizeof(adv_data_t));
 }
 
 void ble_send_battery() {
