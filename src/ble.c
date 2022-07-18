@@ -37,11 +37,6 @@ _attribute_data_retention_ uint8_t   ble_name[32]; /* = {0x12, 0x09,
 //};
 //
 
-//typedef struct __attribute__((packed)) _avd_data_t {
-//    uint8_t ble_name[19];
-//
-//};
-
 _attribute_data_retention_ uint8_t advertising_data[] = {
     0x05, 0x09, 'V', 'H', 'I', 'D',
     0x02, 0x01, 0x05,                          // BLE limited discoverable mode and BR/EDR not supported
