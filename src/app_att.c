@@ -236,14 +236,14 @@ _attribute_data_retention_ attribute_t my_Attributes[] = {
     {0,ATT_PERMISSIONS_READ,2,sizeof(my_ManStr),(u8*)(&my_UUID_MANUFACTURER_NAME),(u8*)(my_ManStr), 0},
 
 	////////////////////////////////////// Battery Service /////////////////////////////////////////////////////
-	// 002a - 002d
+	// 0018 - 002d
 	{4,ATT_PERMISSIONS_READ,2,2,(u8*)(&my_primaryServiceUUID), (u8*)(&my_batServiceUUID), 0},
 	{0,ATT_PERMISSIONS_READ,2,sizeof(my_batCharVal),(u8*)(&my_characterUUID), (u8*)(my_batCharVal), 0},				//prop
 	{0,ATT_PERMISSIONS_READ,2,sizeof(battery_level),(u8*)(&my_batCharUUID), (u8*)(&battery_level), 0},	//value
     {0,ATT_PERMISSIONS_RDWR,2,sizeof(batteryValueInCCC),(u8*)(&clientCharacterCfgUUID),(u8*)(&batteryValueInCCC), 0},   //value
 
     ////////////////////////////////////// Count Service /////////////////////////////////////////////////////
-    // 002a - 002d
+    // 002e - 0031
     {7,ATT_PERMISSIONS_READ,2,2,(u8*)(&my_primaryServiceUUID),(u8*)(&my_countServiceUUID), 0},
     {0,ATT_PERMISSIONS_READ,2,sizeof(my_hotCharVal),(u8*)(&my_characterUUID),(u8*)(my_hotCharVal), 0},                //prop
     {0,ATT_PERMISSIONS_READ,2,sizeof(watermeter_config.hot_water_count),(u8*)(&my_hotCharUUID),(u8*)(&watermeter_config.hot_water_count), 0},    //value
@@ -254,7 +254,7 @@ _attribute_data_retention_ attribute_t my_Attributes[] = {
     {0,ATT_PERMISSIONS_RDWR,2,sizeof(coldValueInCCC),(u8*)(&clientCharacterCfgUUID),(u8*)(&coldValueInCCC), 0},   //value
 
 	////////////////////////////////////// OTA /////////////////////////////////////////////////////
-	// 002e - 0032
+	// 0032 - 0036
 	{5,ATT_PERMISSIONS_READ, 2,16,(u8*)(&my_primaryServiceUUID), 	(u8*)(&my_OtaServiceUUID), 0},
 	{0,ATT_PERMISSIONS_READ, 2, sizeof(my_OtaCharVal),(u8*)(&my_characterUUID), (u8*)(my_OtaCharVal), 0},				//prop
 	{0,ATT_PERMISSIONS_RDWR,16,sizeof(my_OtaData),(u8*)(&my_OtaUUID),	(&my_OtaData), &otaWrite, NULL},				//value
