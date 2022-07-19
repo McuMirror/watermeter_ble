@@ -63,8 +63,8 @@ _attribute_ram_code_ void blt_pm_proc(void)
 _attribute_ram_code_ static void suspend_enter_cb(u8 e, u8 *p, int n) {
     (void) e; (void) p; (void) n;
     if (!ble_connected) {
-        cpu_set_gpio_wakeup(HOT_GPIO, Level_Low, 1);  // pad wakeup deepsleep enable
-        cpu_set_gpio_wakeup(COLD_GPIO, Level_Low, 1);  // pad wakeup deepsleep enable
+        cpu_set_gpio_wakeup(HOT_GPIO, gpio_read(HOT_GPIO)? Level_Low : Level_High, 1);  // pad wakeup deepsleep enable
+        cpu_set_gpio_wakeup(COLD_GPIO, gpio_read(COLD_GPIO)? Level_Low : Level_High, 1);  // pad wakeup deepsleep enable
         bls_pm_setWakeupSource(PM_WAKEUP_PAD | PM_WAKEUP_TIMER);  // gpio pad wakeup suspend/deepsleep
     } else {
         cpu_set_gpio_wakeup(HOT_GPIO, Level_Low, 0);  // pad wakeup suspend/deepsleep disable
