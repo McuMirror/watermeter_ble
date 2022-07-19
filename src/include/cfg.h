@@ -15,15 +15,17 @@ typedef struct __attribute__((packed)) _watermeter_config_t {
     uint8_t  ble_name[32];       /* Module name with MAC             */
 } watermeter_config_t;
 
+extern watermeter_config_t watermeter_config;
+
 void init_default_config();
 bool read_config();
 void write_config();
 void clear_config();
-void add_hotwater(uint32_t count);
-void add_coldwater(uint32_t count);
-uint32_t get_hotwater();
-uint32_t get_coldwater();
-void set_module_name(uint8_t *blename);
-const uint8_t *get_module_name();
+//void add_hotwater(uint32_t count);
+//void add_coldwater(uint32_t count);
+//uint32_t get_hotwater();
+//uint32_t get_coldwater();
+//void set_module_name(uint8_t *blename);
+//const uint8_t *get_module_name();
 
 #endif /* SRC_INCLUDE_CFG_H_ */

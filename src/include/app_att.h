@@ -40,6 +40,17 @@ typedef enum
     BATT_LEVEL_INPUT_DP_H,                  //UUID: 2A19    VALUE: batVal
     BATT_LEVEL_INPUT_CCB_H,                 //UUID: 2902,   VALUE: batValCCC
 
+    //// Count service ////
+    /**********************************************************************************************/
+    HOT_PS_H,                              //UUID: 2800,    VALUE: uuid 181A
+    HOT_LEVEL_INPUT_CD_H,                  //UUID: 2803,    VALUE:              Prop: Read | Notify
+    HOT_LEVEL_INPUT_DP_H,                  //UUID: 2AEA,    VALUE: hot count
+    HOT_LEVEL_INPUT_CCB_H,                 //UUID: 2902,    VALUE: hotValCCC
+
+    COLD_PS_H,                              //UUID: 2800,   VALUE: uuid 181A
+    COLD_LEVEL_INPUT_CD_H,                  //UUID: 2803,   VALUE:              Prop: Read | Notify
+    COLD_LEVEL_INPUT_DP_H,                  //UUID: 2AEB,   VALUE: hot count
+    COLD_LEVEL_INPUT_CCB_H,                 //UUID: 2902,   VALUE: hotValCCC
 
     //// Ota ////
     /**********************************************************************************************/

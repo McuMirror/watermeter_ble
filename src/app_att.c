@@ -6,6 +6,7 @@
 #include "app.h"
 #include "app_att.h"
 #include "battery.h"
+#include "cfg.h"
 
 typedef struct
 {
@@ -66,6 +67,12 @@ static const u16 my_batServiceUUID        = SERVICE_UUID_BATTERY;
 static const u16 my_batCharUUID       	  = CHARACTERISTIC_UUID_BATTERY_LEVEL;
 _attribute_data_retention_ uint16_t batteryValueInCCC;
 
+//////////////////////// Counters /////////////////////////////////////////////////
+static const u16 my_countServiceUUID      = 0x183B; // Binary Sensor
+static const u16 my_hotCharUUID           = 0x2AEA; // count16
+static const u16 my_coldCharUUID          = 0x2AEB; // count16
+_attribute_data_retention_ u32 hotValueInCCC;
+_attribute_data_retention_ u32 coldValueInCCC;
 
 
 /////////////////////////////////////////////////////////
@@ -122,6 +129,18 @@ static const u8 my_batCharVal[5] = {
 	U16_LO(CHARACTERISTIC_UUID_BATTERY_LEVEL), U16_HI(CHARACTERISTIC_UUID_BATTERY_LEVEL)
 };
 
+//// Count attribute values
+static const u8 my_hotCharVal[5] = {
+    CHAR_PROP_READ | CHAR_PROP_NOTIFY,
+    U16_LO(HOT_LEVEL_INPUT_DP_H), U16_HI(HOT_LEVEL_INPUT_DP_H),
+    U16_LO(0x2AEA), U16_HI(0x2AEA)
+};
+
+static const u8 my_coldCharVal[5] = {
+    CHAR_PROP_READ | CHAR_PROP_NOTIFY,
+    U16_LO(COLD_LEVEL_INPUT_DP_H), U16_HI(COLD_LEVEL_INPUT_DP_H),
+    U16_LO(0x2AEB), U16_HI(0x2AEB)
+};
 
 //// OTA attribute values
 static const u8 my_OtaCharVal[19] = {
@@ -140,7 +159,7 @@ _attribute_data_retention_ attribute_t my_Attributes[] = {
 	// 0001 - 0007  gap
 	{7,ATT_PERMISSIONS_READ,2,2,(u8*)(&my_primaryServiceUUID), 	(u8*)(&my_gapServiceUUID), 0},
 	{0,ATT_PERMISSIONS_READ,2,sizeof(my_devNameCharVal),(u8*)(&my_characterUUID), (u8*)(my_devNameCharVal), 0},
-	{0,ATT_PERMISSIONS_READ,2,sizeof(my_devName), (u8*)(&my_devNameUUID), (u8*)(&ble_name[2]), 0},
+	{0,ATT_PERMISSIONS_READ,2,sizeof(my_devName), (u8*)(&my_devNameUUID), (u8*)&ble_name[2], 0},
 	{0,ATT_PERMISSIONS_READ,2,sizeof(my_appearanceCharVal),(u8*)(&my_characterUUID), (u8*)(my_appearanceCharVal), 0},
 	{0,ATT_PERMISSIONS_READ,2,sizeof (my_appearance), (u8*)(&my_appearanceUIID), 	(u8*)(&my_appearance), 0},
 	{0,ATT_PERMISSIONS_READ,2,sizeof(my_periConnParamCharVal),(u8*)(&my_characterUUID), (u8*)(my_periConnParamCharVal), 0},
@@ -166,6 +185,17 @@ _attribute_data_retention_ attribute_t my_Attributes[] = {
 	{0,ATT_PERMISSIONS_READ,2,sizeof(my_batCharVal),(u8*)(&my_characterUUID), (u8*)(my_batCharVal), 0},				//prop
 	{0,ATT_PERMISSIONS_READ,2,sizeof(battery_level),(u8*)(&my_batCharUUID), (u8*)(&battery_level), 0},	//value
     {0,ATT_PERMISSIONS_RDWR,2,sizeof(batteryValueInCCC),(u8*)(&clientCharacterCfgUUID),(u8*)(&batteryValueInCCC), 0},   //value
+
+    ////////////////////////////////////// Count Service /////////////////////////////////////////////////////
+    // 002a - 002d
+    {7,ATT_PERMISSIONS_READ,2,2,(u8*)(&my_primaryServiceUUID),(u8*)(&my_countServiceUUID), 0},
+    {0,ATT_PERMISSIONS_READ,2,sizeof(my_hotCharVal),(u8*)(&my_characterUUID),(u8*)(my_hotCharVal), 0},                //prop
+    {0,ATT_PERMISSIONS_READ,2,sizeof(watermeter_config.hot_water),(u8*)(&my_hotCharUUID),(u8*)(&watermeter_config.hot_water), 0},    //value
+    {0,ATT_PERMISSIONS_RDWR,2,sizeof(hotValueInCCC),(u8*)(&clientCharacterCfgUUID),(u8*)(&hotValueInCCC), 0}, //value
+
+    {0,ATT_PERMISSIONS_READ,2,sizeof(my_coldCharVal),(u8*)(&my_characterUUID),(u8*)(my_coldCharVal), 0},              //prop
+    {0,ATT_PERMISSIONS_READ,2,sizeof(watermeter_config.cold_water),(u8*)(&my_coldCharUUID),(u8*)(&watermeter_config.cold_water), 0},   //value
+    {0,ATT_PERMISSIONS_RDWR,2,sizeof(coldValueInCCC),(u8*)(&clientCharacterCfgUUID),(u8*)(&coldValueInCCC), 0},   //value
 
 	////////////////////////////////////// OTA /////////////////////////////////////////////////////
 	// 002e - 0032

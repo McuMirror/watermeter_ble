@@ -109,7 +109,7 @@ extern attribute_t my_Attributes[ATT_END_H];
 const char* hex_ascii = {"0123456789ABCDEF"};
 
 void get_ble_name() {
-    const uint8_t *blename = get_module_name();
+    uint8_t *blename = watermeter_config.ble_name;
     if (blename[0] == 0) {
         ble_name[2]  = 'W';
         ble_name[3]  = 'a';
@@ -131,11 +131,11 @@ void get_ble_name() {
         ble_name[19] = 0;
         ble_name[0]  = 18;
         ble_name[1]  = GAP_ADTYPE_LOCAL_NAME_COMPLETE;
-        set_module_name(ble_name);
+        memcpy(blename, ble_name, ble_name[0]+2);
     } else {
         memcpy(ble_name, blename, blename[0]+2);
     }
-    my_Attributes[GenericAccess_DeviceName_DP_H].attrLen = ble_name[0] + 1;
+    my_Attributes[GenericAccess_DeviceName_DP_H].attrLen = ble_name[0] - 1;
     for (int i = 0; i < ble_name[0]+2; i++) {
         printf("0x%x - %c\r\n", ble_name[i], ble_name[i]);
     }
@@ -167,12 +167,12 @@ __attribute__((optimize("-Os"))) void init_ble(void) {
     adv_data.adv_hot.type_len = HaBleType_uint |
             (sizeof(adv_data.adv_hot.id) + sizeof(adv_data.adv_hot.counter));
     adv_data.adv_hot.id  = HaBleID_count;
-    adv_data.adv_hot.counter = get_hotwater();
+    adv_data.adv_hot.counter = watermeter_config.hot_water;
 
     adv_data.adv_cold.type_len = HaBleType_uint |
             (sizeof(adv_data.adv_cold.id) + sizeof(adv_data.adv_cold.counter));
     adv_data.adv_cold.id  = HaBleID_count;
-    adv_data.adv_cold.counter = get_coldwater();
+    adv_data.adv_cold.counter = watermeter_config.cold_water;
 
     ////// Controller Initialization  //////////
     blc_ll_initBasicMCU();                      //mandatory

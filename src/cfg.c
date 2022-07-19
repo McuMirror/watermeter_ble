@@ -80,27 +80,27 @@ void clear_config() {
     init_default_config();
 }
 
-void add_hotwater(uint32_t count) {
-    watermeter_config.hot_water += (count * watermeter_config.liters_per_pulse);
-}
-
-void add_coldwater(uint32_t count) {
-    watermeter_config.cold_water += (count * watermeter_config.liters_per_pulse);
-}
-
-uint32_t get_hotwater() {
-    return watermeter_config.hot_water;
-}
-
-uint32_t get_coldwater() {
-    return watermeter_config.cold_water;
-}
-
-const uint8_t *get_module_name() {
-    return watermeter_config.ble_name;
-}
-
-void set_module_name(uint8_t *blename) {
-    memcpy(watermeter_config.ble_name, blename, blename[0]+2);
-    write_config();
-}
+//void add_hotwater(uint32_t count) {
+//    watermeter_config.hot_water += (count * watermeter_config.liters_per_pulse);
+//}
+//
+//void add_coldwater(uint32_t count) {
+//    watermeter_config.cold_water += (count * watermeter_config.liters_per_pulse);
+//}
+//
+//uint32_t get_hotwater() {
+//    return watermeter_config.hot_water;
+//}
+//
+//uint32_t get_coldwater() {
+//    return watermeter_config.cold_water;
+//}
+//
+//const uint8_t *get_module_name() {
+//    return watermeter_config.ble_name;
+//}
+//
+//void set_module_name(uint8_t *blename) {
+//    memcpy(watermeter_config.ble_name, blename, blename[0]+2);
+//    write_config();
+//}
