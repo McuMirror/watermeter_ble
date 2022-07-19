@@ -85,19 +85,19 @@ _attribute_ram_code_ uint8_t task_counters() {
 
     if (hot_counter.count) {
         save_config = true;
-        watermeter_config.hot_water += (hot_counter.count * watermeter_config.liters_per_pulse);
+        watermeter_config.hot_water_count += (hot_counter.count * watermeter_config.liters_per_pulse);
         hot_counter.count = 0;
 #if UART_PRINT_DEBUG_ENABLE
-        printf("hot counter - %u\r\n", watermeter_config.hot_water);
+        printf("hot counter - %u\r\n", watermeter_config.hot_water_count);
 #endif /* UART_PRINT_DEBUG_ENABLE */
     }
 
     if (cold_counter.count) {
         save_config = true;
-        watermeter_config.cold_water += (cold_counter.count * watermeter_config.liters_per_pulse);
+        watermeter_config.cold_water_count += (cold_counter.count * watermeter_config.liters_per_pulse);
         cold_counter.count = 0;
 #if UART_PRINT_DEBUG_ENABLE
-        printf("cold counter - %u\r\n", watermeter_config.cold_water);
+        printf("cold counter - %u\r\n", watermeter_config.cold_water_count);
 #endif /* UART_PRINT_DEBUG_ENABLE */
     }
 

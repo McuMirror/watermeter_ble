@@ -12,8 +12,8 @@ void init_default_config() {
     watermeter_config.active = ON;
     watermeter_config.flash_addr = BEGIN_USER_DATA;
     watermeter_config.liters_per_pulse = 10;
-    watermeter_config.hot_water = 0;
-    watermeter_config.cold_water = 0;
+    watermeter_config.hot_water_count = 0;
+    watermeter_config.cold_water_count = 0;
     memset(watermeter_config.ble_name, 0, sizeof(watermeter_config.ble_name));
     default_config = true;
     write_config();

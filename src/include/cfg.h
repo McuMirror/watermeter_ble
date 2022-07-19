@@ -10,8 +10,8 @@ typedef struct __attribute__((packed)) _watermeter_config_t {
     uint8_t  active;             /* current active cfg               */
     uint32_t flash_addr;         /* flash page address               */
     uint8_t  liters_per_pulse;   /* liters per pulse                 */
-    uint32_t hot_water;          /* Last number of liters hot water  */
-    uint32_t cold_water;         /* Last number of litres cold water */
+    uint32_t hot_water_count;    /* Last number of liters hot water  */
+    uint32_t cold_water_count;   /* Last number of litres cold water */
     uint8_t  ble_name[32];       /* Module name with MAC             */
 } watermeter_config_t;
 
