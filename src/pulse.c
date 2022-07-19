@@ -1,12 +1,11 @@
 #include "tl_common.h"
-//#include "drivers/8258/gpio_8258.h"
-//#include "application/print/u_printf.h"
 
 #include "app_adc.h"
 #include "pulse.h"
 #include "cfg.h"
 
-#define BIT_COUNT   256
+#define BIT_COUNT   128                         /* check debounce */
+#define TASK_COUNT  (BIT_COUNT/2+BIT_COUNT)     /* task duration  */
 
 _attribute_data_retention_ static water_counter_t hot_counter;
 _attribute_data_retention_ static water_counter_t cold_counter;
@@ -78,7 +77,11 @@ _attribute_ram_code_ static void water_counters() {
 _attribute_ram_code_ uint8_t task_counters() {
     uint8_t save_config = false;
 
-    water_counters();
+
+    for (uint16_t i = 0; i < TASK_COUNT && !hot_counter.count && !cold_counter.count; i++) {
+        water_counters();
+    }
+
 
     if (hot_counter.count) {
         save_config = true;
