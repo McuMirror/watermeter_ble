@@ -29,8 +29,18 @@ typedef enum
     //// device information ////
     /**********************************************************************************************/
     DeviceInformation_PS_H,                 //UUID: 2800,   VALUE: uuid 180A
-    DeviceInformation_pnpID_CD_H,           //UUID: 2803,   VALUE:              Prop: Read
-    DeviceInformation_pnpID_DP_H,           //UUID: 2A50,   VALUE: PnPtrs
+    DeviceInformation_ModName_CD_H,         //UUID: 2803,   VALUE:              Prop: Read
+    DeviceInformation_ModName_DP_H,         //UUID: 2A24,   VALUE: Model Number String
+    DeviceInformation_SerialN_CD_H,         //UUID: 2803,   VALUE:              Prop: Read
+    DeviceInformation_SerialN_DP_H,         //UUID: 2A25,   VALUE: Serial Number String
+    DeviceInformation_FirmRev_CD_H,         //UUID: 2803,   VALUE:              Prop: Read
+    DeviceInformation_FirmRev_DP_H,         //UUID: 2A26,   VALUE: Firmware Revision String
+    DeviceInformation_HardRev_CD_H,         //UUID: 2803,   VALUE:              Prop: Read
+    DeviceInformation_HardRev_DP_H,         //UUID: 2A27,   VALUE: Hardware Revision String
+    DeviceInformation_SoftRev_CD_H,         //UUID: 2803,   VALUE:              Prop: Read
+    DeviceInformation_SoftRev_DP_H,         //UUID: 2A28,   VALUE: Software Revision String
+    DeviceInformation_ManName_CD_H,         //UUID: 2803,   VALUE:              Prop: Read
+    DeviceInformation_ManName_DP_H,         //UUID: 2A29,   VALUE: Manufacturer Name String
 
 
     //// battery service ////

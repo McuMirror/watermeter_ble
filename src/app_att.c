@@ -60,7 +60,7 @@ static u8 serviceChangeCCC[2] = {0,0};
 
 static const u8 my_devName[] = {'W','a','t','e','r','m','e','t','e','r'};
 
-static const u8 my_PnPtrs [] = {0x02, 0x8a, 0x24, 0x66, 0x82, 0x01, 0x00};
+//static const u8 my_PnPtrs [] = {0x02, 0x8a, 0x24, 0x66, 0x82, 0x01, 0x00};
 
 //////////////////////// Battery /////////////////////////////////////////////////
 static const u16 my_batServiceUUID        = SERVICE_UUID_BATTERY;
@@ -82,10 +82,6 @@ static u8 my_OtaData 						        = 0x00;
 static u8 otaDataCCC[2] 							= {0,0};
 
 static const u8  my_OtaName[] = {'O', 'T', 'A'};
-
-
-// Include attribute (Battery service)
-static const u16 include[3] = {BATT_PS_H, BATT_LEVEL_INPUT_CCB_H, SERVICE_UUID_BATTERY};
 
 
 //// GAP attribute values
@@ -113,14 +109,59 @@ static const u8 my_serviceChangeCharVal[5] = {
 	U16_LO(GATT_UUID_SERVICE_CHANGE), U16_HI(GATT_UUID_SERVICE_CHANGE)
 };
 
+#define CHARACTERISTIC_UUID_MODEL_NUMBER        0x2A24 // Model Number String: Watermeter_BLE
+#define CHARACTERISTIC_UUID_SERIAL_NUMBER       0x2A25 // Serial Number String:
+#define CHARACTERISTIC_UUID_FIRMWARE_REV        0x2A26 // Firmware Revision String: 1.0.0_0100
+#define CHARACTERISTIC_UUID_HARDWARE_REV        0x2A27 // Hardware Revision String: TB-04
+#define CHARACTERISTIC_UUID_SOFTWARE_REV        0x2A28 // Software Revision String: 0x100
+#define CHARACTERISTIC_UUID_MANUFACTURER_NAME   0x2A29 // Manufacturer Name String: ai-thinker.com
 
 //// device Information  attribute values
-static const u8 my_PnCharVal[5] = {
-	CHAR_PROP_READ,
-	U16_LO(DeviceInformation_pnpID_DP_H), U16_HI(DeviceInformation_pnpID_DP_H),
-	U16_LO(CHARACTERISTIC_UUID_PNP_ID), U16_HI(CHARACTERISTIC_UUID_PNP_ID)
+//static const u16 my_UUID_SYSTEM_ID            = CHARACTERISTIC_UUID_SYSTEM_ID;
+static const u16 my_UUID_MODEL_NUMBER       = CHARACTERISTIC_UUID_MODEL_NUMBER;
+static const u16 my_UUID_SERIAL_NUMBER      = CHARACTERISTIC_UUID_SERIAL_NUMBER;
+static const u16 my_UUID_FIRMWARE_REV       = CHARACTERISTIC_UUID_FIRMWARE_REV;
+static const u16 my_UUID_HARDWARE_REV       = CHARACTERISTIC_UUID_HARDWARE_REV;
+static const u16 my_UUID_SOFTWARE_REV       = CHARACTERISTIC_UUID_SOFTWARE_REV;
+static const u16 my_UUID_MANUFACTURER_NAME  = CHARACTERISTIC_UUID_MANUFACTURER_NAME;
+
+static const u8 my_ModCharVal[5] = {
+    CHAR_PROP_READ,
+    U16_LO(DeviceInformation_HardRev_DP_H), U16_HI(DeviceInformation_HardRev_DP_H),
+    U16_LO(CHARACTERISTIC_UUID_HARDWARE_REV), U16_HI(CHARACTERISTIC_UUID_HARDWARE_REV)
+};
+static const u8 my_SerialCharVal[5] = {
+    CHAR_PROP_READ,
+    U16_LO(DeviceInformation_FirmRev_DP_H), U16_HI(DeviceInformation_FirmRev_DP_H),
+    U16_LO(CHARACTERISTIC_UUID_SERIAL_NUMBER), U16_HI(CHARACTERISTIC_UUID_SERIAL_NUMBER)
+};
+static const u8 my_FirmCharVal[5] = {
+    CHAR_PROP_READ,
+    U16_LO(DeviceInformation_FirmRev_DP_H), U16_HI(DeviceInformation_FirmRev_DP_H),
+    U16_LO(CHARACTERISTIC_UUID_FIRMWARE_REV), U16_HI(CHARACTERISTIC_UUID_FIRMWARE_REV)
+};
+static const u8 my_HardCharVal[5] = {
+    CHAR_PROP_READ,
+    U16_LO(DeviceInformation_HardRev_DP_H), U16_HI(DeviceInformation_HardRev_DP_H),
+    U16_LO(CHARACTERISTIC_UUID_HARDWARE_REV), U16_HI(CHARACTERISTIC_UUID_HARDWARE_REV)
+};
+static const u8 my_SoftCharVal[5] = {
+    CHAR_PROP_READ,
+    U16_LO(DeviceInformation_SoftRev_DP_H), U16_HI(DeviceInformation_SoftRev_DP_H),
+    U16_LO(CHARACTERISTIC_UUID_SOFTWARE_REV), U16_HI(CHARACTERISTIC_UUID_SOFTWARE_REV)
+};
+static const u8 my_ManCharVal[5] = {
+    CHAR_PROP_READ,
+    U16_LO(DeviceInformation_ManName_DP_H), U16_HI(DeviceInformation_ManName_DP_H),
+    U16_LO(CHARACTERISTIC_UUID_MANUFACTURER_NAME), U16_HI(CHARACTERISTIC_UUID_MANUFACTURER_NAME)
 };
 
+static const u8 my_ModelStr[] = {"Watermeter_BLE"};
+static const u8 my_SerialStr[] = {"0123456789--"};
+static const u8 my_FirmStr[] = {"github.com/slacky1965"};
+_attribute_data_retention_ u8 my_HardStr[] = {"TB-04"};
+static const u8 my_SoftStr[] = {'V','0'+(VERSION>>4),'.','0'+(VERSION&0x0f)}; // "0100"
+static const u8 my_ManStr[] = {"ai-thinker.com"};
 
 //// Battery attribute values
 static const u8 my_batCharVal[5] = {
@@ -173,11 +214,26 @@ _attribute_data_retention_ attribute_t my_Attributes[] = {
 	{0,ATT_PERMISSIONS_RDWR,2,sizeof (serviceChangeCCC),(u8*)(&clientCharacterCfgUUID), (u8*)(serviceChangeCCC), 0},
 
 
-	// 000c - 000e  device Information Service
-	{3,ATT_PERMISSIONS_READ,2,2,(u8*)(&my_primaryServiceUUID), 	(u8*)(&my_devServiceUUID), 0},
-	{0,ATT_PERMISSIONS_READ,2,sizeof(my_PnCharVal),(u8*)(&my_characterUUID), (u8*)(my_PnCharVal), 0},
-	{0,ATT_PERMISSIONS_READ,2,sizeof (my_PnPtrs),(u8*)(&my_PnPUUID), (u8*)(my_PnPtrs), 0},
+    // 000c - 0018 Device Information Service
+    {13,ATT_PERMISSIONS_READ,2,2,(u8*)(&my_primaryServiceUUID),(u8*)(&my_devServiceUUID), 0},
 
+    {0,ATT_PERMISSIONS_READ,2,sizeof(my_ModCharVal),(u8*)(&my_characterUUID),(u8*)(my_ModCharVal), 0},
+    {0,ATT_PERMISSIONS_READ,2,sizeof(my_ModelStr),(u8*)(&my_UUID_MODEL_NUMBER),(u8*)(my_ModelStr), 0},
+
+    {0,ATT_PERMISSIONS_READ,2,sizeof(my_SerialCharVal),(u8*)(&my_characterUUID),(u8*)(my_SerialCharVal), 0},
+    {0,ATT_PERMISSIONS_READ,2,sizeof(my_SerialStr),(u8*)(&my_UUID_SERIAL_NUMBER),(u8*)(my_SerialStr), 0},
+
+    {0,ATT_PERMISSIONS_READ,2,sizeof(my_FirmCharVal),(u8*)(&my_characterUUID),(u8*)(my_FirmCharVal), 0},
+    {0,ATT_PERMISSIONS_READ,2,sizeof(my_FirmStr),(u8*)(&my_UUID_FIRMWARE_REV),(u8*)(my_FirmStr), 0},
+
+    {0,ATT_PERMISSIONS_READ,2,sizeof(my_HardCharVal),(u8*)(&my_characterUUID),(u8*)(my_HardCharVal), 0},
+    {0,ATT_PERMISSIONS_READ,2,sizeof(my_HardStr),(u8*)(&my_UUID_HARDWARE_REV),(u8*)(my_HardStr), 0},
+
+    {0,ATT_PERMISSIONS_READ,2,sizeof(my_SoftCharVal),(u8*)(&my_characterUUID),(u8*)(my_SoftCharVal), 0},
+    {0,ATT_PERMISSIONS_READ,2,sizeof(my_SoftStr),(u8*)(&my_UUID_SOFTWARE_REV),(u8*)(my_SoftStr), 0},
+
+    {0,ATT_PERMISSIONS_READ,2,sizeof(my_ManCharVal),(u8*)(&my_characterUUID),(u8*)(my_ManCharVal), 0},
+    {0,ATT_PERMISSIONS_READ,2,sizeof(my_ManStr),(u8*)(&my_UUID_MANUFACTURER_NAME),(u8*)(my_ManStr), 0},
 
 	////////////////////////////////////// Battery Service /////////////////////////////////////////////////////
 	// 002a - 002d
