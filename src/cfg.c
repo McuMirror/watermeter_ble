@@ -5,7 +5,7 @@
 #include "cfg.h"
 
 _attribute_data_retention_ watermeter_config_t watermeter_config;
-static uint8_t default_config = true;
+_attribute_data_retention_ static uint8_t default_config = true;
 
 void init_default_config() {
     watermeter_config.id = ID_CFG;
