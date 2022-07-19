@@ -11,7 +11,6 @@
 #include "battery.h"
 #include "pulse.h"
 #include "cfg.h"
-#include "util.h"
 
 #define        ADV_INTERVAL_MIN                  ADV_INTERVAL_2S
 #define        ADV_INTERVAL_MAX                  ADV_INTERVAL_2S+800
@@ -72,17 +71,26 @@ _attribute_ram_code_ static void suspend_enter_cb(u8 e, u8 *p, int n) {
     }
 }
 
-
-
-void ble_disconnect_callback(uint8_t e,uint8_t *p, int n)
-{
-    ble_connected = 0;
-    ota_is_working = 0;
-}
-
 _attribute_ram_code_ void suspend_exit_cb (uint8_t e, uint8_t *p, int n)
 {
     rf_set_power_level_index (RF_POWER_P3p01dBm);
+}
+
+void ble_connect_cb(uint8_t e, uint8_t *p, int n)
+{
+    ble_connected = 1;
+//  bls_l2cap_requestConnParamUpdate (CONN_INTERVAL_10MS, CONN_INTERVAL_10MS, 19, CONN_TIMEOUT_4S);  // 200mS
+    bls_l2cap_requestConnParamUpdate (CONN_INTERVAL_10MS, CONN_INTERVAL_10MS, 99, CONN_TIMEOUT_4S);  // 1 S
+//  bls_l2cap_requestConnParamUpdate (CONN_INTERVAL_10MS, CONN_INTERVAL_10MS, 149, CONN_TIMEOUT_8S);  // 1.5 S
+//  bls_l2cap_requestConnParamUpdate (CONN_INTERVAL_10MS, CONN_INTERVAL_10MS, 199, CONN_TIMEOUT_8S);  // 2 S
+//  bls_l2cap_requestConnParamUpdate (CONN_INTERVAL_10MS, CONN_INTERVAL_10MS, 249, CONN_TIMEOUT_8S);  // 2.5 S
+//  bls_l2cap_requestConnParamUpdate (CONN_INTERVAL_10MS, CONN_INTERVAL_10MS, 299, CONN_TIMEOUT_8S);  // 3 S
+}
+
+void ble_disconnect_cb(uint8_t e,uint8_t *p, int n)
+{
+    ble_connected = 0;
+    ota_is_working = 0;
 }
 
 void ev_adv_timeout(u8 e, u8 *p, int n) {
@@ -93,19 +101,6 @@ void ev_adv_timeout(u8 e, u8 *p, int n) {
     //  set_adv_data();
     bls_ll_setScanRspData((uint8_t *) ble_name, ble_name[0]+1);
     bls_ll_setAdvEnable(BLC_ADV_ENABLE);  //ADV enable
-}
-
-
-
-void ble_connect_callback(uint8_t e, uint8_t *p, int n)
-{
-    ble_connected = 1;
-//  bls_l2cap_requestConnParamUpdate (CONN_INTERVAL_10MS, CONN_INTERVAL_10MS, 19, CONN_TIMEOUT_4S);  // 200mS
-    bls_l2cap_requestConnParamUpdate (CONN_INTERVAL_10MS, CONN_INTERVAL_10MS, 99, CONN_TIMEOUT_4S);  // 1 S
-//  bls_l2cap_requestConnParamUpdate (CONN_INTERVAL_10MS, CONN_INTERVAL_10MS, 149, CONN_TIMEOUT_8S);  // 1.5 S
-//  bls_l2cap_requestConnParamUpdate (CONN_INTERVAL_10MS, CONN_INTERVAL_10MS, 199, CONN_TIMEOUT_8S);  // 2 S
-//  bls_l2cap_requestConnParamUpdate (CONN_INTERVAL_10MS, CONN_INTERVAL_10MS, 249, CONN_TIMEOUT_8S);  // 2.5 S
-//  bls_l2cap_requestConnParamUpdate (CONN_INTERVAL_10MS, CONN_INTERVAL_10MS, 299, CONN_TIMEOUT_8S);  // 3 S
 }
 
 
@@ -138,10 +133,10 @@ void get_ble_name() {
         ble_name[1]  = GAP_ADTYPE_LOCAL_NAME_COMPLETE;
         set_module_name(ble_name);
     } else {
-        memcpy(ble_name, blename, strlen((char*)blename)+1);
+        memcpy(ble_name, blename, blename[0]+2);
     }
-    my_Attributes[GenericAccess_DeviceName_DP_H].attrLen = strlen((char*)ble_name) + 1;
-    for (int i = 0; i < strlen((char*)ble_name); i++) {
+    my_Attributes[GenericAccess_DeviceName_DP_H].attrLen = ble_name[0] + 1;
+    for (int i = 0; i < ble_name[0]+2; i++) {
         printf("0x%x - %c\r\n", ble_name[i], ble_name[i]);
     }
 }
@@ -194,7 +189,7 @@ __attribute__((optimize("-Os"))) void init_ble(void) {
     blc_smp_setSecurityLevel(No_Security);
 
     ///////////////////// USER application initialization ///////////////////
-    bls_ll_setScanRspData((uint8_t *)ble_name, strlen((char*)ble_name));
+    bls_ll_setScanRspData((uint8_t *)ble_name, ble_name[0]+1);
     bls_ll_setAdvParam(ADV_INTERVAL_MIN, ADV_INTERVAL_MAX,
                        ADV_TYPE_CONNECTABLE_UNDIRECTED,
                        OWN_ADDRESS_PUBLIC, 0,  NULL,
@@ -203,8 +198,8 @@ __attribute__((optimize("-Os"))) void init_ble(void) {
     rf_set_power_level_index(MY_RF_POWER_INDEX);
     bls_app_registerEventCallback(BLT_EV_FLAG_SUSPEND_ENTER, &suspend_enter_cb);
     bls_app_registerEventCallback(BLT_EV_FLAG_SUSPEND_EXIT, &suspend_exit_cb);
-    bls_app_registerEventCallback(BLT_EV_FLAG_CONNECT, &ble_connect_callback);
-    bls_app_registerEventCallback(BLT_EV_FLAG_TERMINATE, &ble_disconnect_callback);
+    bls_app_registerEventCallback(BLT_EV_FLAG_CONNECT, &ble_connect_cb);
+    bls_app_registerEventCallback(BLT_EV_FLAG_TERMINATE, &ble_disconnect_cb);
 
     ///////////////////// Power Management initialization///////////////////
     blc_ll_initPowerManagement_module();

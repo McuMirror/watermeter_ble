@@ -2,12 +2,10 @@
 #include "drivers\8258\flash.h"
 #include "tl_common.h"
 
-//#include "app_config.h"
 #include "cfg.h"
-#include "util.h"
 
 _attribute_data_retention_ watermeter_config_t watermeter_config;
-_attribute_data_retention_ static bool default_config = true;
+static uint8_t default_config = true;
 
 void init_default_config() {
     watermeter_config.id = ID_CFG;
@@ -21,7 +19,7 @@ void init_default_config() {
     write_config();
 }
 
-bool read_config() {
+uint8_t read_config() {
     watermeter_config_t config;
     uint32_t flash_addr = BEGIN_USER_DATA;
 
@@ -102,7 +100,7 @@ const uint8_t *get_module_name() {
     return watermeter_config.ble_name;
 }
 
-void set_module_name(uint8_t *name) {
-    memcpy(watermeter_config.ble_name, name, strlen((char*)name)+1);
+void set_module_name(uint8_t *blename) {
+    memcpy(watermeter_config.ble_name, blename, blename[0]+2);
     write_config();
 }

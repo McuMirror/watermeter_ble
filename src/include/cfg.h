@@ -23,7 +23,7 @@ void add_hotwater(uint32_t count);
 void add_coldwater(uint32_t count);
 uint32_t get_hotwater();
 uint32_t get_coldwater();
-void set_module_name(uint8_t *name);
+void set_module_name(uint8_t *blename);
 const uint8_t *get_module_name();
 
 #endif /* SRC_INCLUDE_CFG_H_ */
