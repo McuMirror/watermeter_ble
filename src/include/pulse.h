@@ -3,8 +3,6 @@
 
 #include "stdint.h"
 
-//#include "app_config.h"
-
 typedef struct _water_conter_t {
     uint8_t  pressed;
     uint8_t  released;
