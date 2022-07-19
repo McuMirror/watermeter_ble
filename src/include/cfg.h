@@ -4,6 +4,8 @@
 #include "stdint.h"
 
 #define ID_CFG  0xFED1410
+#define LITERS_PER_PULSE 10      /* How many liters per one pulse    */
+
 
 typedef struct __attribute__((packed)) _watermeter_config_t {
     uint32_t id;
@@ -21,11 +23,5 @@ void init_default_config();
 bool read_config();
 void write_config();
 void clear_config();
-//void add_hotwater(uint32_t count);
-//void add_coldwater(uint32_t count);
-//uint32_t get_hotwater();
-//uint32_t get_coldwater();
-//void set_module_name(uint8_t *blename);
-//const uint8_t *get_module_name();
 
 #endif /* SRC_INCLUDE_CFG_H_ */
