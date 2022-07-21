@@ -1,16 +1,21 @@
 #pragma once
 
-#define ON                      1
-#define OFF                     0
+#define ON                          1
+#define OFF                         0
 
-#define VERSION                 0x10    /* BCD format (0x10 -> '1.0')   */
+#define VERSION                     0x10    /* BCD format (0x10 -> '1.0')   */
 
-#define UART_PRINT_DEBUG_ENABLE         1       /* =1 use u_printf()            */
-//#define BLE_REMOTE_SECURITY_ENABLE      1
+#define UART_PRINT_DEBUG_ENABLE     1       /* =1 use printf() over uart    */
+//#define BLE_REMOTE_SECURITY_ENABLE 1
+
+/************************Advertising_Interval*************************************/
+#define ADV_INTERVAL_MIN            4000    /* 4000 * 0.625 = 2500 ms or 2.5 sec */
+#define ADV_INTERVAL_MAX            4800    /* 4800 * 0.625 = 3000 ms or 3.0 sec */
 
 
 #define MY_RF_POWER_INDEX       RF_POWER_P0p04dBm
 
+/****************************Configure UART***************************************/
 #if UART_PRINT_DEBUG_ENABLE
 #define PRINT_BAUD_RATE         115200
 #define DEBUG_INFO_TX_PIN       UART_TX_PB1
@@ -20,6 +25,7 @@
 #define PB1_FUNC                AS_GPIO
 #endif /* UART_PRINT_DEBUG_ENABLE */
 
+/*************************Configure HOT GPIO***************************************/
 #define HOT_GPIO                GPIO_PB6
 #define PB6_INPUT_ENABLE        ON
 #define PB6_DATA_OUT            OFF
@@ -27,6 +33,7 @@
 #define PB6_FUNC                AS_GPIO
 #define PULL_WAKEUP_SRC_PB6     PM_PIN_PULLUP_1M
 
+/*************************Configure COLD GPIO**************************************/
 #define COLD_GPIO               GPIO_PB7
 #define PB7_INPUT_ENABLE        ON
 #define PB7_DATA_OUT            OFF
@@ -34,6 +41,7 @@
 #define PB7_FUNC                AS_GPIO
 #define PULL_WAKEUP_SRC_PB7     PM_PIN_PULLUP_1M
 
+/*************************Configure VBAT GPIO***************************************/
 #define GPIO_VBAT               GPIO_PC4
 #define PC4_INPUT_ENABLE        OFF
 #define PC4_OUTPUT_ENABLE       ON
@@ -41,10 +49,11 @@
 #define PC4_FUNC                AS_GPIO
 #define SHL_ADC_VBAT            9 //C4P
 
+/*************************For 512K Flash only***************************************/
 #define BEGIN_USER_DATA         0x40000
 #define END_USER_DATA           0x74000
 #define FLASH_SECTOR_SIZE       0x1000
-#define CFG_ADR_MAC             0x76000
+#define FLASH_SECTOR_MAC        0x76000
 
 
 #define MODULE_WATCHDOG_ENABLE      0
