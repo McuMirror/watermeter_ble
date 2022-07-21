@@ -43,14 +43,14 @@ typedef struct __attribute__((packed)) _adv_head_uuid16_t {
 } adv_head_uuid16_t;
 
 typedef struct __attribute__((packed)) _adv_battery_t {
-    uint8_t     type_len;               /* HaBleType_uint | length */
-    uint8_t     id;                     /* HaBleID_battery         */
+    uint8_t     type_len;               /* HaBleType_uint (5-7 bit) | length (0-3 bit or 0xF) */
+    uint8_t     id;                     /* HaBleID_battery                                    */
     uint8_t     level;
 } adv_battery_t;
 
 typedef struct __attribute__((packed)) _adv_counter_t {
-    uint8_t     type_len;               /* HaBleType_uint | length */
-    uint8_t     id;                     /* HaBleID_count           */
+    uint8_t     type_len;               /* HaBleType_uint (5-7 bit) | length (0-3 bit or 0xF) */
+    uint8_t     id;                     /* HaBleID_count                                      */
     uint32_t    counter;
 } adv_counter_t;
 
@@ -59,13 +59,13 @@ typedef struct __attribute__((packed)) _adv_data_t {
     uint8_t             flg_type;       /* 0x01                     */
     uint8_t             flg;            /* 0x06                     */
     adv_head_uuid16_t   head;
-    uint8_t             type_len;       /* HaBleType_uint | length   */
-    uint8_t             id;             /* HaBleID_PacketId          */
-    uint8_t             pid;            /* 0 .. 255                  */
+    uint8_t             type_len;       /* HaBleType_uint | length  */
+    uint8_t             id;             /* HaBleID_PacketId         */
+    uint8_t             pid;            /* 0 .. 255                 */
     adv_battery_t       adv_battery;
     adv_counter_t       adv_hot;
     adv_counter_t       adv_cold;
-} adv_data_t, *p_adv_data_t;
+} adv_data_t;
 
 extern uint8_t ble_connected;
 extern uint8_t mac_public[6], mac_random_static[6];
