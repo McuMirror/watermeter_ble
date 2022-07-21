@@ -4,8 +4,8 @@
 #include "pulse.h"
 #include "cfg.h"
 
-#define BIT_COUNT   128                         /* check debounce */
-#define TASK_COUNT  (BIT_COUNT/2+BIT_COUNT)     /* task duration  */
+#define BIT_COUNT   128                         /* number of polls for debounce */
+#define TASK_COUNT  (BIT_COUNT/2+BIT_COUNT)     /* task duration                */
 
 _attribute_data_retention_ static water_counter_t hot_counter;
 _attribute_data_retention_ static water_counter_t cold_counter;
