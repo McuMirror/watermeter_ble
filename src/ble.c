@@ -12,9 +12,6 @@
 #include "pulse.h"
 #include "cfg.h"
 
-#define        ADV_INTERVAL_MIN                  ADV_INTERVAL_2S
-#define        ADV_INTERVAL_MAX                  ADV_INTERVAL_2S+800
-
 
 _attribute_data_retention_ uint8_t   blt_rxfifo_b[64 * 8] = {0};
 _attribute_data_retention_ my_fifo_t blt_rxfifo = { 64, 8, 0, 0, blt_rxfifo_b,};
@@ -143,7 +140,7 @@ void get_ble_name() {
 
 __attribute__((optimize("-Os"))) void init_ble(void) {
 
-    blc_initMacAddress(CFG_ADR_MAC, mac_public, mac_random_static);
+    blc_initMacAddress(FLASH_SECTOR_MAC, mac_public, mac_random_static);
     /// if bls_ll_setAdvParam( OWN_ADDRESS_RANDOM ) ->  blc_ll_setRandomAddr(mac_random_static);
     get_ble_name();
 
@@ -151,16 +148,16 @@ __attribute__((optimize("-Os"))) void init_ble(void) {
     adv_data.flg_type  = 0x01;
     adv_data.flg       = 0x06;
 
-    adv_data.head.size = sizeof(adv_head_uuid16_t) + 3 + sizeof(adv_battery_t) + sizeof(adv_counter_t)*2 - 1;
+    adv_data.head.size = (sizeof(adv_head_uuid16_t) + 3 + sizeof(adv_battery_t) + sizeof(adv_counter_t)*2 - 1) & 0xFF;
     adv_data.head.type =  GAP_ADTYPE_SERVICE_DATA_UUID_16BIT;
     adv_data.head.UUID = ADV_HA_BLE_NS_UUID16;
 
-    adv_data.type_len  = HaBleType_uint | (sizeof(adv_data.id) + sizeof(adv_data.pid));
+    adv_data.type_len  = HaBleType_uint | ((sizeof(adv_data.id) + sizeof(adv_data.pid)) & 0xF);
     adv_data.id        = HaBleID_PacketId;
     adv_data.pid       = 0;
 
     adv_data.adv_battery.type_len = HaBleType_uint |
-            (sizeof(adv_data.adv_battery.id) + sizeof(adv_data.adv_battery.level));
+            ((sizeof(adv_data.adv_battery.id) + sizeof(adv_data.adv_battery.level)) & 0xF);
     adv_data.adv_battery.id       = HaBleID_battery;
     adv_data.adv_battery.level = 0;
 
