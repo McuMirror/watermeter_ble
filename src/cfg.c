@@ -4,17 +4,68 @@
 
 #include "cfg.h"
 
+#ifndef MAC1
+_attribute_data_retention_ uint8_t wl_mac1[6] = {0};
+_attribute_data_retention_ uint8_t wl_mac2[6] = {0};
+_attribute_data_retention_ uint8_t wl_mac3[6] = {0};
+_attribute_data_retention_ uint8_t wl_mac4[6] = {0};
+#else
+_attribute_data_retention_ uint8_t wl_mac1[6] = MAC1;
+    #ifndef MAC2
+_attribute_data_retention_ uint8_t wl_mac2[6] = {0};
+_attribute_data_retention_ uint8_t wl_mac3[6] = {0};
+_attribute_data_retention_ uint8_t wl_mac4[6] = {0};
+    #else
+_attribute_data_retention_ uint8_t wl_mac2[6] = MAC2;
+        #ifndef MAC3
+_attribute_data_retention_ uint8_t wl_mac3[6] = {0};
+_attribute_data_retention_ uint8_t wl_mac4[6] = {0};
+        #else
+_attribute_data_retention_ uint8_t wl_mac3[6] = MAC3;
+            #ifndef MAC4
+_attribute_data_retention_ uint8_t wl_mac4[6] = {0};
+            #else
+_attribute_data_retention_ uint8_t wl_mac4[6] = MAC4;
+            #endif /* MAC4 */
+        #endif /* MAC3 */
+    #endif /* MAC2 */
+#endif /* MAC1 */
+
+
+
 _attribute_data_retention_ watermeter_config_t watermeter_config;
 _attribute_data_retention_ static uint8_t default_config = true;
 
+uint16_t check_mac_wl(uint8_t *mac) {
+
+    return mac[0]+mac[1]+mac[2]+mac[3]+mac[4]+mac[5];
+
+}
+
 void init_default_config() {
+    memset(&watermeter_config, 0, sizeof(watermeter_config_t));
     watermeter_config.id = ID_CFG;
     watermeter_config.active = ON;
     watermeter_config.flash_addr = BEGIN_USER_DATA;
     watermeter_config.liters_per_pulse = LITERS_PER_PULSE;
     watermeter_config.hot_water_count = 0;
     watermeter_config.cold_water_count = 0;
-    memset(watermeter_config.ble_name, 0, sizeof(watermeter_config.ble_name));
+    if (check_mac_wl(wl_mac1)) {
+        memcpy(watermeter_config.wl_mac1, wl_mac1, sizeof(wl_mac1));
+        watermeter_config.whitelist_enable++;
+        if (check_mac_wl(wl_mac2)) {
+            memcpy(watermeter_config.wl_mac2, wl_mac2, sizeof(wl_mac2));
+            watermeter_config.whitelist_enable++;
+            if (check_mac_wl(wl_mac3)) {
+                memcpy(watermeter_config.wl_mac3, wl_mac3, sizeof(wl_mac3));
+                watermeter_config.whitelist_enable++;
+                if (check_mac_wl(wl_mac4)) {
+                    memcpy(watermeter_config.wl_mac4, wl_mac4, sizeof(wl_mac4));
+                    watermeter_config.whitelist_enable++;
+                }
+            }
+        }
+    }
     default_config = true;
     write_config();
 }
