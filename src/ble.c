@@ -12,7 +12,6 @@
 #include "pulse.h"
 #include "cfg.h"
 
-
 _attribute_data_retention_ uint8_t   blt_rxfifo_b[64 * 8] = {0};
 _attribute_data_retention_ my_fifo_t blt_rxfifo = { 64, 8, 0, 0, blt_rxfifo_b,};
 
@@ -29,14 +28,18 @@ _attribute_data_retention_ uint8_t mac_public[6], mac_random_static[6];
 _attribute_data_retention_ uint8_t ble_connected = 0;
 uint8_t ota_is_working = 0;
 
-void app_switch_to_indirect_adv(uint8_t e, uint8_t *p, int n)
-{
-    bls_ll_setAdvParam(ADV_INTERVAL_MIN, ADV_INTERVAL_MAX,
-                       ADV_TYPE_CONNECTABLE_UNDIRECTED,
-                       OWN_ADDRESS_PUBLIC, 0,  NULL,
-                       BLT_ENABLE_ADV_ALL, ADV_FP_NONE);
-    bls_ll_setAdvEnable(BLC_ADV_ENABLE);
+
+#if UART_PRINT_DEBUG_ENABLE
+void print_mac(uint8_t num, uint8_t *mac) {
+    printf("MAC%u from whitelist: ", num);
+    for (uint8_t i = 0; i < 6; i++) {
+        printf("0x%X ", mac[i]);
+    }
+    printf("\r\n");
+
 }
+#endif /* UART_PRINT_DEBUG_ENABLE */
+
 
 void app_enter_ota_mode(void)
 {
@@ -94,7 +97,8 @@ void ev_adv_timeout(u8 e, u8 *p, int n) {
     (void) e; (void) p; (void) n;
     bls_ll_setAdvParam(ADV_INTERVAL_MIN, ADV_INTERVAL_MAX,
             ADV_TYPE_CONNECTABLE_UNDIRECTED, OWN_ADDRESS_PUBLIC, 0, NULL,
-            BLT_ENABLE_ADV_ALL, ADV_FP_NONE);
+            BLT_ENABLE_ADV_ALL,
+            watermeter_config.whitelist_enable?ADV_FP_ALLOW_SCAN_ANY_ALLOW_CONN_WL:ADV_FP_NONE);
     //  set_adv_data();
     bls_ll_setScanRspData((uint8_t *) ble_name, ble_name[0]+1);
     bls_ll_setAdvEnable(BLC_ADV_ENABLE);  //ADV enable
@@ -144,9 +148,9 @@ __attribute__((optimize("-Os"))) void init_ble(void) {
     /// if bls_ll_setAdvParam( OWN_ADDRESS_RANDOM ) ->  blc_ll_setRandomAddr(mac_random_static);
     get_ble_name();
 
-    adv_data.flg_size  = 0x02;
-    adv_data.flg_type  = 0x01;
-    adv_data.flg       = 0x06;
+    adv_data.flg_size  = 0x02;              /* size  */
+    adv_data.flg_type  = GAP_ADTYPE_FLAGS;  /* 0x01  */
+    adv_data.flg       = 0x06;              /* flags */
 
     adv_data.head.size = (sizeof(adv_head_uuid16_t) + 3 + sizeof(adv_battery_t) + sizeof(adv_counter_t)*2 - 1) & 0xFF;
     adv_data.head.type =  GAP_ADTYPE_SERVICE_DATA_UUID_16BIT;
@@ -186,12 +190,41 @@ __attribute__((optimize("-Os"))) void init_ble(void) {
     blc_smp_setSecurityLevel(No_Security);
 
     ///////////////////// USER application initialization ///////////////////
-    bls_ll_setScanRspData((uint8_t *)ble_name, ble_name[0]+1);
-    bls_ll_setAdvParam(ADV_INTERVAL_MIN, ADV_INTERVAL_MAX,
-                       ADV_TYPE_CONNECTABLE_UNDIRECTED,
-                       OWN_ADDRESS_PUBLIC, 0,  NULL,
-                       BLT_ENABLE_ADV_ALL, ADV_FP_NONE);
-    bls_ll_setAdvEnable(BLC_ADV_ENABLE);
+
+    if (watermeter_config.whitelist_enable) ll_whiteList_reset();
+
+    for (uint8_t i = 0; i < watermeter_config.whitelist_enable; i++) {
+        if (i == 0) {
+            ll_whiteList_add(BLE_ADDR_PUBLIC, watermeter_config.wl_mac1);
+#if UART_PRINT_DEBUG_ENABLE
+            print_mac(i+1, watermeter_config.wl_mac1);
+#endif /* UART_PRINT_DEBUG_ENABLE */
+        } else if (i == 1) {
+            ll_whiteList_add(BLE_ADDR_PUBLIC, watermeter_config.wl_mac2);
+#if UART_PRINT_DEBUG_ENABLE
+            print_mac(i+1, watermeter_config.wl_mac2);
+#endif /* UART_PRINT_DEBUG_ENABLE */
+        } else if (i == 2) {
+            ll_whiteList_add(BLE_ADDR_PUBLIC, watermeter_config.wl_mac3);
+#if UART_PRINT_DEBUG_ENABLE
+            print_mac(i+1, watermeter_config.wl_mac3);
+#endif /* UART_PRINT_DEBUG_ENABLE */
+        } else {
+            ll_whiteList_add(BLE_ADDR_PUBLIC, watermeter_config.wl_mac4);
+#if UART_PRINT_DEBUG_ENABLE
+            print_mac(i+1, watermeter_config.wl_mac4);
+#endif /* UART_PRINT_DEBUG_ENABLE */
+        }
+
+    }
+
+//    bls_ll_setScanRspData((uint8_t *)ble_name, ble_name[0]+1);
+//    bls_ll_setAdvParam(ADV_INTERVAL_MIN, ADV_INTERVAL_MAX,
+//                       ADV_TYPE_CONNECTABLE_UNDIRECTED,
+//                       OWN_ADDRESS_PUBLIC, 0,  NULL,
+//                       BLT_ENABLE_ADV_ALL,
+//                       watermeter_config.whitelist_enable?ADV_FP_ALLOW_SCAN_ANY_ALLOW_CONN_WL:ADV_FP_NONE);
+//    bls_ll_setAdvEnable(BLC_ADV_ENABLE);
     rf_set_power_level_index(MY_RF_POWER_INDEX);
     bls_app_registerEventCallback(BLT_EV_FLAG_SUSPEND_ENTER, &suspend_enter_cb);
     bls_app_registerEventCallback(BLT_EV_FLAG_SUSPEND_EXIT, &suspend_exit_cb);
@@ -201,7 +234,7 @@ __attribute__((optimize("-Os"))) void init_ble(void) {
     ///////////////////// Power Management initialization///////////////////
     blc_ll_initPowerManagement_module();
     bls_pm_setSuspendMask(SUSPEND_DISABLE);
-    blc_pm_setDeepsleepRetentionThreshold(45, 45);
+    blc_pm_setDeepsleepRetentionThreshold(40, 18);
     blc_pm_setDeepsleepRetentionEarlyWakeupTiming(200); // 240
     blc_pm_setDeepsleepRetentionType(DEEPSLEEP_MODE_RET_SRAM_LOW32K);
 
