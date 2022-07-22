@@ -156,12 +156,12 @@ __attribute__((optimize("-Os"))) void init_ble(void) {
     adv_data.head.type =  GAP_ADTYPE_SERVICE_DATA_UUID_16BIT;
     adv_data.head.UUID = ADV_HA_BLE_NS_UUID16;
 
-    adv_data.type_len  = HaBleType_uint | ((sizeof(adv_data.id) + sizeof(adv_data.pid)) & 0xF);
+    adv_data.type_len  = HaBleType_uint | ((sizeof(adv_data.id) + sizeof(adv_data.pid)) & 0x1F);
     adv_data.id        = HaBleID_PacketId;
     adv_data.pid       = 0;
 
     adv_data.adv_battery.type_len = HaBleType_uint |
-            ((sizeof(adv_data.adv_battery.id) + sizeof(adv_data.adv_battery.level)) & 0xF);
+            ((sizeof(adv_data.adv_battery.id) + sizeof(adv_data.adv_battery.level)) & 0x1F);
     adv_data.adv_battery.id       = HaBleID_battery;
     adv_data.adv_battery.level = 0;
 
