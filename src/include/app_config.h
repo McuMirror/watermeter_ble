@@ -5,12 +5,19 @@
 
 #define VERSION                     0x10    /* BCD format (0x10 -> '1.0')   */
 
-#define UART_PRINT_DEBUG_ENABLE     1       /* =1 use printf() over uart    */
-//#define BLE_REMOTE_SECURITY_ENABLE 1
+#define UART_PRINT_DEBUG_ENABLE     1       /* if 1 use printf() over uart  */
+#define WHITELIST_ENABLE            0       /* if 1 use whitelist           */
+
+#if WHITELIST_ENABLE
+#define MAC1                    {0x88, 0x10, 0x8F, 0x2D, 0x06, 0x16}
+#define MAC2                    {0x88, 0x10, 0x8F, 0x2D, 0x06, 0x17}
+//#define MAC3                    {0x88, 0x10, 0x8F, 0x2D, 0x06, 0x18}
+//#define MAC4                    {0x88, 0x10, 0x8F, 0x2D, 0x06, 0x19}
+#endif /* WHITELIST_ENABLE */
 
 /************************Advertising_Interval*************************************/
-#define ADV_INTERVAL_MIN            4000    /* 4000 * 0.625 = 2500 ms or 2.5 sec */
-#define ADV_INTERVAL_MAX            4800    /* 4800 * 0.625 = 3000 ms or 3.0 sec */
+#define ADV_INTERVAL_MIN        ADV_INTERVAL_2S+800    /* (3200+800) * 0.625 = 2500 ms or 2.5 sec */
+#define ADV_INTERVAL_MAX        ADV_INTERVAL_2S+1000   /* (3200+1000)* 0.625 = 2625 ms or 2.6 sec */
 
 
 #define MY_RF_POWER_INDEX       RF_POWER_P0p04dBm
