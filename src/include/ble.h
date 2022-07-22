@@ -43,14 +43,14 @@ typedef struct __attribute__((packed)) _adv_head_uuid16_t {
 } adv_head_uuid16_t;
 
 typedef struct __attribute__((packed)) _adv_battery_t {
-    uint8_t     type_len;               /* HaBleType_uint (5-7 bit) | length (0-3 bit or 0xF) */
-    uint8_t     id;                     /* HaBleID_battery                                    */
+    uint8_t     type_len;               /* HaBleType_uint (5-7 bit) | length (0-4 bit or 0x1F) */
+    uint8_t     id;                     /* HaBleID_battery                                     */
     uint8_t     level;
 } adv_battery_t;
 
 typedef struct __attribute__((packed)) _adv_counter_t {
-    uint8_t     type_len;               /* HaBleType_uint (5-7 bit) | length (0-3 bit or 0xF) */
-    uint8_t     id;                     /* HaBleID_count                                      */
+    uint8_t     type_len;               /* HaBleType_uint (5-7 bit) | length (0-4 bit or 0x1F) */
+    uint8_t     id;                     /* HaBleID_count                                       */
     uint32_t    counter;
 } adv_counter_t;
 
