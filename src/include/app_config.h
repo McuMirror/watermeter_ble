@@ -15,14 +15,14 @@
 //#define MAC4                    {0x88, 0x10, 0x8F, 0x2D, 0x06, 0x19}
 #endif /* WHITELIST_ENABLE */
 
-/************************Advertising_Interval*************************************/
+/************************ Advertising_Interval *************************************/
 #define ADV_INTERVAL_MIN        ADV_INTERVAL_2S+800    /* (3200+800) * 0.625 = 2500 ms or 2.5 sec */
 #define ADV_INTERVAL_MAX        ADV_INTERVAL_2S+1000   /* (3200+1000)* 0.625 = 2625 ms or 2.6 sec */
 
 
 #define MY_RF_POWER_INDEX       RF_POWER_P0p04dBm
 
-/****************************Configure UART***************************************/
+/**************************** Configure UART ***************************************/
 #if UART_PRINT_DEBUG_ENABLE
 #define PRINT_BAUD_RATE         115200
 #define DEBUG_INFO_TX_PIN       UART_TX_PB1
