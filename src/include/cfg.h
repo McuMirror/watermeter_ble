@@ -15,6 +15,11 @@ typedef struct __attribute__((packed)) _watermeter_config_t {
     uint32_t hot_water_count;    /* Last number of liters hot water  */
     uint32_t cold_water_count;   /* Last number of litres cold water */
     uint8_t  ble_name[32];       /* Module name with MAC             */
+    uint8_t  wl_mac1[6];         /* MAC1 for whitelist               */
+    uint8_t  wl_mac2[6];         /* MAC2 for whitelist               */
+    uint8_t  wl_mac3[6];         /* MAC3 for whitelist               */
+    uint8_t  wl_mac4[6];         /* MAC4 for whitelist               */
+    uint8_t  whitelist_enable;   /* 0 - disable, 1-4 enable          */
 } watermeter_config_t;
 
 extern watermeter_config_t watermeter_config;
