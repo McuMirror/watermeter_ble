@@ -67,10 +67,14 @@ static const u16 my_batServiceUUID        = SERVICE_UUID_BATTERY;
 static const u16 my_batCharUUID       	  = CHARACTERISTIC_UUID_BATTERY_LEVEL;
 _attribute_data_retention_ uint16_t batteryValueInCCC;
 
+#define SERVICE_UUID_BINARY_SENSOR      0x183B
+#define CHARACTERISTIC_UUID_COUNT1      0x2AEA
+#define CHARACTERISTIC_UUID_COUNT2      0x2AEB
+
 //////////////////////// Counters /////////////////////////////////////////////////
-static const u16 my_countServiceUUID      = 0x183B; // Binary Sensor
-static const u16 my_hotCharUUID           = 0x2AEA; // count16
-static const u16 my_coldCharUUID          = 0x2AEB; // count16
+static const u16 my_countServiceUUID      = SERVICE_UUID_BINARY_SENSOR; // Binary Sensor
+static const u16 my_hotCharUUID           = CHARACTERISTIC_UUID_COUNT1;
+static const u16 my_coldCharUUID          = CHARACTERISTIC_UUID_COUNT2;
 _attribute_data_retention_ u32 hotValueInCCC;
 _attribute_data_retention_ u32 coldValueInCCC;
 
@@ -174,13 +178,13 @@ static const u8 my_batCharVal[5] = {
 static const u8 my_hotCharVal[5] = {
     CHAR_PROP_READ | CHAR_PROP_NOTIFY,
     U16_LO(HOT_LEVEL_INPUT_DP_H), U16_HI(HOT_LEVEL_INPUT_DP_H),
-    U16_LO(0x2AEA), U16_HI(0x2AEA)
+    U16_LO(CHARACTERISTIC_UUID_COUNT1), U16_HI(CHARACTERISTIC_UUID_COUNT1)
 };
 
 static const u8 my_coldCharVal[5] = {
     CHAR_PROP_READ | CHAR_PROP_NOTIFY,
     U16_LO(COLD_LEVEL_INPUT_DP_H), U16_HI(COLD_LEVEL_INPUT_DP_H),
-    U16_LO(0x2AEB), U16_HI(0x2AEB)
+    U16_LO(CHARACTERISTIC_UUID_COUNT2), U16_HI(CHARACTERISTIC_UUID_COUNT2)
 };
 
 //// OTA attribute values
