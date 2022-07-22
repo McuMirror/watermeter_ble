@@ -32,7 +32,7 @@
 #define PB1_FUNC                AS_GPIO
 #endif /* UART_PRINT_DEBUG_ENABLE */
 
-/*************************Configure HOT GPIO***************************************/
+/************************* Configure HOT GPIO ***************************************/
 #define HOT_GPIO                GPIO_PB6
 #define PB6_INPUT_ENABLE        ON
 #define PB6_DATA_OUT            OFF
@@ -40,7 +40,7 @@
 #define PB6_FUNC                AS_GPIO
 #define PULL_WAKEUP_SRC_PB6     PM_PIN_PULLUP_1M
 
-/*************************Configure COLD GPIO**************************************/
+/************************* Configure COLD GPIO **************************************/
 #define COLD_GPIO               GPIO_PB7
 #define PB7_INPUT_ENABLE        ON
 #define PB7_DATA_OUT            OFF
@@ -48,7 +48,7 @@
 #define PB7_FUNC                AS_GPIO
 #define PULL_WAKEUP_SRC_PB7     PM_PIN_PULLUP_1M
 
-/*************************Configure VBAT GPIO***************************************/
+/************************* Configure VBAT GPIO ***************************************/
 #define GPIO_VBAT               GPIO_PC4
 #define PC4_INPUT_ENABLE        OFF
 #define PC4_OUTPUT_ENABLE       ON
@@ -56,7 +56,7 @@
 #define PC4_FUNC                AS_GPIO
 #define SHL_ADC_VBAT            9 //C4P
 
-/*************************For 512K Flash only***************************************/
+/************************* For 512K Flash only ***************************************/
 #define BEGIN_USER_DATA         0x40000
 #define END_USER_DATA           0x74000
 #define FLASH_SECTOR_SIZE       0x1000
