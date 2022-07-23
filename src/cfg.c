@@ -42,6 +42,15 @@ uint16_t check_mac_wl(uint8_t *mac) {
 
 }
 
+static void clear_user_data() {
+    uint32_t flash_addr = BEGIN_USER_DATA;
+
+    while(flash_addr != END_USER_DATA) {
+        flash_erase_sector(flash_addr);
+        flash_addr += FLASH_SECTOR_SIZE;
+    }
+}
+
 static void init_default_config(uint32_t hot_count, uint32_t cold_count) {
     memset(&watermeter_config, 0, sizeof(watermeter_config_t));
     watermeter_config.size = sizeof(watermeter_config_t);
@@ -85,7 +94,7 @@ void init_config() {
 #if UART_PRINT_DEBUG_ENABLE
                     printf("Check new format config! Reinit.\r\n");
 #endif /* UART_PRINT_DEBUG_ENABLE */
-                    clear_config();
+                    clear_user_data();
                     if (config.counters.id == ID_COUNTERS) {
                         /* save old count in new config */
                         init_default_config(config.counters.hot_water_count, config.counters.cold_water_count);
@@ -142,37 +151,3 @@ void write_config() {
 #endif /* UART_PRINT_DEBUG_ENABLE */
 }
 
-void clear_config() {
-    uint32_t flash_addr = BEGIN_USER_DATA;
-
-    while(flash_addr != END_USER_DATA) {
-        flash_erase_sector(flash_addr);
-        flash_addr += FLASH_SECTOR_SIZE;
-    }
-//    init_default_config(0, 0);
-}
-
-//void add_hotwater(uint32_t count) {
-//    watermeter_config.hot_water += (count * watermeter_config.liters_per_pulse);
-//}
-//
-//void add_coldwater(uint32_t count) {
-//    watermeter_config.cold_water += (count * watermeter_config.liters_per_pulse);
-//}
-//
-//uint32_t get_hotwater() {
-//    return watermeter_config.hot_water;
-//}
-//
-//uint32_t get_coldwater() {
-//    return watermeter_config.cold_water;
-//}
-//
-//const uint8_t *get_module_name() {
-//    return watermeter_config.ble_name;
-//}
-//
-//void set_module_name(uint8_t *blename) {
-//    memcpy(watermeter_config.ble_name, blename, blename[0]+2);
-//    write_config();
-//}
