@@ -250,11 +250,11 @@ _attribute_data_retention_ attribute_t my_Attributes[] = {
     // 002e - 0031
     {7,ATT_PERMISSIONS_READ,2,2,(u8*)(&my_primaryServiceUUID),(u8*)(&my_countServiceUUID), 0},
     {0,ATT_PERMISSIONS_READ,2,sizeof(my_hotCharVal),(u8*)(&my_characterUUID),(u8*)(my_hotCharVal), 0},                //prop
-    {0,ATT_PERMISSIONS_READ,2,sizeof(watermeter_config.hot_water_count),(u8*)(&my_hotCharUUID),(u8*)(&watermeter_config.hot_water_count), 0},    //value
+    {0,ATT_PERMISSIONS_READ,2,sizeof(watermeter_config.counters.hot_water_count),(u8*)(&my_hotCharUUID),(u8*)(&watermeter_config.counters.hot_water_count), 0},    //value
     {0,ATT_PERMISSIONS_RDWR,2,sizeof(hotValueInCCC),(u8*)(&clientCharacterCfgUUID),(u8*)(&hotValueInCCC), 0}, //value
 
     {0,ATT_PERMISSIONS_READ,2,sizeof(my_coldCharVal),(u8*)(&my_characterUUID),(u8*)(my_coldCharVal), 0},              //prop
-    {0,ATT_PERMISSIONS_READ,2,sizeof(watermeter_config.cold_water_count),(u8*)(&my_coldCharUUID),(u8*)(&watermeter_config.cold_water_count), 0},   //value
+    {0,ATT_PERMISSIONS_READ,2,sizeof(watermeter_config.counters.cold_water_count),(u8*)(&my_coldCharUUID),(u8*)(&watermeter_config.counters.cold_water_count), 0},   //value
     {0,ATT_PERMISSIONS_RDWR,2,sizeof(coldValueInCCC),(u8*)(&clientCharacterCfgUUID),(u8*)(&coldValueInCCC), 0},   //value
 
 	////////////////////////////////////// OTA /////////////////////////////////////////////////////

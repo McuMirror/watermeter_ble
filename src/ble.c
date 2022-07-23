@@ -168,12 +168,12 @@ __attribute__((optimize("-Os"))) void init_ble(void) {
     adv_data.adv_hot.type_len = HaBleType_uint |
             (sizeof(adv_data.adv_hot.id) + sizeof(adv_data.adv_hot.counter));
     adv_data.adv_hot.id  = HaBleID_count;
-    adv_data.adv_hot.counter = watermeter_config.hot_water_count;
+    adv_data.adv_hot.counter = watermeter_config.counters.hot_water_count;
 
     adv_data.adv_cold.type_len = HaBleType_uint |
             (sizeof(adv_data.adv_cold.id) + sizeof(adv_data.adv_cold.counter));
     adv_data.adv_cold.id  = HaBleID_count;
-    adv_data.adv_cold.counter = watermeter_config.cold_water_count;
+    adv_data.adv_cold.counter = watermeter_config.counters.cold_water_count;
 
     ////// Controller Initialization  //////////
     blc_ll_initBasicMCU();                      //mandatory

@@ -42,14 +42,19 @@ uint16_t check_mac_wl(uint8_t *mac) {
 
 }
 
+void check_config() {
+
+}
+
 void init_default_config() {
     memset(&watermeter_config, 0, sizeof(watermeter_config_t));
-    watermeter_config.id = ID_CFG;
+    watermeter_config.size = sizeof(watermeter_config_t);
+    watermeter_config.id = ID_CONFIG;
     watermeter_config.active = ON;
     watermeter_config.flash_addr = BEGIN_USER_DATA;
     watermeter_config.liters_per_pulse = LITERS_PER_PULSE;
-    watermeter_config.hot_water_count = 0;
-    watermeter_config.cold_water_count = 0;
+    watermeter_config.counters.hot_water_count = 0;
+    watermeter_config.counters.cold_water_count = 0;
     if (check_mac_wl(wl_mac1)) {
         memcpy(watermeter_config.wl_mac1, wl_mac1, sizeof(wl_mac1));
         watermeter_config.whitelist_enable++;
@@ -77,7 +82,7 @@ uint8_t read_config() {
     while(1) {
         flash_read_page(flash_addr, sizeof(watermeter_config_t), (uint8_t*)&(config));
 
-        if (config.id == ID_CFG) {
+        if (config.id == ID_CONFIG) {
             if (config.active) {
                 memcpy(&watermeter_config, &config, sizeof(watermeter_config_t));
                 watermeter_config.flash_addr = flash_addr;

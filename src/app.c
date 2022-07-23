@@ -80,8 +80,8 @@ _attribute_data_retention_ uint8_t send_cold    = 0;
 void main_loop (void) {
 
     if (task_counters()) {
-        adv_data.adv_hot.counter  = watermeter_config.hot_water_count;
-        adv_data.adv_cold.counter = watermeter_config.cold_water_count;
+        adv_data.adv_hot.counter  = watermeter_config.counters.hot_water_count;
+        adv_data.adv_cold.counter = watermeter_config.counters.cold_water_count;
         set_adv_data();
     }
 
