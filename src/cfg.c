@@ -121,6 +121,10 @@ void init_config() {
                 continue;
             }
         } else {
+#if UART_PRINT_DEBUG_ENABLE
+            printf("No saved config! Init.\r\n");
+#endif /* UART_PRINT_DEBUG_ENABLE */
+            clear_user_data();
             init_default_config(0, 0);
             break;
         }
