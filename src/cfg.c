@@ -42,19 +42,15 @@ uint16_t check_mac_wl(uint8_t *mac) {
 
 }
 
-void check_config() {
-
-}
-
-void init_default_config() {
+static void init_default_config(uint32_t hot_count, uint32_t cold_count) {
     memset(&watermeter_config, 0, sizeof(watermeter_config_t));
     watermeter_config.size = sizeof(watermeter_config_t);
     watermeter_config.id = ID_CONFIG;
     watermeter_config.active = ON;
     watermeter_config.flash_addr = BEGIN_USER_DATA;
     watermeter_config.liters_per_pulse = LITERS_PER_PULSE;
-    watermeter_config.counters.hot_water_count = 0;
-    watermeter_config.counters.cold_water_count = 0;
+    watermeter_config.counters.hot_water_count = hot_count;
+    watermeter_config.counters.cold_water_count = cold_count;
     if (check_mac_wl(wl_mac1)) {
         memcpy(watermeter_config.wl_mac1, wl_mac1, sizeof(wl_mac1));
         watermeter_config.whitelist_enable++;
@@ -75,7 +71,7 @@ void init_default_config() {
     write_config();
 }
 
-uint8_t read_config() {
+void init_config() {
     watermeter_config_t config;
     uint32_t flash_addr = BEGIN_USER_DATA;
 
@@ -84,22 +80,38 @@ uint8_t read_config() {
 
         if (config.id == ID_CONFIG) {
             if (config.active) {
+                if (config.size != sizeof(watermeter_config_t)) {
+#if UART_PRINT_DEBUG_ENABLE
+                    printf("Check new format config! Reinit.\r\n");
+#endif /* UART_PRINT_DEBUG_ENABLE */
+                    clear_config();
+                    if (config.counters.id == ID_COUNTERS) {
+                        /* save old count in new config */
+                        init_default_config(config.counters.hot_water_count, config.counters.cold_water_count);
+                    } else {
+                        init_default_config(0, 0);
+                    }
+                    break;
+                }
                 memcpy(&watermeter_config, &config, sizeof(watermeter_config_t));
                 watermeter_config.flash_addr = flash_addr;
-                return true;
+                break;
             } else {
                 flash_addr += FLASH_SECTOR_SIZE;
                 if (flash_addr == END_USER_DATA) {
-                    return false;
+#if UART_PRINT_DEBUG_ENABLE
+                    printf("No active saved config! Reinit.\r\n");
+#endif /* UART_PRINT_DEBUG_ENABLE */
+                    init_default_config(0, 0);
+                    break;
                 }
                 continue;
             }
         } else {
-            return false;
+            init_default_config(0, 0);
+            break;
         }
     }
-
-    return false;
 }
 
 void write_config() {
@@ -133,7 +145,7 @@ void clear_config() {
         flash_erase_sector(flash_addr);
         flash_addr += FLASH_SECTOR_SIZE;
     }
-    init_default_config();
+//    init_default_config(0, 0);
 }
 
 //void add_hotwater(uint32_t count) {
