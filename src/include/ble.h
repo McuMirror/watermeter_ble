@@ -69,7 +69,7 @@ typedef struct __attribute__((packed)) _adv_data_t {
 
 extern uint8_t ble_connected;
 extern uint8_t mac_public[6], mac_random_static[6];
-extern uint8_t ble_name[32];
+extern uint8_t ble_name[DEV_NAME_SIZE];
 extern adv_data_t adv_data;
 
 void init_ble();
