@@ -18,9 +18,7 @@ _attribute_data_retention_ my_fifo_t blt_rxfifo = { 64, 8, 0, 0, blt_rxfifo_b,};
 _attribute_data_retention_ uint8_t   blt_txfifo_b[40 * 16] = {0};
 _attribute_data_retention_ my_fifo_t blt_txfifo = { 40, 16, 0, 0, blt_txfifo_b,};
 
-_attribute_data_retention_ uint8_t   ble_name[32]; /* = {0x12, 0x09,
-                                                     'W', 'a', 't', 'e', 'r', 'm', 'e', 't', 'e', 'r',
-                                                     '_', '0', '0', '0', '0', '0', '0',};*/
+_attribute_data_retention_ uint8_t   ble_name[DEV_NAME_SIZE];
 
 _attribute_data_retention_ adv_data_t adv_data;
 
@@ -111,35 +109,31 @@ const char* hex_ascii = {"0123456789ABCDEF"};
 
 void get_ble_name() {
     uint8_t *blename = watermeter_config.ble_name;
-    if (blename[0] == 0) {
-        ble_name[2]  = 'W';
-        ble_name[3]  = 'a';
-        ble_name[4]  = 't';
-        ble_name[5]  = 'e';
-        ble_name[6]  = 'r';
-        ble_name[7]  = 'm';
-        ble_name[8]  = 'e';
-        ble_name[9]  = 't';
-        ble_name[10] = 'e';
-        ble_name[11] = 'r';
-        ble_name[12] = '_';
-        ble_name[13] = hex_ascii[mac_public[2]>>4];
-        ble_name[14] = hex_ascii[mac_public[2] &0x0f];
-        ble_name[15] = hex_ascii[mac_public[1]>>4];
-        ble_name[16] = hex_ascii[mac_public[1] &0x0f];
-        ble_name[17] = hex_ascii[mac_public[0]>>4];
-        ble_name[18] = hex_ascii[mac_public[0] &0x0f];
-        ble_name[19] = 0;
-        ble_name[0]  = 18;
-        ble_name[1]  = GAP_ADTYPE_LOCAL_NAME_COMPLETE;
-        memcpy(blename, ble_name, ble_name[0]+2);
+    uint8_t pos = sizeof(DEV_NAME_STR)-1;
+
+    memcpy(ble_name+2, DEV_NAME_STR, pos);
+    pos +=2;
+    ble_name[pos++] = '_';
+    ble_name[pos++] = hex_ascii[mac_public[2]>>4];
+    ble_name[pos++] = hex_ascii[mac_public[2] &0x0f];
+    ble_name[pos++] = hex_ascii[mac_public[1]>>4];
+    ble_name[pos++] = hex_ascii[mac_public[1] &0x0f];
+    ble_name[pos++] = hex_ascii[mac_public[0]>>4];
+    ble_name[pos++] = hex_ascii[mac_public[0] &0x0f];
+    ble_name[0]     = DEV_NAME_SIZE-1;
+    ble_name[1]     = GAP_ADTYPE_LOCAL_NAME_COMPLETE;
+
+    if (*blename == 0) {
+        memcpy(blename, ble_name, ble_name[0]+1);
     } else {
-        memcpy(ble_name, blename, blename[0]+2);
+        if (memcmp(ble_name, blename, DEV_NAME_SIZE)) {
+            memcpy(blename, ble_name, DEV_NAME_SIZE);
+        }
     }
     my_Attributes[GenericAccess_DeviceName_DP_H].attrLen = ble_name[0] - 1;
-    for (int i = 0; i < ble_name[0]+2; i++) {
-        printf("0x%x - %c\r\n", ble_name[i], ble_name[i]);
-    }
+//    for (int i = 0; i < DEV_NAME_SIZE; i++) {
+//        printf("[%u] 0x%x - %c\r\n", i, ble_name[i], ble_name[i]);
+//    }
 }
 
 __attribute__((optimize("-Os"))) void init_ble(void) {
