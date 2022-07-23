@@ -16,8 +16,8 @@ typedef struct __attribute__((packed)) _counters_config_t {
 
 
 typedef struct __attribute__((packed)) _watermeter_config_t {
-    uint8_t  size;              /* 1st place only! sizeof config        */
-    uint32_t id;                /* 2st place only! ID - ID_CONFIG       */
+    uint32_t id;                /* 1st place only! ID - ID_CONFIG       */
+    uint8_t  size;              /* 2st place only! sizeof config        */
     uint8_t  active;            /* 3st place only! current active cfg   */
     uint32_t flash_addr;        /* 4st place only! flash page address   */
     counters_config_t counters; /* 4st place only! water counters       */
