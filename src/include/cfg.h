@@ -13,8 +13,6 @@ typedef struct __attribute__((packed)) _counters_config_t {
     uint32_t cold_water_count;  /* Last number of litres cold water     */
 } counters_config_t;
 
-
-
 typedef struct __attribute__((packed)) _watermeter_config_t {
     uint32_t id;                /* 1st place only! ID - ID_CONFIG       */
     uint8_t  active;            /* 2st place only! current active cfg   */
@@ -35,6 +33,5 @@ extern watermeter_config_t watermeter_config;
 
 void init_config();
 void write_config();
-void clear_config();
 
 #endif /* SRC_INCLUDE_CFG_H_ */
