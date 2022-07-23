@@ -35,10 +35,7 @@ void user_init_normal(void)
 	random_generator_init();  //this is must
     pulse_init();
 
-    if (!read_config()) {
-        init_default_config();
-    }
-
+    init_config();
     init_ble();
 
 }
@@ -55,19 +52,6 @@ _attribute_ram_code_ void user_init_deepRetn(void) {
 	blc_ll_recoverDeepRetention();
 
 	irq_enable();
-
-	#if (UI_KEYBOARD_ENABLE)
-		/////////// keyboard gpio wakeup init ////////
-		u32 pin[] = KB_DRIVE_PINS;
-		for (int i=0; i<(sizeof (pin)/sizeof(*pin)); i++)
-		{
-			cpu_set_gpio_wakeup (pin[i], Level_High,1);  //drive pin pad high wakeup deepsleep
-		}
-	#elif (UI_BUTTON_ENABLE)
-
-		cpu_set_gpio_wakeup (SW1_GPIO, Level_Low,1);  //button pin pad low wakeUp suspend/deepSleep
-		cpu_set_gpio_wakeup (SW2_GPIO, Level_Low,1);  //button pin pad low wakeUp suspend/deepSleep
-	#endif
 }
 
 #define BATTERY_MEAS_PERIOD 5000UL /* ms */
