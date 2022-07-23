@@ -49,6 +49,7 @@ static void init_default_config(uint32_t hot_count, uint32_t cold_count) {
     watermeter_config.active = ON;
     watermeter_config.flash_addr = BEGIN_USER_DATA;
     watermeter_config.liters_per_pulse = LITERS_PER_PULSE;
+    watermeter_config.counters.id = ID_COUNTERS;
     watermeter_config.counters.hot_water_count = hot_count;
     watermeter_config.counters.cold_water_count = cold_count;
     if (check_mac_wl(wl_mac1)) {
@@ -89,6 +90,9 @@ void init_config() {
                         /* save old count in new config */
                         init_default_config(config.counters.hot_water_count, config.counters.cold_water_count);
                     } else {
+#if UART_PRINT_DEBUG_ENABLE
+                        printf("Can't find old water counters data. New data = 0.\r\n");
+#endif /* UART_PRINT_DEBUG_ENABLE */
                         init_default_config(0, 0);
                     }
                     break;
