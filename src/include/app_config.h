@@ -3,6 +3,10 @@
 #define ON                          1
 #define OFF                         0
 
+#define DEV_NAME_CHR               'W','a','t','e','r','m','e','t','e','r','_','B','L','E'
+#define DEV_NAME_STR                "Watermeter_BLE"
+/* 0x16,0x09,'W','a','t','e','r','m','e','t','e','r','_','B','L','E','_',0x00,0x00,0x00,0x00,0x00,0x00 */
+#define DEV_NAME_SIZE               23
 #define VERSION                     0x10    /* BCD format (0x10 -> '1.0')   */
 
 #define UART_PRINT_DEBUG_ENABLE     1       /* if 1 use printf() over uart  */
