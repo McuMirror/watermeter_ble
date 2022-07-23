@@ -58,7 +58,7 @@ static u16 serviceChangeVal[2] = {0};
 
 static u8 serviceChangeCCC[2] = {0,0};
 
-static const u8 my_devName[] = {'W','a','t','e','r','m','e','t','e','r'};
+static const u8 my_devName[] = WRAPPING_BRACES(DEV_NAME_CHR);
 
 //static const u8 my_PnPtrs [] = {0x02, 0x8a, 0x24, 0x66, 0x82, 0x01, 0x00};
 
@@ -160,12 +160,12 @@ static const u8 my_ManCharVal[5] = {
     U16_LO(CHARACTERISTIC_UUID_MANUFACTURER_NAME), U16_HI(CHARACTERISTIC_UUID_MANUFACTURER_NAME)
 };
 
-static const u8 my_ModelStr[] = {"Watermeter_BLE"};
-static const u8 my_SerialStr[] = {"0123456789--"};
-static const u8 my_FirmStr[] = {"github.com/slacky1965"};
-_attribute_data_retention_ u8 my_HardStr[] = {"TB-04"};
-static const u8 my_SoftStr[] = {'V','0'+(VERSION>>4),'.','0'+(VERSION&0x0f)}; // "0100"
-static const u8 my_ManStr[] = {"ai-thinker.com"};
+static const u8 my_ModelStr[]               = {DEV_NAME_STR};
+static const u8 my_SerialStr[]              = {"0123456789--"};
+static const u8 my_FirmStr[]                = {"github.com/slacky1965"};
+_attribute_data_retention_ u8 my_HardStr[]  = {"TB-04"};
+static const u8 my_SoftStr[]                = {'V','0'+(VERSION>>4),'.','0'+(VERSION&0x0f)}; // "0100"
+static const u8 my_ManStr[]                 = {"ai-thinker.com"};
 
 //// Battery attribute values
 static const u8 my_batCharVal[5] = {
