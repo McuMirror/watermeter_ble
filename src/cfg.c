@@ -5,25 +5,25 @@
 #include "cfg.h"
 
 #ifndef MAC1
-_attribute_data_retention_ uint8_t wl_mac1[6] = {0};
-_attribute_data_retention_ uint8_t wl_mac2[6] = {0};
-_attribute_data_retention_ uint8_t wl_mac3[6] = {0};
-_attribute_data_retention_ uint8_t wl_mac4[6] = {0};
+_attribute_data_retention_ uint8_t wl_mac1[6] = {0,0,0,0,0,0};
+_attribute_data_retention_ uint8_t wl_mac2[6] = {0,0,0,0,0,0};
+_attribute_data_retention_ uint8_t wl_mac3[6] = {0,0,0,0,0,0};
+_attribute_data_retention_ uint8_t wl_mac4[6] = {0,0,0,0,0,0};
 #else
 _attribute_data_retention_ uint8_t wl_mac1[6] = MAC1;
     #ifndef MAC2
-_attribute_data_retention_ uint8_t wl_mac2[6] = {0};
-_attribute_data_retention_ uint8_t wl_mac3[6] = {0};
-_attribute_data_retention_ uint8_t wl_mac4[6] = {0};
+_attribute_data_retention_ uint8_t wl_mac2[6] = {0,0,0,0,0,0};
+_attribute_data_retention_ uint8_t wl_mac3[6] = {0,0,0,0,0,0};
+_attribute_data_retention_ uint8_t wl_mac4[6] = {0,0,0,0,0,0};
     #else
 _attribute_data_retention_ uint8_t wl_mac2[6] = MAC2;
         #ifndef MAC3
-_attribute_data_retention_ uint8_t wl_mac3[6] = {0};
-_attribute_data_retention_ uint8_t wl_mac4[6] = {0};
+_attribute_data_retention_ uint8_t wl_mac3[6] = {0,0,0,0,0,0};
+_attribute_data_retention_ uint8_t wl_mac4[6] = {0,0,0,0,0,0};
         #else
 _attribute_data_retention_ uint8_t wl_mac3[6] = MAC3;
             #ifndef MAC4
-_attribute_data_retention_ uint8_t wl_mac4[6] = {0};
+_attribute_data_retention_ uint8_t wl_mac4[6] = {0,0,0,0,0,0};
             #else
 _attribute_data_retention_ uint8_t wl_mac4[6] = MAC4;
             #endif /* MAC4 */

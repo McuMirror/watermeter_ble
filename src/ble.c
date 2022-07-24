@@ -11,6 +11,7 @@
 #include "battery.h"
 #include "pulse.h"
 #include "cfg.h"
+#include "cmd_parser.h"
 
 _attribute_data_retention_ uint8_t   blt_rxfifo_b[64 * 8] = {0};
 _attribute_data_retention_ my_fifo_t blt_rxfifo = { 64, 8, 0, 0, blt_rxfifo_b,};
@@ -45,7 +46,11 @@ void app_enter_ota_mode(void)
     bls_ota_setTimeout(5 * 1000000);
 }
 
-
+int RxTxWrite(void * p)
+{
+    cmd_parser(p);
+    return 0;
+}
 
 _attribute_ram_code_ void blt_pm_proc(void)
 {
@@ -189,7 +194,7 @@ __attribute__((optimize("-Os"))) void init_ble(void) {
 
     for (uint8_t i = 0; i < watermeter_config.whitelist_enable; i++) {
         if (i == 0) {
-            ll_whiteList_add(BLE_ADDR_PUBLIC, watermeter_config.wl_mac1);
+            printf("wl_ret - %u\r\n"), ll_whiteList_add(BLE_ADDR_PUBLIC, watermeter_config.wl_mac1);
 #if UART_PRINT_DEBUG_ENABLE
             print_mac(i+1, watermeter_config.wl_mac1);
 #endif /* UART_PRINT_DEBUG_ENABLE */

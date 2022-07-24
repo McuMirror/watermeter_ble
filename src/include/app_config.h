@@ -66,10 +66,9 @@
 #define FLASH_SECTOR_SIZE       0x1000
 #define FLASH_SECTOR_MAC        0x76000
 
-
+/////////////////// watchdog  //////////////////////////////
 #define MODULE_WATCHDOG_ENABLE      0
 #define WATCHDOG_INIT_TIMEOUT       500  //ms
-
 
 ///////////////////////// System Clock  Configuration /////////////////////////////////////////
 #define CLOCK_SYS_CLOCK_HZ  								24000000 //16000000
@@ -91,13 +90,6 @@ enum{
 	CLOCK_SYS_CLOCK_1MS = (CLOCK_SYS_CLOCK_1S / 1000),
 	CLOCK_SYS_CLOCK_1US = (CLOCK_SYS_CLOCK_1S / 1000000),
 };
-
-
-
-/////////////////// watchdog  //////////////////////////////
-#define MODULE_WATCHDOG_ENABLE		0
-#define WATCHDOG_INIT_TIMEOUT		500  //ms
-
 
 #include "vendor/common/default_config.h"
 

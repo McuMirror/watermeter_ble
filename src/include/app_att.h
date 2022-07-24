@@ -70,12 +70,19 @@ typedef enum
     OTA_CMD_INPUT_CCB_H,                    //UUID: 2902,   VALUE: otaDataCCC
     OTA_CMD_OUT_DESC_H,                     //UUID: 2901,   VALUE: otaName
 
+    //// Custom RxTx ////
+    /**********************************************************************************************/
+    RxTx_PS_H,                              //UUID: 2800,   VALUE: 1F10 RxTx service uuid
+    RxTx_CMD_OUT_CD_H,                      //UUID: 2803,   VALUE:              Prop: read | write_without_rsp
+    RxTx_CMD_OUT_DP_H,                      //UUID: 1F1F,  VALUE: RxTxData
+    RxTx_CMD_OUT_DESC_H,                    //UUID: 2902,   VALUE: RxTxValueInCCC
 
     ATT_END_H,
 
 }ATT_HANDLE;
 
-
+extern int otaWritePre(void * p);
+extern int RxTxWrite(void * p);
 void my_att_init(void);
 
 

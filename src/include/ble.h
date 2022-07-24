@@ -76,6 +76,7 @@ void init_ble();
 void set_adv_data();
 void ble_send_battery();
 void blt_pm_proc(void);
+void ev_adv_timeout(u8 e, u8 *p, int n);
 
 
 #endif /* SRC_INCLUDE_BLE_H_ */

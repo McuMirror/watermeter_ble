@@ -79,11 +79,17 @@ _attribute_data_retention_ u32 hotValueInCCC;
 _attribute_data_retention_ u32 coldValueInCCC;
 
 
+// RxTx Char
+static const  u16 my_RxTxUUID              = 0x1f1f;
+static const  u16 my_RxTx_ServiceUUID      = 0x1f10;
+static u8     my_RxTx_Data                 = 0x00;
+static u8     RxTxValueInCCC[2];
+
 /////////////////////////////////////////////////////////
-static const  u8 my_OtaUUID[16]					    = WRAPPING_BRACES(TELINK_SPP_DATA_OTA);
-static const  u8 my_OtaServiceUUID[16]				= WRAPPING_BRACES(TELINK_OTA_UUID_SERVICE);
-static u8 my_OtaData 						        = 0x00;
-static u8 otaDataCCC[2] 							= {0,0};
+static const  u8 my_OtaUUID[16]            = WRAPPING_BRACES(TELINK_SPP_DATA_OTA);
+static const  u8 my_OtaServiceUUID[16]     = WRAPPING_BRACES(TELINK_OTA_UUID_SERVICE);
+static u8 my_OtaData                       = 0x00;
+static u8 otaDataCCC[2]                    = {0,0};
 
 static const u8  my_OtaName[] = {'O', 'T', 'A'};
 
@@ -194,6 +200,14 @@ static const u8 my_OtaCharVal[19] = {
 	TELINK_SPP_DATA_OTA,
 };
 
+//// RxTx attribute values
+static const u8 my_RxTxCharVal[5] = {
+    CHAR_PROP_NOTIFY | CHAR_PROP_WRITE_WITHOUT_RSP,
+    U16_LO(RxTx_CMD_OUT_DP_H), U16_HI(RxTx_CMD_OUT_DP_H),
+    U16_LO(0x1f1f), U16_HI(0x1f1f)
+};
+
+
 
 // TM : to modify
 _attribute_data_retention_ attribute_t my_Attributes[] = {
@@ -264,6 +278,13 @@ _attribute_data_retention_ attribute_t my_Attributes[] = {
 	{0,ATT_PERMISSIONS_RDWR,16,sizeof(my_OtaData),(u8*)(&my_OtaUUID),	(&my_OtaData), &otaWrite, NULL},				//value
 	{0,ATT_PERMISSIONS_RDWR,2,sizeof(otaDataCCC),(u8*)(&clientCharacterCfgUUID), 	(u8*)(otaDataCCC), 0},				//value
 	{0,ATT_PERMISSIONS_READ, 2,sizeof (my_OtaName),(u8*)(&userdesc_UUID), (u8*)(my_OtaName), 0},
+
+    ////////////////////////////////////// RxTx ////////////////////////////////////////////////////
+    // RxTx Communication
+    {4,ATT_PERMISSIONS_READ, 2,2,(u8*)(&my_primaryServiceUUID),     (u8*)(&my_RxTx_ServiceUUID), 0},
+    {0,ATT_PERMISSIONS_READ, 2, sizeof(my_RxTxCharVal),(u8*)(&my_characterUUID), (u8*)(my_RxTxCharVal), 0},             //prop
+    {0,ATT_PERMISSIONS_WRITE, 2,sizeof(my_RxTx_Data),(u8*)(&my_RxTxUUID),   (&my_RxTx_Data), &RxTxWrite},           //value
+    {0,ATT_PERMISSIONS_RDWR,2,sizeof(RxTxValueInCCC),(u8*)(&clientCharacterCfgUUID),    (u8*)(RxTxValueInCCC), 0},  //value
 
 };
 
