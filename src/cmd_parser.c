@@ -37,20 +37,21 @@ static void set_water(uint8_t hot_cold, uint8_t b32, uint8_t b24, uint8_t b16, u
 
 void cmd_parser(void * p) {
 	rf_packet_att_data_t *req = (rf_packet_att_data_t*)p;
-	uint8_t inData = req->dat[0];
+	uint8_t *in_data = req->dat;
+	uint8_t len = req->l2cap-3;
 
-	if (inData == CMD_SET_LPP) {
-	    watermeter_config.liters_per_pulse = req->dat[1];
+	if (*in_data == CMD_SET_LPP) {
+	    watermeter_config.liters_per_pulse = in_data[1];
         write_config();
-	} else if (inData == CMD_SET_WL) {
+	} else if (*in_data == CMD_SET_WL) {
 	    if (watermeter_config.whitelist_enable < 4) {
 	        uint8_t mac[7];
-            mac[0] = req->dat[1];
-            mac[1] = req->dat[2];
-            mac[2] = req->dat[3];
-            mac[3] = req->dat[4];
-            mac[4] = req->dat[5];
-            mac[5] = req->dat[6];
+            mac[0] = in_data[1];
+            mac[1] = in_data[2];
+            mac[2] = in_data[3];
+            mac[3] = in_data[4];
+            mac[4] = in_data[5];
+            mac[5] = in_data[6];
             mac[6] = 0;
 	        watermeter_config.whitelist_enable++;
 	        if (watermeter_config.whitelist_enable == 1) {
@@ -87,11 +88,11 @@ void cmd_parser(void * p) {
 #endif /* UART_PRINT_DEBUG_ENABLE */
 
 	    }
-	} else if (inData == CMD_SET_WL) {
-	} else if (inData == CMD_SET_HW) {
-	    set_water(HOT_WATER, req->dat[1], req->dat[2], req->dat[3], req->dat[4]);
-	} else if (inData == CMD_SET_CW) {
-        set_water(COLD_WATER, req->dat[1], req->dat[2], req->dat[3], req->dat[4]);
+	} else if (*in_data == CMD_SET_HW) {
+	    set_water(HOT_WATER, in_data[1], in_data[2], in_data[3], in_data[4]);
+	} else if (*in_data == CMD_SET_CW) {
+        set_water(COLD_WATER, in_data[1], in_data[2], in_data[3], in_data[4]);
+    } else if (*in_data == CMD_RESET) {
 	}
 
 
