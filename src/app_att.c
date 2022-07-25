@@ -75,8 +75,8 @@ _attribute_data_retention_ uint16_t batteryValueInCCC;
 static const u16 my_countServiceUUID      = SERVICE_UUID_BINARY_SENSOR; // Binary Sensor
 static const u16 my_hotCharUUID           = CHARACTERISTIC_UUID_COUNT1;
 static const u16 my_coldCharUUID          = CHARACTERISTIC_UUID_COUNT2;
-_attribute_data_retention_ u32 hotValueInCCC;
-_attribute_data_retention_ u32 coldValueInCCC;
+_attribute_data_retention_ u16 hotValueInCCC;
+_attribute_data_retention_ u16 coldValueInCCC;
 
 
 // RxTx Char
