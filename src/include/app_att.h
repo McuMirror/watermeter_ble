@@ -83,6 +83,9 @@ typedef enum
 
 extern int otaWritePre(void * p);
 extern int RxTxWrite(void * p);
+extern uint16_t batteryValueInCCC;
+extern uint16_t hotValueInCCC;
+extern uint16_t coldValueInCCC;
 void my_att_init(void);
 
 
