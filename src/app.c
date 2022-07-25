@@ -88,16 +88,19 @@ void main_loop (void) {
             battery_interval = clock_time();
         }
 
-        if (batteryValueInCCC) {
-            ble_send_battery();
-        }
+        if((blc_ll_getCurrentState() & BLS_LINK_STATE_CONN) && blc_ll_getTxFifoNumber() < 9) {
 
-        if (hotValueInCCC) {
-            ble_send_hotwater();
-        }
+            if (batteryValueInCCC) {
+                ble_send_battery();
+            }
 
-        if (coldValueInCCC) {
-            ble_send_coldwater();
+            if (hotValueInCCC) {
+                ble_send_hotwater();
+            }
+
+            if (coldValueInCCC) {
+                ble_send_coldwater();
+            }
         }
 
         update_interval = clock_time();
@@ -111,24 +114,8 @@ void main_loop (void) {
         set_adv_data();
     }
 
-//    if((blc_ll_getCurrentState() & BLS_LINK_STATE_CONN) && blc_ll_getTxFifoNumber() < 9){
-//        if (send_battery) {
-//            printf("ble_connected\r\n");
-//            ble_send_battery();
-//            send_battery = 0;
-//        }
-//    }
-
-//    if ((clock_time() - advertise_begin_tick) > AVD_PERIOD*CLOCK_SYS_CLOCK_1MS) {
-//        set_adv_data();
-//        advertise_begin_tick = clock_time();
-//        printf("%u - avd start\r\n", clock_time());
-//    }
-
     blt_sdk_main_loop();
     blt_pm_proc();
-//    bls_pm_setSuspendMask(SUSPEND_ADV | DEEPSLEEP_RETENTION_ADV | SUSPEND_CONN | DEEPSLEEP_RETENTION_CONN);
-
 }
 
 
