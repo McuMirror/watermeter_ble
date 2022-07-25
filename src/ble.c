@@ -25,7 +25,7 @@ _attribute_data_retention_ adv_data_t adv_data;
 
 _attribute_data_retention_ uint8_t mac_public[6], mac_random_static[6];
 _attribute_data_retention_ uint8_t ble_connected = 0;
-uint8_t ota_is_working = 0;
+_attribute_data_retention_ uint8_t ota_is_working = 0;
 
 
 #if UART_PRINT_DEBUG_ENABLE
@@ -52,26 +52,19 @@ int RxTxWrite(void * p)
     return 0;
 }
 
-_attribute_ram_code_ void blt_pm_proc(void)
-{
-    if(ota_is_working){
-        bls_pm_setSuspendMask(SUSPEND_DISABLE);
-        bls_pm_setManualLatency(0);
-    }else{
-        bls_pm_setSuspendMask (SUSPEND_ADV | DEEPSLEEP_RETENTION_ADV | SUSPEND_CONN | DEEPSLEEP_RETENTION_CONN);
-    }
-}
-
 _attribute_ram_code_ static void suspend_enter_cb(u8 e, u8 *p, int n) {
     (void) e; (void) p; (void) n;
-    if (!ble_connected) {
-        cpu_set_gpio_wakeup(HOT_GPIO, gpio_read(HOT_GPIO)? Level_Low : Level_High, 1);  // pad wakeup deepsleep enable
-        cpu_set_gpio_wakeup(COLD_GPIO, gpio_read(COLD_GPIO)? Level_Low : Level_High, 1);  // pad wakeup deepsleep enable
-        bls_pm_setWakeupSource(PM_WAKEUP_PAD | PM_WAKEUP_TIMER);  // gpio pad wakeup suspend/deepsleep
-    } else {
-        cpu_set_gpio_wakeup(HOT_GPIO, Level_Low, 0);  // pad wakeup suspend/deepsleep disable
-        cpu_set_gpio_wakeup(COLD_GPIO, Level_Low, 0);  // pad wakeup suspend/deepsleep disable
-    }
+    cpu_set_gpio_wakeup(HOT_GPIO, gpio_read(HOT_GPIO)? Level_Low : Level_High, 1);  // pad wakeup deepsleep enable
+    cpu_set_gpio_wakeup(COLD_GPIO, gpio_read(COLD_GPIO)? Level_Low : Level_High, 1);  // pad wakeup deepsleep enable
+    bls_pm_setWakeupSource(PM_WAKEUP_PAD | PM_WAKEUP_TIMER);  // gpio pad wakeup suspend/deepsleep
+//    if (!ble_connected) {
+//        cpu_set_gpio_wakeup(HOT_GPIO, gpio_read(HOT_GPIO)? Level_Low : Level_High, 1);  // pad wakeup deepsleep enable
+//        cpu_set_gpio_wakeup(COLD_GPIO, gpio_read(COLD_GPIO)? Level_Low : Level_High, 1);  // pad wakeup deepsleep enable
+//        bls_pm_setWakeupSource(PM_WAKEUP_PAD | PM_WAKEUP_TIMER);  // gpio pad wakeup suspend/deepsleep
+//    } else {
+//        cpu_set_gpio_wakeup(HOT_GPIO, Level_Low, 0);  // pad wakeup suspend/deepsleep disable
+//        cpu_set_gpio_wakeup(COLD_GPIO, Level_Low, 0);  // pad wakeup suspend/deepsleep disable
+//    }
 }
 
 _attribute_ram_code_ void suspend_exit_cb (uint8_t e, uint8_t *p, int n)
@@ -258,6 +251,14 @@ void set_adv_data() {
 
 void ble_send_battery() {
     bls_att_pushNotifyData(BATT_LEVEL_INPUT_DP_H, (uint8_t *)&battery_level, 1);
+}
+
+void ble_send_hotwater() {
+    bls_att_pushNotifyData(HOT_LEVEL_INPUT_DP_H, (uint8_t *)&watermeter_config.counters.hot_water_count, 1);
+}
+
+void ble_send_coldwater() {
+    bls_att_pushNotifyData(COLD_LEVEL_INPUT_DP_H, (uint8_t *)&watermeter_config.counters.cold_water_count, 1);
 }
 
 
