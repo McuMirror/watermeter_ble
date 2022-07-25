@@ -12,16 +12,14 @@
 #include "ble.h"
 
 #if UART_PRINT_DEBUG_ENABLE
-_attribute_data_retention_ static uint32_t deepRetn_count = 0;
+//_attribute_data_retention_ static uint32_t deepRetn_count = 0;
 #endif /* UART_PRINT_DEBUG_ENABLE */
 
-//_attribute_data_retention_	int device_in_connection_state;
-//_attribute_data_retention_	u32 advertise_begin_tick;
-//_attribute_data_retention_	u32	interval_update_tick;
-//_attribute_data_retention_	u8	sendTerminate_before_enterDeep = 0;
-//_attribute_data_retention_  u32 latest_user_event_tick;
-_attribute_data_retention_  uint32_t battery_measure_tick = 0;
-_attribute_data_retention_  uint32_t advertise_begin_tick = 0;
+#define UPDATE_PERIOD       5000UL      /* 5 sec */
+#define BATTERY_PERIOD      300000UL    /* 5 min */
+_attribute_data_retention_  uint32_t update_interval  = 0;
+_attribute_data_retention_  uint32_t battery_interval = 0;
+
 
 void user_init_normal(void)
 {
@@ -54,8 +52,17 @@ _attribute_ram_code_ void user_init_deepRetn(void) {
 	irq_enable();
 }
 
-#define BATTERY_MEAS_PERIOD 5000UL /* ms */
-#define AVD_PERIOD          (ADV_INTERVAL_2S-1200)
+_attribute_ram_code_ void blt_pm_proc(void)
+{
+    if(ota_is_working){
+        bls_pm_setSuspendMask(SUSPEND_DISABLE);
+        bls_pm_setManualLatency(0);
+    }else{
+        bls_pm_setSuspendMask (SUSPEND_ADV | DEEPSLEEP_RETENTION_ADV | SUSPEND_CONN | DEEPSLEEP_RETENTION_CONN);
+    }
+}
+
+
 
 _attribute_data_retention_ uint8_t send_battery = 0;
 _attribute_data_retention_ uint8_t send_hot     = 0;
@@ -69,10 +76,31 @@ void main_loop (void) {
         set_adv_data();
     }
 
-    if ((clock_time() - battery_measure_tick) > BATTERY_MEAS_PERIOD*CLOCK_SYS_CLOCK_1MS) {
-        check_battery();
-        battery_measure_tick = clock_time();
-        send_battery = 1;
+    if ((clock_time() - update_interval) > UPDATE_PERIOD*CLOCK_SYS_CLOCK_1MS) {
+
+        if ((clock_time() - battery_interval) > BATTERY_PERIOD*CLOCK_SYS_CLOCK_1MS) {
+            check_battery();
+
+            if (battery_level != adv_data.adv_battery.level) {
+                adv_data.adv_battery.level = battery_level;
+                set_adv_data();
+            }
+            battery_interval = clock_time();
+        }
+
+        if (batteryValueInCCC) {
+            ble_send_battery();
+        }
+
+        if (hotValueInCCC) {
+            ble_send_hotwater();
+        }
+
+        if (coldValueInCCC) {
+            ble_send_coldwater();
+        }
+
+        update_interval = clock_time();
     }
 
     if (battery_level != adv_data.adv_battery.level) {
