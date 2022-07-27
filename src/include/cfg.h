@@ -5,7 +5,6 @@
 
 #define ID_CONFIG        0xFED1410
 #define ID_COUNTERS      0xFED1965
-#define LITERS_PER_PULSE 10     /* How many liters per one pulse        */
 
 typedef struct __attribute__((packed)) _counters_config_t {
     uint32_t id;                /* ID - ID_COUNTERS                     */
