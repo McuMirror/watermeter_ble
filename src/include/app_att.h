@@ -52,15 +52,14 @@ typedef enum
 
     //// Count service ////
     /**********************************************************************************************/
-    HOT_PS_H,                              //UUID: 2800,    VALUE: uuid 183B
-    HOT_LEVEL_INPUT_CD_H,                  //UUID: 2803,    VALUE:              Prop: Read | Notify
-    HOT_LEVEL_INPUT_DP_H,                  //UUID: 2AEA,    VALUE: hot count
-    HOT_LEVEL_INPUT_CCB_H,                 //UUID: 2902,    VALUE: hotValCCC
+    HOT_PS_H,                               //UUID: 2800,    VALUE: uuid 183B
+    HOT_LEVEL_INPUT_CD_H,                   //UUID: 2803,    VALUE:              Prop: Read | Notify
+    HOT_LEVEL_INPUT_DP_H,                   //UUID: 2AEA,    VALUE: hot count
+    HOT_LEVEL_INPUT_CCB_H,                  //UUID: 2902,    VALUE: hotValCCC
 
-    COLD_PS_H,                              //UUID: 2800,   VALUE: uuid 183B
     COLD_LEVEL_INPUT_CD_H,                  //UUID: 2803,   VALUE:              Prop: Read | Notify
-    COLD_LEVEL_INPUT_DP_H,                  //UUID: 2AEB,   VALUE: hot count
-    COLD_LEVEL_INPUT_CCB_H,                 //UUID: 2902,   VALUE: hotValCCC
+    COLD_LEVEL_INPUT_DP_H,                  //UUID: 2AEB,   VALUE: cold count
+    COLD_LEVEL_INPUT_CCB_H,                 //UUID: 2902,   VALUE: coldValCCC
 
     //// Ota ////
     /**********************************************************************************************/
@@ -87,6 +86,7 @@ extern uint16_t batteryValueInCCC;
 extern uint16_t hotValueInCCC;
 extern uint16_t coldValueInCCC;
 void my_att_init(void);
+uint32_t size_my_devName();
 
 
 
