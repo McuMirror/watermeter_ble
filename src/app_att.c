@@ -82,14 +82,14 @@ _attribute_data_retention_ uint16_t coldValueInCCC;
 // RxTx Char
 static const  u16 my_RxTxUUID              = 0x1f1f;
 static const  u16 my_RxTx_ServiceUUID      = 0x1f10;
-static u8     my_RxTx_Data                 = 0x00;
-static u8     RxTxValueInCCC[2];
+_attribute_data_retention_ u8 my_RxTx_Data[16];
+_attribute_data_retention_ u16 RxTxValueInCCC;
+
 
 /////////////////////////////////////////////////////////
 static const  u8 my_OtaUUID[16]            = WRAPPING_BRACES(TELINK_SPP_DATA_OTA);
 static const  u8 my_OtaServiceUUID[16]     = WRAPPING_BRACES(TELINK_OTA_UUID_SERVICE);
 static u8 my_OtaData                       = 0x00;
-static u8 otaDataCCC[2]                    = {0,0};
 
 static const u8  my_OtaName[] = {'O', 'T', 'A'};
 
@@ -169,7 +169,7 @@ static const u8 my_ManCharVal[5] = {
 static const u8 my_ModelStr[]               = {DEV_NAME_STR};
 static const u8 my_SerialStr[]              = {"0123456789--"};
 static const u8 my_FirmStr[]                = {"github.com/slacky1965"};
-_attribute_data_retention_ u8 my_HardStr[]  = {"TB-04"};
+static const u8 my_HardStr[]                = {"TB-04"};
 static const u8 my_SoftStr[]                = {'V','0'+(VERSION>>4),'.','0'+(VERSION&0x0f)}; // "0100"
 static const u8 my_ManStr[]                 = {"ai-thinker.com"};
 
@@ -273,18 +273,17 @@ _attribute_data_retention_ attribute_t my_Attributes[] = {
 
 	////////////////////////////////////// OTA /////////////////////////////////////////////////////
 	// 0032 - 0036
-	{5,ATT_PERMISSIONS_READ, 2,16,(u8*)(&my_primaryServiceUUID), 	(u8*)(&my_OtaServiceUUID), 0},
+	{4,ATT_PERMISSIONS_READ, 2,16,(u8*)(&my_primaryServiceUUID), 	(u8*)(&my_OtaServiceUUID), 0},
 	{0,ATT_PERMISSIONS_READ, 2, sizeof(my_OtaCharVal),(u8*)(&my_characterUUID), (u8*)(my_OtaCharVal), 0},				//prop
 	{0,ATT_PERMISSIONS_RDWR,16,sizeof(my_OtaData),(u8*)(&my_OtaUUID),	(&my_OtaData), &otaWrite, NULL},				//value
-	{0,ATT_PERMISSIONS_RDWR,2,sizeof(otaDataCCC),(u8*)(&clientCharacterCfgUUID), 	(u8*)(otaDataCCC), 0},				//value
 	{0,ATT_PERMISSIONS_READ, 2,sizeof (my_OtaName),(u8*)(&userdesc_UUID), (u8*)(my_OtaName), 0},
 
     ////////////////////////////////////// RxTx ////////////////////////////////////////////////////
     // RxTx Communication
     {4,ATT_PERMISSIONS_READ, 2,2,(u8*)(&my_primaryServiceUUID),     (u8*)(&my_RxTx_ServiceUUID), 0},
-    {0,ATT_PERMISSIONS_READ, 2, sizeof(my_RxTxCharVal),(u8*)(&my_characterUUID), (u8*)(my_RxTxCharVal), 0},             //prop
-    {0,ATT_PERMISSIONS_WRITE, 2,sizeof(my_RxTx_Data),(u8*)(&my_RxTxUUID),   (&my_RxTx_Data), &RxTxWrite},           //value
-    {0,ATT_PERMISSIONS_RDWR,2,sizeof(RxTxValueInCCC),(u8*)(&clientCharacterCfgUUID),    (u8*)(RxTxValueInCCC), 0},  //value
+    {0,ATT_PERMISSIONS_READ, 2, sizeof(my_RxTxCharVal), (u8*)(&my_characterUUID), (u8*)(my_RxTxCharVal), 0},             //prop
+    {0,ATT_PERMISSIONS_RDWR, 2,sizeof(my_RxTx_Data),(u8*)(&my_RxTxUUID), (u8*)&my_RxTx_Data, &RxTxWrite, 0},
+    {0,ATT_PERMISSIONS_RDWR, 2,sizeof(RxTxValueInCCC),(u8*)(&clientCharacterCfgUUID),   (u8*)(&RxTxValueInCCC), 0}, //value
 
 };
 
@@ -299,4 +298,6 @@ void	my_att_init (void)
 	bls_att_setAttributeTable ((u8 *)my_Attributes);
 }
 
-
+uint32_t size_my_devName() {
+    return sizeof(my_devName);
+}
