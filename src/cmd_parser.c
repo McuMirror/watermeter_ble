@@ -21,18 +21,25 @@ static void set_water(uint8_t hot_cold, uint8_t b32, uint8_t b24, uint8_t b16, u
     counter |= (b8          & 0xFF);
 
     if (hot_cold == HOT_WATER) {
-#if UART_PRINT_DEBUG_ENABLE
-        printf("Set hot water - %u\r\n", counter);
-#endif /* UART_PRINT_DEBUG_ENABLE */
         watermeter_config.counters.hot_water_count = counter;
+        if (watermeter_config.counters.hot_water_count > (COUNTERS_OVERFLOW-LITERS_PER_PULSE)) {
+            watermeter_config.counters.hot_water_count -= (COUNTERS_OVERFLOW-LITERS_PER_PULSE);
+        }
+#if UART_PRINT_DEBUG_ENABLE
+        printf("New counter - %u. Set hot water - %u\r\n", counter, watermeter_config.counters.hot_water_count);
+#endif /* UART_PRINT_DEBUG_ENABLE */
         write_config();
     } else if (hot_cold == COLD_WATER) {
-#if UART_PRINT_DEBUG_ENABLE
-        printf("Set cold water - %u\r\n", counter);
-#endif /* UART_PRINT_DEBUG_ENABLE */
         watermeter_config.counters.cold_water_count = counter;
+        if (watermeter_config.counters.cold_water_count > (COUNTERS_OVERFLOW-LITERS_PER_PULSE)) {
+            watermeter_config.counters.cold_water_count -= (COUNTERS_OVERFLOW-LITERS_PER_PULSE);
+        }
+#if UART_PRINT_DEBUG_ENABLE
+        printf("New counter - %u. Set cold water - %u\r\n", counter, watermeter_config.counters.cold_water_count);
+#endif /* UART_PRINT_DEBUG_ENABLE */
         write_config();
     }
+    ev_adv_timeout(0,0,0);
 }
 
 void cmd_parser(void * p) {
@@ -40,10 +47,10 @@ void cmd_parser(void * p) {
 	uint8_t *in_data = req->dat;
 	uint8_t len = req->l2cap-3;
 
-	if (*in_data == CMD_SET_LPP) {
+	if (*in_data == CMD_SET_LPP && len == 2) {
 	    watermeter_config.liters_per_pulse = in_data[1];
         write_config();
-	} else if (*in_data == CMD_SET_WL) {
+	} else if (*in_data == CMD_SET_WL && len == 7) {
 	    if (watermeter_config.whitelist_enable < 4) {
 	        uint8_t mac[7];
             mac[0] = in_data[1];
@@ -88,12 +95,16 @@ void cmd_parser(void * p) {
 #endif /* UART_PRINT_DEBUG_ENABLE */
 
 	    }
-	} else if (*in_data == CMD_SET_HW) {
+	} else if (*in_data == CMD_SET_HW && len == 5) {
 	    set_water(HOT_WATER, in_data[1], in_data[2], in_data[3], in_data[4]);
-	} else if (*in_data == CMD_SET_CW) {
+	} else if (*in_data == CMD_SET_CW && len == 5) {
         set_water(COLD_WATER, in_data[1], in_data[2], in_data[3], in_data[4]);
-    } else if (*in_data == CMD_RESET) {
-	}
+    } else if (*in_data == CMD_RESET && len == 1) {
+#if UART_PRINT_DEBUG_ENABLE
+        printf("Reboot module\r\n");
+#endif /* UART_PRINT_DEBUG_ENABLE */
+        start_reboot();
+    }
 
 
 
