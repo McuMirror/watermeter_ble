@@ -55,13 +55,13 @@ typedef struct __attribute__((packed)) _adv_counter_t {
 } adv_counter_t;
 
 typedef struct __attribute__((packed)) _adv_data_t {
-    uint8_t             flg_size;       /* 0x02                     */
-    uint8_t             flg_type;       /* 0x01                     */
-    uint8_t             flg;            /* 0x06                     */
+    uint8_t             flg_size;       /* 0x02                                      */
+    uint8_t             flg_type;       /* 0x01                                      */
+    uint8_t             flg;            /* 0x06                                      */
     adv_head_uuid16_t   head;
-    uint8_t             type_len;       /* HaBleType_uint | length  */
-    uint8_t             id;             /* HaBleID_PacketId         */
-    uint8_t             pid;            /* 0 .. 255                 */
+    uint8_t             type_len;       /* HaBleType_uint | length (0-4 bit or 0x1F) */
+    uint8_t             id;             /* HaBleID_PacketId                          */
+    uint8_t             pid;            /* 0 .. 255                                  */
     adv_battery_t       adv_battery;
     adv_counter_t       adv_hot;
     adv_counter_t       adv_cold;
