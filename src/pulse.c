@@ -4,7 +4,7 @@
 #include "pulse.h"
 #include "cfg.h"
 
-#define BIT_COUNT   128                         /* number of polls for debounce */
+#define BIT_COUNT   256                         /* number of polls for debounce */
 #define TASK_COUNT  (BIT_COUNT/2+BIT_COUNT)     /* task duration                */
 
 _attribute_data_retention_ static water_counter_t hot_counter;
@@ -81,11 +81,14 @@ _attribute_ram_code_ uint8_t task_counters() {
         water_counters();
     }
 
-
     if (hot_counter.count) {
         save_config = true;
         watermeter_config.counters.hot_water_count += (hot_counter.count * watermeter_config.liters_per_pulse);
         hot_counter.count = 0;
+        /* detect hot counter overflow */
+        if (watermeter_config.counters.hot_water_count > (COUNTERS_OVERFLOW-LITERS_PER_PULSE)) {
+            watermeter_config.counters.hot_water_count -= (COUNTERS_OVERFLOW-LITERS_PER_PULSE);
+        }
 #if UART_PRINT_DEBUG_ENABLE
         printf("hot counter - %u\r\n", watermeter_config.counters.hot_water_count);
 #endif /* UART_PRINT_DEBUG_ENABLE */
@@ -95,6 +98,10 @@ _attribute_ram_code_ uint8_t task_counters() {
         save_config = true;
         watermeter_config.counters.cold_water_count += (cold_counter.count * watermeter_config.liters_per_pulse);
         cold_counter.count = 0;
+        /* detect cold counter overflow */
+        if (watermeter_config.counters.cold_water_count > (COUNTERS_OVERFLOW-LITERS_PER_PULSE)) {
+            watermeter_config.counters.cold_water_count -= (COUNTERS_OVERFLOW-LITERS_PER_PULSE);
+        }
 #if UART_PRINT_DEBUG_ENABLE
         printf("cold counter - %u\r\n", watermeter_config.counters.cold_water_count);
 #endif /* UART_PRINT_DEBUG_ENABLE */
