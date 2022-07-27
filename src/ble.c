@@ -72,19 +72,27 @@ _attribute_ram_code_ void suspend_exit_cb (uint8_t e, uint8_t *p, int n)
     rf_set_power_level_index (RF_POWER_P3p01dBm);
 }
 
-void ble_connect_cb(uint8_t e, uint8_t *p, int n)
-{
+void ble_connect_cb(uint8_t e, uint8_t *p, int n) {
+
+#if UART_PRINT_DEBUG_ENABLE
+    printf("Connect\r\n");
+#endif /* UART_PRINT_DEBUG_ENABLE */
+
     ble_connected = 1;
 //  bls_l2cap_requestConnParamUpdate (CONN_INTERVAL_10MS, CONN_INTERVAL_10MS, 19, CONN_TIMEOUT_4S);  // 200mS
-    bls_l2cap_requestConnParamUpdate (CONN_INTERVAL_10MS, CONN_INTERVAL_10MS, 99, CONN_TIMEOUT_4S);  // 1 S
+//    bls_l2cap_requestConnParamUpdate (CONN_INTERVAL_10MS, CONN_INTERVAL_10MS, 99, CONN_TIMEOUT_4S);  // 1 S
 //  bls_l2cap_requestConnParamUpdate (CONN_INTERVAL_10MS, CONN_INTERVAL_10MS, 149, CONN_TIMEOUT_8S);  // 1.5 S
-//  bls_l2cap_requestConnParamUpdate (CONN_INTERVAL_10MS, CONN_INTERVAL_10MS, 199, CONN_TIMEOUT_8S);  // 2 S
-//  bls_l2cap_requestConnParamUpdate (CONN_INTERVAL_10MS, CONN_INTERVAL_10MS, 249, CONN_TIMEOUT_8S);  // 2.5 S
+//    bls_l2cap_requestConnParamUpdate (CONN_INTERVAL_10MS, CONN_INTERVAL_10MS, 199, CONN_TIMEOUT_8S);  // 2 S
+    bls_l2cap_requestConnParamUpdate (CONN_INTERVAL_10MS, CONN_INTERVAL_10MS, 249, CONN_TIMEOUT_8S);  // 2.5 S
 //  bls_l2cap_requestConnParamUpdate (CONN_INTERVAL_10MS, CONN_INTERVAL_10MS, 299, CONN_TIMEOUT_8S);  // 3 S
 }
 
-void ble_disconnect_cb(uint8_t e,uint8_t *p, int n)
-{
+void ble_disconnect_cb(uint8_t e,uint8_t *p, int n) {
+
+#if UART_PRINT_DEBUG_ENABLE
+    printf("Disconnect\r\n");
+#endif /* UART_PRINT_DEBUG_ENABLE */
+
     ble_connected = 0;
     ota_is_working = 0;
 }
@@ -155,15 +163,15 @@ __attribute__((optimize("-Os"))) void init_ble(void) {
     adv_data.adv_battery.type_len = HaBleType_uint |
             ((sizeof(adv_data.adv_battery.id) + sizeof(adv_data.adv_battery.level)) & 0x1F);
     adv_data.adv_battery.id       = HaBleID_battery;
-    adv_data.adv_battery.level = 0;
+    adv_data.adv_battery.level = battery_level;
 
     adv_data.adv_hot.type_len = HaBleType_uint |
-            (sizeof(adv_data.adv_hot.id) + sizeof(adv_data.adv_hot.counter));
+            ((sizeof(adv_data.adv_hot.id) + sizeof(adv_data.adv_hot.counter)) & 0x1F);
     adv_data.adv_hot.id  = HaBleID_count;
     adv_data.adv_hot.counter = watermeter_config.counters.hot_water_count;
 
     adv_data.adv_cold.type_len = HaBleType_uint |
-            (sizeof(adv_data.adv_cold.id) + sizeof(adv_data.adv_cold.counter));
+            ((sizeof(adv_data.adv_cold.id) + sizeof(adv_data.adv_cold.counter)) & 0x1F);
     adv_data.adv_cold.id  = HaBleID_count;
     adv_data.adv_cold.counter = watermeter_config.counters.cold_water_count;
 
@@ -235,7 +243,7 @@ __attribute__((optimize("-Os"))) void init_ble(void) {
 
     bls_app_registerEventCallback (BLT_EV_FLAG_ADV_DURATION_TIMEOUT, &ev_adv_timeout);
     ev_adv_timeout(0,0,0);
-
+    set_adv_data();
 }
 
 void set_adv_data() {
@@ -250,15 +258,17 @@ void set_adv_data() {
 }
 
 void ble_send_battery() {
-    bls_att_pushNotifyData(BATT_LEVEL_INPUT_DP_H, (uint8_t *)&battery_level, 1);
+    bls_att_pushNotifyData(BATT_LEVEL_INPUT_DP_H, (uint8_t *)&battery_level, sizeof(battery_level));
 }
 
 void ble_send_hotwater() {
-    bls_att_pushNotifyData(HOT_LEVEL_INPUT_DP_H, (uint8_t *)&watermeter_config.counters.hot_water_count, 1);
+    bls_att_pushNotifyData(HOT_LEVEL_INPUT_DP_H, (uint8_t *)&watermeter_config.counters.hot_water_count,
+            sizeof(watermeter_config.counters.hot_water_count));
 }
 
 void ble_send_coldwater() {
-    bls_att_pushNotifyData(COLD_LEVEL_INPUT_DP_H, (uint8_t *)&watermeter_config.counters.cold_water_count, 1);
+    bls_att_pushNotifyData(COLD_LEVEL_INPUT_DP_H, (uint8_t *)&watermeter_config.counters.cold_water_count,
+            sizeof(watermeter_config.counters.cold_water_count));
 }
 
 
