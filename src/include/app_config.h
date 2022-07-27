@@ -1,17 +1,18 @@
 #pragma once
 
-#define ON                          1
-#define OFF                         0
-
+#define VERSION                     0x10    /* BCD format (0x10 -> '1.0')   */
 #define DEV_NAME_CHR               'W','a','t','e','r','m','e','t','e','r','_','B','L','E'
 #define DEV_NAME_STR                "Watermeter_BLE"
 /* 0x16,0x09,'W','a','t','e','r','m','e','t','e','r','_','B','L','E','_',0x00,0x00,0x00,0x00,0x00,0x00 */
 #define DEV_NAME_SIZE               23
-#define VERSION                     0x10    /* BCD format (0x10 -> '1.0')   */
+
+#define ON                          1
+#define OFF                         0
 
 #define UART_PRINT_DEBUG_ENABLE     1       /* if 1 use printf() over uart  */
 #define WHITELIST_ENABLE            0       /* if 1 use whitelist           */
 
+/* if defined mac1 and mac3, but not defined mac2, mac3 will not be defined. etc. */
 #if WHITELIST_ENABLE
 #define MAC1                    {0x88, 0x10, 0x8F, 0x2D, 0x06, 0x16}
 #define MAC2                    {0x88, 0x10, 0x8F, 0x2D, 0x06, 0x17}
@@ -20,9 +21,8 @@
 #endif /* WHITELIST_ENABLE */
 
 /************************ Advertising_Interval *************************************/
-#define ADV_INTERVAL_MIN        ADV_INTERVAL_2S+800    /* (3200+800) * 0.625 = 2500 ms or 2.5 sec */
-#define ADV_INTERVAL_MAX        ADV_INTERVAL_2S+1000   /* (3200+1000)* 0.625 = 2625 ms or 2.6 sec */
-
+#define ADV_INTERVAL_MIN        4000        /* 4000 * 0.625 = 2500 ms or 2.5 sec */
+#define ADV_INTERVAL_MAX        4200        /* 4200 * 0.625 = 2625 ms or 2.6 sec */
 
 #define MY_RF_POWER_INDEX       RF_POWER_P0p04dBm
 
@@ -35,6 +35,10 @@
 #define PULL_WAKEUP_SRC_PB1     PM_PIN_PULLUP_1M
 #define PB1_FUNC                AS_GPIO
 #endif /* UART_PRINT_DEBUG_ENABLE */
+
+/************************* Configure counters ***************************************/
+#define LITERS_PER_PULSE        10              /* How many liters per one pulse */
+#define COUNTERS_OVERFLOW       100000000       /* counters overflow             */
 
 /************************* Configure HOT GPIO ***************************************/
 #define HOT_GPIO                GPIO_PB6
@@ -71,7 +75,7 @@
 #define WATCHDOG_INIT_TIMEOUT       500  //ms
 
 ///////////////////////// System Clock  Configuration /////////////////////////////////////////
-#define CLOCK_SYS_CLOCK_HZ  								24000000 //16000000
+#define CLOCK_SYS_CLOCK_HZ  								24000000// 16000000
 
 #if (CLOCK_SYS_CLOCK_HZ == 16000000)
 	#define SYS_CLK_TYPE  									SYS_CLK_16M_Crystal
