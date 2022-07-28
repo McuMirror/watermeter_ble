@@ -4,7 +4,7 @@
 #define DEV_NAME_CHR               'W','a','t','e','r','m','e','t','e','r','_','B','L','E'
 #define DEV_NAME_STR                "Watermeter_BLE"
 /* 0x16,0x09,'W','a','t','e','r','m','e','t','e','r','_','B','L','E','_',0x00,0x00,0x00,0x00,0x00,0x00 */
-#define DEV_NAME_SIZE               23
+#define BLE_NAME_SIZE               23
 
 #define ON                          1
 #define OFF                         0
@@ -14,8 +14,9 @@
 
 /* if defined mac1 and mac3, but not defined mac2, mac3 will not be defined. etc. */
 #if WHITELIST_ENABLE
-#define MAC1                    {0x88, 0x10, 0x8F, 0x2D, 0x06, 0x16}
-#define MAC2                    {0x88, 0x10, 0x8F, 0x2D, 0x06, 0x17}
+#define MAC1                    {0x16, 0x06, 0x2D, 0x8F, 0x10, 0x88}
+//#define MAC1                    {0x88, 0x10, 0x8F, 0x2D, 0x06, 0x16}
+//#define MAC2                    {0x88, 0x10, 0x8F, 0x2D, 0x06, 0x17}
 //#define MAC3                    {0x88, 0x10, 0x8F, 0x2D, 0x06, 0x18}
 //#define MAC4                    {0x88, 0x10, 0x8F, 0x2D, 0x06, 0x19}
 #endif /* WHITELIST_ENABLE */
