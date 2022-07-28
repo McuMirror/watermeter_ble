@@ -24,7 +24,7 @@ typedef struct __attribute__((packed)) _watermeter_config_t {
     uint8_t  wl_mac3[6];                /* MAC3 for whitelist                   */
     uint8_t  wl_mac4[6];                /* MAC4 for whitelist                   */
     uint8_t  whitelist_enable;          /* 0 - disable, 1-4 enable              */
-    uint8_t  ble_name[DEV_NAME_SIZE];   /* Module name with MAC                 */
+    uint8_t  ble_name[BLE_NAME_SIZE];   /* Module name with MAC                 */
 //    uint8_t  test;
 } watermeter_config_t;
 
