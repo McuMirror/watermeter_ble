@@ -4,6 +4,8 @@
 
 #include "cfg.h"
 
+_attribute_data_retention_ uint8_t whitelist_enable = OFF;
+
 #ifndef MAC1
 _attribute_data_retention_ uint8_t wl_mac1[6] = {0,0,0,0,0,0};
 _attribute_data_retention_ uint8_t wl_mac2[6] = {0,0,0,0,0,0};
@@ -84,6 +86,10 @@ static void init_default_config(uint32_t hot_count, uint32_t cold_count) {
 void init_config() {
     watermeter_config_t config;
     uint32_t flash_addr = BEGIN_USER_DATA;
+
+#if WHITELIST_ENABLE
+    whitelist_enable = ON;
+#endif /* WHITELIST_ENABLE */
 
     while(1) {
         flash_read_page(flash_addr, sizeof(watermeter_config_t), (uint8_t*)&(config));
