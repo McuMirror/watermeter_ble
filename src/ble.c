@@ -19,7 +19,7 @@ _attribute_data_retention_ my_fifo_t blt_rxfifo = { 64, 8, 0, 0, blt_rxfifo_b,};
 _attribute_data_retention_ uint8_t   blt_txfifo_b[40 * 16] = {0};
 _attribute_data_retention_ my_fifo_t blt_txfifo = { 40, 16, 0, 0, blt_txfifo_b,};
 
-_attribute_data_retention_ uint8_t   ble_name[DEV_NAME_SIZE];
+_attribute_data_retention_ uint8_t   ble_name[BLE_NAME_SIZE];
 
 _attribute_data_retention_ adv_data_t adv_data;
 
@@ -98,15 +98,61 @@ void ble_disconnect_cb(uint8_t e,uint8_t *p, int n) {
 }
 
 void ev_adv_timeout(u8 e, u8 *p, int n) {
-    (void) e; (void) p; (void) n;
-    bls_ll_setAdvParam(ADV_INTERVAL_MIN, ADV_INTERVAL_MAX,
-            ADV_TYPE_CONNECTABLE_UNDIRECTED, OWN_ADDRESS_PUBLIC, 0, NULL,
-            BLT_ENABLE_ADV_ALL,
-            watermeter_config.whitelist_enable?ADV_FP_ALLOW_SCAN_ANY_ALLOW_CONN_WL:ADV_FP_NONE);
-    //  set_adv_data();
+    smp_param_save_t  bondInfo;
+    u8 bond_number = blc_smp_param_getCurrentBondingDeviceNumber();  //get bonded device number
+    /* get latest device info */
+    if (bond_number) {
+        bls_smp_param_loadByIndex( bond_number - 1, &bondInfo);  //get the latest bonding device (index: bond_number-1 )
+    }
+
+    ll_whiteList_reset();     //clear whitelist
+    ll_resolvingList_reset(); //clear resolving list
+
+    /* use whitelist to filter master device */
+    if (bond_number) {
+        printf("whitelist_enable\r\n");
+
+        //if master device use RPA(resolvable private address), must add irk to resolving list
+        if (IS_RESOLVABLE_PRIVATE_ADDR(bondInfo.peer_addr_type, bondInfo.peer_addr)){
+            printf("whitelist_enable 2\r\n");
+            /* resolvable private address, should add peer irk to resolving list */
+            ll_resolvingList_add(bondInfo.peer_id_adrType, bondInfo.peer_id_addr, bondInfo.peer_irk, NULL);  //no local IRK
+            ll_resolvingList_setAddrResolutionEnable(ON);
+
+            for (int i = 0; i < 6; i++)
+                printf("0x%X ", bondInfo.peer_id_addr[i]);
+            printf("\r\n");
+        } else {
+            printf("whitelist_enable 3\r\n");
+            //if not resolvable random address, add peer address to whitelist
+            ll_whiteList_add(bondInfo.peer_addr_type, bondInfo.peer_addr);
+        }
+
+        bls_ll_setAdvParam( ADV_INTERVAL_MIN, ADV_INTERVAL_MAX,
+                            ADV_TYPE_CONNECTABLE_UNDIRECTED, OWN_ADDRESS_PUBLIC,
+                            0,  NULL, BLT_ENABLE_ADV_ALL, ADV_FP_ALLOW_SCAN_ANY_ALLOW_CONN_WL);
+    } else {
+
+        bls_ll_setAdvParam( ADV_INTERVAL_MIN, ADV_INTERVAL_MAX,
+                            ADV_TYPE_CONNECTABLE_UNDIRECTED, OWN_ADDRESS_PUBLIC,
+                            0,  NULL, BLT_ENABLE_ADV_ALL, ADV_FP_NONE);
+    }
+
     bls_ll_setScanRspData((uint8_t *) ble_name, ble_name[0]+1);
     bls_ll_setAdvEnable(BLC_ADV_ENABLE);  //ADV enable
 }
+
+
+//void ev_adv_timeout(u8 e, u8 *p, int n) {
+//    (void) e; (void) p; (void) n;
+//    bls_ll_setAdvParam(ADV_INTERVAL_MIN, ADV_INTERVAL_MAX,
+//            ADV_TYPE_CONNECTABLE_UNDIRECTED, OWN_ADDRESS_PUBLIC, 0, NULL,
+//            BLT_ENABLE_ADV_ALL,
+//            watermeter_config.whitelist_enable?ADV_FP_ALLOW_SCAN_ANY_ALLOW_CONN_WL:ADV_FP_NONE);
+//    //  set_adv_data();
+//    bls_ll_setScanRspData((uint8_t *) ble_name, ble_name[0]+1);
+//    bls_ll_setAdvEnable(BLC_ADV_ENABLE);  //ADV enable
+//}
 
 
 
@@ -126,14 +172,14 @@ void get_ble_name() {
     ble_name[pos++] = hex_ascii[mac_public[1] &0x0f];
     ble_name[pos++] = hex_ascii[mac_public[0]>>4];
     ble_name[pos++] = hex_ascii[mac_public[0] &0x0f];
-    ble_name[0]     = DEV_NAME_SIZE-1;
+    ble_name[0]     = BLE_NAME_SIZE-1;
     ble_name[1]     = GAP_ADTYPE_LOCAL_NAME_COMPLETE;
 
     if (*blename == 0) {
         memcpy(blename, ble_name, ble_name[0]+1);
     } else {
-        if (memcmp(ble_name, blename, DEV_NAME_SIZE)) {
-            memcpy(blename, ble_name, DEV_NAME_SIZE);
+        if (memcmp(ble_name, blename, BLE_NAME_SIZE)) {
+            memcpy(blename, ble_name, BLE_NAME_SIZE);
         }
     }
     my_Attributes[GenericAccess_DeviceName_DP_H].attrLen = ble_name[0] - 1;
@@ -175,7 +221,7 @@ __attribute__((optimize("-Os"))) void init_ble(void) {
     adv_data.adv_cold.id  = HaBleID_count;
     adv_data.adv_cold.counter = watermeter_config.counters.cold_water_count;
 
-    ////// Controller Initialization  //////////
+    ///////////////////// Controller Initialization /////////////////////
     blc_ll_initBasicMCU();                      //mandatory
     blc_ll_initStandby_module(mac_public);      //mandatory
     blc_ll_initAdvertising_module(mac_public);  //adv module:        mandatory for BLE slave,
@@ -183,48 +229,16 @@ __attribute__((optimize("-Os"))) void init_ble(void) {
     blc_ll_initSlaveRole_module();              //slave module:      mandatory for BLE slave,
     blc_ll_initPowerManagement_module();        //pm module:         optional
 
-    ////// Host Initialization  //////////
+    ///////////////////// Host Initialization /////////////////////
     blc_gap_peripheral_init();    //gap initialization
     my_att_init (); //gatt initialization
     blc_l2cap_register_handler (blc_l2cap_packet_receive);      //l2cap initialization
-    blc_smp_setSecurityLevel(No_Security);
+//    blc_smp_setSecurityLevel(No_Security);
+    blc_smp_peripheral_init();
+
 
     ///////////////////// USER application initialization ///////////////////
 
-    if (watermeter_config.whitelist_enable) ll_whiteList_reset();
-
-    for (uint8_t i = 0; i < watermeter_config.whitelist_enable; i++) {
-        if (i == 0) {
-            printf("wl_ret - %u\r\n"), ll_whiteList_add(BLE_ADDR_PUBLIC, watermeter_config.wl_mac1);
-#if UART_PRINT_DEBUG_ENABLE
-            print_mac(i+1, watermeter_config.wl_mac1);
-#endif /* UART_PRINT_DEBUG_ENABLE */
-        } else if (i == 1) {
-            ll_whiteList_add(BLE_ADDR_PUBLIC, watermeter_config.wl_mac2);
-#if UART_PRINT_DEBUG_ENABLE
-            print_mac(i+1, watermeter_config.wl_mac2);
-#endif /* UART_PRINT_DEBUG_ENABLE */
-        } else if (i == 2) {
-            ll_whiteList_add(BLE_ADDR_PUBLIC, watermeter_config.wl_mac3);
-#if UART_PRINT_DEBUG_ENABLE
-            print_mac(i+1, watermeter_config.wl_mac3);
-#endif /* UART_PRINT_DEBUG_ENABLE */
-        } else {
-            ll_whiteList_add(BLE_ADDR_PUBLIC, watermeter_config.wl_mac4);
-#if UART_PRINT_DEBUG_ENABLE
-            print_mac(i+1, watermeter_config.wl_mac4);
-#endif /* UART_PRINT_DEBUG_ENABLE */
-        }
-
-    }
-
-//    bls_ll_setScanRspData((uint8_t *)ble_name, ble_name[0]+1);
-//    bls_ll_setAdvParam(ADV_INTERVAL_MIN, ADV_INTERVAL_MAX,
-//                       ADV_TYPE_CONNECTABLE_UNDIRECTED,
-//                       OWN_ADDRESS_PUBLIC, 0,  NULL,
-//                       BLT_ENABLE_ADV_ALL,
-//                       watermeter_config.whitelist_enable?ADV_FP_ALLOW_SCAN_ANY_ALLOW_CONN_WL:ADV_FP_NONE);
-//    bls_ll_setAdvEnable(BLC_ADV_ENABLE);
     rf_set_power_level_index(MY_RF_POWER_INDEX);
     bls_app_registerEventCallback(BLT_EV_FLAG_SUSPEND_ENTER, &suspend_enter_cb);
     bls_app_registerEventCallback(BLT_EV_FLAG_SUSPEND_EXIT, &suspend_exit_cb);
@@ -242,8 +256,40 @@ __attribute__((optimize("-Os"))) void init_ble(void) {
     bls_ota_registerStartCmdCb(app_enter_ota_mode);
 
     bls_app_registerEventCallback (BLT_EV_FLAG_ADV_DURATION_TIMEOUT, &ev_adv_timeout);
-    ev_adv_timeout(0,0,0);
     set_adv_data();
+    ev_adv_timeout(0,0,0);
+
+    ///////////////////// Whitelist configuration ///////////////////
+
+    if (watermeter_config.whitelist_enable) {
+        ll_whiteList_reset();     //clear whitelist
+
+        for (uint8_t i = 0; i < watermeter_config.whitelist_enable; i++) {
+            if (i == 0) {
+                ll_whiteList_add(BLE_ADDR_PUBLIC, watermeter_config.wl_mac1);
+    #if UART_PRINT_DEBUG_ENABLE
+                print_mac(i+1, watermeter_config.wl_mac1);
+    #endif /* UART_PRINT_DEBUG_ENABLE */
+            } else if (i == 1) {
+                ll_whiteList_add(BLE_ADDR_PUBLIC, watermeter_config.wl_mac2);
+    #if UART_PRINT_DEBUG_ENABLE
+                print_mac(i+1, watermeter_config.wl_mac2);
+    #endif /* UART_PRINT_DEBUG_ENABLE */
+            } else if (i == 2) {
+                ll_whiteList_add(BLE_ADDR_PUBLIC, watermeter_config.wl_mac3);
+    #if UART_PRINT_DEBUG_ENABLE
+                print_mac(i+1, watermeter_config.wl_mac3);
+    #endif /* UART_PRINT_DEBUG_ENABLE */
+            } else {
+                ll_whiteList_add(BLE_ADDR_PUBLIC, watermeter_config.wl_mac4);
+    #if UART_PRINT_DEBUG_ENABLE
+                print_mac(i+1, watermeter_config.wl_mac4);
+    #endif /* UART_PRINT_DEBUG_ENABLE */
+            }
+        }
+    }
+
+
 }
 
 void set_adv_data() {
