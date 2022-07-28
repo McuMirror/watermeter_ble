@@ -5,11 +5,12 @@
 #include "cfg.h"
 #include "ble.h"
 
-#define CMD_SET_LPP     0xF1    /* set liters per pulse  */
-#define CMD_SET_WL      0xF2    /* add mac for whitelist */
-#define CMD_SET_HW      0xF3    /* set hot water         */
-#define CMD_SET_CW      0xF4    /* set cold water        */
-#define CMD_RESET       0xF5    /* reset module          */
+#define CMD_SET_HW      0xF1    /* set hot water        */
+#define CMD_SET_CW      0xF2    /* set cold water       */
+#define CMD_SET_LPP     0xF3    /* set liters per pulse */
+#define CMD_RESET_WL    0xF4    /* reset whitelist      */
+#define CMD_RESET       0xF5    /* reset module         */
+
 #define HOT_WATER       0x00
 #define COLD_WATER      0x01
 
@@ -47,58 +48,20 @@ void cmd_parser(void * p) {
 	uint8_t *in_data = req->dat;
 	uint8_t len = req->l2cap-3;
 
-	if (*in_data == CMD_SET_LPP && len == 2) {
+    if (*in_data == CMD_SET_HW && len == 5) {
+        set_water(HOT_WATER, in_data[1], in_data[2], in_data[3], in_data[4]);
+    } else if (*in_data == CMD_SET_CW && len == 5) {
+        set_water(COLD_WATER, in_data[1], in_data[2], in_data[3], in_data[4]);
+    } else if (*in_data == CMD_SET_LPP && len == 2) {
 	    watermeter_config.liters_per_pulse = in_data[1];
         write_config();
-	} else if (*in_data == CMD_SET_WL && len == 7) {
-	    if (watermeter_config.whitelist_enable < 4) {
-	        uint8_t mac[7];
-            mac[0] = in_data[1];
-            mac[1] = in_data[2];
-            mac[2] = in_data[3];
-            mac[3] = in_data[4];
-            mac[4] = in_data[5];
-            mac[5] = in_data[6];
-            mac[6] = 0;
-	        watermeter_config.whitelist_enable++;
-	        if (watermeter_config.whitelist_enable == 1) {
+	} else if (*in_data == CMD_RESET_WL && len == 1) {
+	    watermeter_config.whitelist_enable = 0;
 #if UART_PRINT_DEBUG_ENABLE
-	            printf("MAC1 0x%X added to whitelist\r\n", mac);
+	    printf("Reset whitelist\r\n");
 #endif /* UART_PRINT_DEBUG_ENABLE */
-	            memcpy(watermeter_config.wl_mac1, mac, 6);
-	            ll_whiteList_reset();
-	            ll_whiteList_add(BLE_ADDR_PUBLIC, watermeter_config.wl_mac1);
-	        } else if (watermeter_config.whitelist_enable == 2) {
-#if UART_PRINT_DEBUG_ENABLE
-                printf("MAC2 0x%X added to whitelist\r\n", mac);
-#endif /* UART_PRINT_DEBUG_ENABLE */
-                memcpy(watermeter_config.wl_mac2, mac, 6);
-                ll_whiteList_add(BLE_ADDR_PUBLIC, watermeter_config.wl_mac2);
-            } else if (watermeter_config.whitelist_enable == 3) {
-#if UART_PRINT_DEBUG_ENABLE
-                printf("MAC3 0x%X added to whitelist\r\n", mac);
-#endif /* UART_PRINT_DEBUG_ENABLE */
-                memcpy(watermeter_config.wl_mac3, mac, 6);
-                ll_whiteList_add(BLE_ADDR_PUBLIC, watermeter_config.wl_mac3);
-            } else if (watermeter_config.whitelist_enable == 4) {
-#if UART_PRINT_DEBUG_ENABLE
-                printf("MAC4 0x%X added to whitelist\r\n", mac);
-#endif /* UART_PRINT_DEBUG_ENABLE */
-                memcpy(watermeter_config.wl_mac4, mac, 6);
-                ll_whiteList_add(BLE_ADDR_PUBLIC, watermeter_config.wl_mac4);
-	        }
-	        write_config();
-	        ev_adv_timeout(0,0,0);
-	    } else {
-#if UART_PRINT_DEBUG_ENABLE
-        printf("Whitelist is full\r\n");
-#endif /* UART_PRINT_DEBUG_ENABLE */
-
-	    }
-	} else if (*in_data == CMD_SET_HW && len == 5) {
-	    set_water(HOT_WATER, in_data[1], in_data[2], in_data[3], in_data[4]);
-	} else if (*in_data == CMD_SET_CW && len == 5) {
-        set_water(COLD_WATER, in_data[1], in_data[2], in_data[3], in_data[4]);
+	    bls_smp_eraseAllParingInformation();
+	    ev_adv_timeout(0,0,0);
     } else if (*in_data == CMD_RESET && len == 1) {
 #if UART_PRINT_DEBUG_ENABLE
         printf("Reboot module\r\n");
