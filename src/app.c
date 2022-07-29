@@ -36,7 +36,6 @@ void user_init_normal(void) {
     init_ble();
     update_interval  = clock_time();
     battery_interval = clock_time();
-    conn_timeout     = clock_time();
 }
 
 _attribute_ram_code_ void user_init_deepRetn(void) {
@@ -72,17 +71,6 @@ void main_loop (void) {
         set_adv_data();
     }
 
-    /* time connections 2 min. */
-    if ((clock_time() - conn_timeout) > CONN_TIMEOUT*CLOCK_SYS_CLOCK_1MS) {
-        if(blc_ll_getCurrentState() & BLS_LINK_STATE_CONN) {
-#if UART_PRINT_DEBUG_ENABLE
-            printf("Connection timeout 2 min.\r\n");
-#endif /* UART_PRINT_DEBUG_ENABLE */
-            bls_ll_terminateConnection(HCI_ERR_REMOTE_USER_TERM_CONN);
-        }
-        conn_timeout = clock_time();
-    }
-
     if ((clock_time() - update_interval) > UPDATE_PERIOD*CLOCK_SYS_CLOCK_1MS) {
 
         if ((clock_time() - battery_interval) > BATTERY_PERIOD*CLOCK_SYS_CLOCK_1MS) {
@@ -98,19 +86,31 @@ void main_loop (void) {
             battery_interval = clock_time();
         }
 
-        if((blc_ll_getCurrentState() & BLS_LINK_STATE_CONN) && blc_ll_getTxFifoNumber() < 9) {
+        if(blc_ll_getCurrentState() & BLS_LINK_STATE_CONN) {
 
-            if (batteryValueInCCC) {
-                ble_send_battery();
+            if (blc_ll_getTxFifoNumber() < 9) {
+                if (batteryValueInCCC) {
+                    ble_send_battery();
+                }
+
+                if (hotValueInCCC) {
+                    ble_send_hotwater();
+                }
+
+                if (coldValueInCCC) {
+                    ble_send_coldwater();
+                }
             }
 
-            if (hotValueInCCC) {
-                ble_send_hotwater();
+            /* connection time 2 min. */
+            if ((clock_time() - conn_timeout) > CONN_TIMEOUT*CLOCK_SYS_CLOCK_1MS) {
+#if UART_PRINT_DEBUG_ENABLE
+                printf("Connection timeout 2 min.\r\n");
+#endif /* UART_PRINT_DEBUG_ENABLE */
+                bls_ll_terminateConnection(HCI_ERR_REMOTE_USER_TERM_CONN);
+                conn_timeout = clock_time();
             }
 
-            if (coldValueInCCC) {
-                ble_send_coldwater();
-            }
         }
 
         update_interval = clock_time();
