@@ -17,8 +17,10 @@
 
 #define UPDATE_PERIOD       5000UL      /* 5 sec */
 #define BATTERY_PERIOD      300000UL    /* 5 min */
-_attribute_data_retention_  uint32_t update_interval  = 0;
-_attribute_data_retention_  uint32_t battery_interval = 0;
+#define CONN_TIMEOUT        120000UL    /* 2 min */
+_attribute_data_retention_  uint32_t update_interval;
+_attribute_data_retention_  uint32_t battery_interval;
+_attribute_data_retention_  uint32_t conn_timeout;
 
 void user_init_normal(void) {
 
@@ -32,6 +34,9 @@ void user_init_normal(void) {
     pulse_init();
     init_config();
     init_ble();
+    update_interval  = clock_time();
+    battery_interval = clock_time();
+    conn_timeout     = clock_time();
 }
 
 _attribute_ram_code_ void user_init_deepRetn(void) {
@@ -65,6 +70,17 @@ void main_loop (void) {
         adv_data.adv_hot.counter  = watermeter_config.counters.hot_water_count;
         adv_data.adv_cold.counter = watermeter_config.counters.cold_water_count;
         set_adv_data();
+    }
+
+    /* time connections 2 min. */
+    if ((clock_time() - conn_timeout) > CONN_TIMEOUT*CLOCK_SYS_CLOCK_1MS) {
+        if(blc_ll_getCurrentState() & BLS_LINK_STATE_CONN) {
+#if UART_PRINT_DEBUG_ENABLE
+            printf("Connection timeout 2 min.\r\n");
+#endif /* UART_PRINT_DEBUG_ENABLE */
+            bls_ll_terminateConnection(HCI_ERR_REMOTE_USER_TERM_CONN);
+        }
+        conn_timeout = clock_time();
     }
 
     if ((clock_time() - update_interval) > UPDATE_PERIOD*CLOCK_SYS_CLOCK_1MS) {
