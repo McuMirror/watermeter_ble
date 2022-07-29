@@ -78,7 +78,7 @@ void main_loop (void) {
 
             if (battery_level != adv_data.adv_battery.level) {
 #if UART_PRINT_DEBUG_ENABLE
-        printf("b_level - %u, adv_b_level - %u\r\n", battery_level, adv_data.adv_battery.level);
+                printf("b_level - %u, adv_b_level - %u\r\n", battery_level, adv_data.adv_battery.level);
 #endif /* UART_PRINT_DEBUG_ENABLE */
                 adv_data.adv_battery.level = battery_level;
                 set_adv_data();
