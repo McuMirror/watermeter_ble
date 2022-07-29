@@ -56,7 +56,6 @@ void cmd_parser(void * p) {
 	    watermeter_config.liters_per_pulse = in_data[1];
         write_config();
 	} else if (*in_data == CMD_RESET_WL && len == 1) {
-	    watermeter_config.whitelist_enable = 0;
 #if UART_PRINT_DEBUG_ENABLE
 	    printf("Reset whitelist\r\n");
 #endif /* UART_PRINT_DEBUG_ENABLE */

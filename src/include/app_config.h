@@ -10,16 +10,6 @@
 #define OFF                         0
 
 #define UART_PRINT_DEBUG_ENABLE     1       /* if 1 use printf() over uart  */
-#define WHITELIST_ENABLE            0       /* if 1 use whitelist           */
-
-/* if defined mac1 and mac3, but not defined mac2, mac3 will not be defined. etc. */
-#if WHITELIST_ENABLE
-#define MAC1                    {0x16, 0x06, 0x2D, 0x8F, 0x10, 0x88}
-//#define MAC1                    {0x88, 0x10, 0x8F, 0x2D, 0x06, 0x16}
-//#define MAC2                    {0x88, 0x10, 0x8F, 0x2D, 0x06, 0x17}
-//#define MAC3                    {0x88, 0x10, 0x8F, 0x2D, 0x06, 0x18}
-//#define MAC4                    {0x88, 0x10, 0x8F, 0x2D, 0x06, 0x19}
-#endif /* WHITELIST_ENABLE */
 
 /************************ Advertising_Interval *************************************/
 #define ADV_INTERVAL_MIN        4000        /* 4000 * 0.625 = 2500 ms or 2.5 sec */

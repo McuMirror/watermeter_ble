@@ -81,6 +81,9 @@ void ble_disconnect_cb(uint8_t e,uint8_t *p, int n) {
         u8 bond_number = blc_smp_param_getCurrentBondingDeviceNumber();  //get bonded device number
         /* get latest device info */
         if (bond_number) {
+#if UART_PRINT_DEBUG_ENABLE
+            printf("Bonded\r\n");
+#endif /* UART_PRINT_DEBUG_ENABLE */
             first_start = 0;
             ev_adv_timeout(0, 0, 0);
         }
@@ -122,6 +125,10 @@ void ev_adv_timeout(u8 e, u8 *p, int n) {
                             ADV_TYPE_CONNECTABLE_UNDIRECTED, OWN_ADDRESS_PUBLIC,
                             0,  NULL, BLT_ENABLE_ADV_ALL, ADV_FP_NONE);
         first_start = 1;
+#if UART_PRINT_DEBUG_ENABLE
+        printf("Not bound, first start!\r\n");
+#endif /* UART_PRINT_DEBUG_ENABLE */
+
     }
 
     bls_ll_setScanRspData((uint8_t *) ble_name, ble_name[0]+1);

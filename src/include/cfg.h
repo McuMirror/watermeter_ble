@@ -19,13 +19,7 @@ typedef struct __attribute__((packed)) _watermeter_config_t {
     counters_config_t counters;         /* 4st place only! water counters       */
     uint8_t  size;                      /* 5st place only! sizeof config        */
     uint8_t  liters_per_pulse;          /* liters per pulse                     */
-    uint8_t  wl_mac1[6];                /* MAC1 for whitelist                   */
-    uint8_t  wl_mac2[6];                /* MAC2 for whitelist                   */
-    uint8_t  wl_mac3[6];                /* MAC3 for whitelist                   */
-    uint8_t  wl_mac4[6];                /* MAC4 for whitelist                   */
-    uint8_t  whitelist_enable;          /* 0 - disable, 1-4 enable              */
     uint8_t  ble_name[BLE_NAME_SIZE];   /* Module name with MAC                 */
-//    uint8_t  test;
 } watermeter_config_t;
 
 extern watermeter_config_t watermeter_config;
