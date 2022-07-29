@@ -13,20 +13,17 @@
 #include "cfg.h"
 #include "cmd_parser.h"
 
-_attribute_data_retention_ uint8_t   blt_rxfifo_b[64 * 8] = {0};
-_attribute_data_retention_ my_fifo_t blt_rxfifo = { 64, 8, 0, 0, blt_rxfifo_b,};
-
-_attribute_data_retention_ uint8_t   blt_txfifo_b[40 * 16] = {0};
-_attribute_data_retention_ my_fifo_t blt_txfifo = { 40, 16, 0, 0, blt_txfifo_b,};
-
-_attribute_data_retention_ uint8_t   ble_name[BLE_NAME_SIZE];
-
+_attribute_data_retention_ uint8_t    ble_name[BLE_NAME_SIZE];
 _attribute_data_retention_ adv_data_t adv_data;
+_attribute_data_retention_ uint8_t    mac_public[6], mac_random_static[6];
+_attribute_data_retention_ uint8_t    ble_connected = 0;
+_attribute_data_retention_ uint8_t    ota_is_working = 0;
+_attribute_data_retention_ uint8_t    first_start;
 
-_attribute_data_retention_ uint8_t mac_public[6], mac_random_static[6];
-_attribute_data_retention_ uint8_t ble_connected = 0;
-_attribute_data_retention_ uint8_t ota_is_working = 0;
-
+_attribute_data_retention_ uint8_t    blt_rxfifo_b[64 * 8] = {0};
+_attribute_data_retention_ my_fifo_t  blt_rxfifo = { 64, 8, 0, 0, blt_rxfifo_b,};
+_attribute_data_retention_ uint8_t    blt_txfifo_b[40 * 16] = {0};
+_attribute_data_retention_ my_fifo_t  blt_txfifo = { 40, 16, 0, 0, blt_txfifo_b,};
 
 #if UART_PRINT_DEBUG_ENABLE
 void print_mac(uint8_t num, uint8_t *mac) {
@@ -57,14 +54,6 @@ _attribute_ram_code_ static void suspend_enter_cb(u8 e, u8 *p, int n) {
     cpu_set_gpio_wakeup(HOT_GPIO, gpio_read(HOT_GPIO)? Level_Low : Level_High, 1);  // pad wakeup deepsleep enable
     cpu_set_gpio_wakeup(COLD_GPIO, gpio_read(COLD_GPIO)? Level_Low : Level_High, 1);  // pad wakeup deepsleep enable
     bls_pm_setWakeupSource(PM_WAKEUP_PAD | PM_WAKEUP_TIMER);  // gpio pad wakeup suspend/deepsleep
-//    if (!ble_connected) {
-//        cpu_set_gpio_wakeup(HOT_GPIO, gpio_read(HOT_GPIO)? Level_Low : Level_High, 1);  // pad wakeup deepsleep enable
-//        cpu_set_gpio_wakeup(COLD_GPIO, gpio_read(COLD_GPIO)? Level_Low : Level_High, 1);  // pad wakeup deepsleep enable
-//        bls_pm_setWakeupSource(PM_WAKEUP_PAD | PM_WAKEUP_TIMER);  // gpio pad wakeup suspend/deepsleep
-//    } else {
-//        cpu_set_gpio_wakeup(HOT_GPIO, Level_Low, 0);  // pad wakeup suspend/deepsleep disable
-//        cpu_set_gpio_wakeup(COLD_GPIO, Level_Low, 0);  // pad wakeup suspend/deepsleep disable
-//    }
 }
 
 _attribute_ram_code_ void suspend_exit_cb (uint8_t e, uint8_t *p, int n)
@@ -79,12 +68,7 @@ void ble_connect_cb(uint8_t e, uint8_t *p, int n) {
 #endif /* UART_PRINT_DEBUG_ENABLE */
 
     ble_connected = 1;
-//  bls_l2cap_requestConnParamUpdate (CONN_INTERVAL_10MS, CONN_INTERVAL_10MS, 19, CONN_TIMEOUT_4S);  // 200mS
-//    bls_l2cap_requestConnParamUpdate (CONN_INTERVAL_10MS, CONN_INTERVAL_10MS, 99, CONN_TIMEOUT_4S);  // 1 S
-//  bls_l2cap_requestConnParamUpdate (CONN_INTERVAL_10MS, CONN_INTERVAL_10MS, 149, CONN_TIMEOUT_8S);  // 1.5 S
-//    bls_l2cap_requestConnParamUpdate (CONN_INTERVAL_10MS, CONN_INTERVAL_10MS, 199, CONN_TIMEOUT_8S);  // 2 S
     bls_l2cap_requestConnParamUpdate (CONN_INTERVAL_10MS, CONN_INTERVAL_10MS, 249, CONN_TIMEOUT_8S);  // 2.5 S
-//  bls_l2cap_requestConnParamUpdate (CONN_INTERVAL_10MS, CONN_INTERVAL_10MS, 299, CONN_TIMEOUT_8S);  // 3 S
 }
 
 void ble_disconnect_cb(uint8_t e,uint8_t *p, int n) {
@@ -92,6 +76,15 @@ void ble_disconnect_cb(uint8_t e,uint8_t *p, int n) {
 #if UART_PRINT_DEBUG_ENABLE
     printf("Disconnect\r\n");
 #endif /* UART_PRINT_DEBUG_ENABLE */
+
+    if (first_start) {
+        u8 bond_number = blc_smp_param_getCurrentBondingDeviceNumber();  //get bonded device number
+        /* get latest device info */
+        if (bond_number) {
+            first_start = 0;
+            ev_adv_timeout(0, 0, 0);
+        }
+    }
 
     ble_connected = 0;
     ota_is_working = 0;
@@ -110,20 +103,12 @@ void ev_adv_timeout(u8 e, u8 *p, int n) {
 
     /* use whitelist to filter master device */
     if (bond_number) {
-        printf("whitelist_enable\r\n");
-
         //if master device use RPA(resolvable private address), must add irk to resolving list
         if (IS_RESOLVABLE_PRIVATE_ADDR(bondInfo.peer_addr_type, bondInfo.peer_addr)){
-            printf("whitelist_enable 2\r\n");
             /* resolvable private address, should add peer irk to resolving list */
             ll_resolvingList_add(bondInfo.peer_id_adrType, bondInfo.peer_id_addr, bondInfo.peer_irk, NULL);  //no local IRK
             ll_resolvingList_setAddrResolutionEnable(ON);
-
-            for (int i = 0; i < 6; i++)
-                printf("0x%X ", bondInfo.peer_id_addr[i]);
-            printf("\r\n");
         } else {
-            printf("whitelist_enable 3\r\n");
             //if not resolvable random address, add peer address to whitelist
             ll_whiteList_add(bondInfo.peer_addr_type, bondInfo.peer_addr);
         }
@@ -136,24 +121,12 @@ void ev_adv_timeout(u8 e, u8 *p, int n) {
         bls_ll_setAdvParam( ADV_INTERVAL_MIN, ADV_INTERVAL_MAX,
                             ADV_TYPE_CONNECTABLE_UNDIRECTED, OWN_ADDRESS_PUBLIC,
                             0,  NULL, BLT_ENABLE_ADV_ALL, ADV_FP_NONE);
+        first_start = 1;
     }
 
     bls_ll_setScanRspData((uint8_t *) ble_name, ble_name[0]+1);
     bls_ll_setAdvEnable(BLC_ADV_ENABLE);  //ADV enable
 }
-
-
-//void ev_adv_timeout(u8 e, u8 *p, int n) {
-//    (void) e; (void) p; (void) n;
-//    bls_ll_setAdvParam(ADV_INTERVAL_MIN, ADV_INTERVAL_MAX,
-//            ADV_TYPE_CONNECTABLE_UNDIRECTED, OWN_ADDRESS_PUBLIC, 0, NULL,
-//            BLT_ENABLE_ADV_ALL,
-//            watermeter_config.whitelist_enable?ADV_FP_ALLOW_SCAN_ANY_ALLOW_CONN_WL:ADV_FP_NONE);
-//    //  set_adv_data();
-//    bls_ll_setScanRspData((uint8_t *) ble_name, ble_name[0]+1);
-//    bls_ll_setAdvEnable(BLC_ADV_ENABLE);  //ADV enable
-//}
-
 
 
 extern attribute_t my_Attributes[ATT_END_H];
@@ -183,9 +156,6 @@ void get_ble_name() {
         }
     }
     my_Attributes[GenericAccess_DeviceName_DP_H].attrLen = ble_name[0] - 1;
-//    for (int i = 0; i < DEV_NAME_SIZE; i++) {
-//        printf("[%u] 0x%x - %c\r\n", i, ble_name[i], ble_name[i]);
-//    }
 }
 
 __attribute__((optimize("-Os"))) void init_ble(void) {
@@ -238,7 +208,6 @@ __attribute__((optimize("-Os"))) void init_ble(void) {
 
 
     ///////////////////// USER application initialization ///////////////////
-
     rf_set_power_level_index(MY_RF_POWER_INDEX);
     bls_app_registerEventCallback(BLT_EV_FLAG_SUSPEND_ENTER, &suspend_enter_cb);
     bls_app_registerEventCallback(BLT_EV_FLAG_SUSPEND_EXIT, &suspend_exit_cb);
@@ -258,38 +227,6 @@ __attribute__((optimize("-Os"))) void init_ble(void) {
     bls_app_registerEventCallback (BLT_EV_FLAG_ADV_DURATION_TIMEOUT, &ev_adv_timeout);
     set_adv_data();
     ev_adv_timeout(0,0,0);
-
-    ///////////////////// Whitelist configuration ///////////////////
-
-    if (watermeter_config.whitelist_enable) {
-        ll_whiteList_reset();     //clear whitelist
-
-        for (uint8_t i = 0; i < watermeter_config.whitelist_enable; i++) {
-            if (i == 0) {
-                ll_whiteList_add(BLE_ADDR_PUBLIC, watermeter_config.wl_mac1);
-    #if UART_PRINT_DEBUG_ENABLE
-                print_mac(i+1, watermeter_config.wl_mac1);
-    #endif /* UART_PRINT_DEBUG_ENABLE */
-            } else if (i == 1) {
-                ll_whiteList_add(BLE_ADDR_PUBLIC, watermeter_config.wl_mac2);
-    #if UART_PRINT_DEBUG_ENABLE
-                print_mac(i+1, watermeter_config.wl_mac2);
-    #endif /* UART_PRINT_DEBUG_ENABLE */
-            } else if (i == 2) {
-                ll_whiteList_add(BLE_ADDR_PUBLIC, watermeter_config.wl_mac3);
-    #if UART_PRINT_DEBUG_ENABLE
-                print_mac(i+1, watermeter_config.wl_mac3);
-    #endif /* UART_PRINT_DEBUG_ENABLE */
-            } else {
-                ll_whiteList_add(BLE_ADDR_PUBLIC, watermeter_config.wl_mac4);
-    #if UART_PRINT_DEBUG_ENABLE
-                print_mac(i+1, watermeter_config.wl_mac4);
-    #endif /* UART_PRINT_DEBUG_ENABLE */
-            }
-        }
-    }
-
-
 }
 
 void set_adv_data() {
