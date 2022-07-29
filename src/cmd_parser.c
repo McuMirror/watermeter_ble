@@ -61,6 +61,7 @@ void cmd_parser(void * p) {
 #endif /* UART_PRINT_DEBUG_ENABLE */
 	    bls_smp_eraseAllParingInformation();
 	    ev_adv_timeout(0,0,0);
+	    bls_ll_terminateConnection(HCI_ERR_REMOTE_USER_TERM_CONN);
     } else if (*in_data == CMD_RESET && len == 1) {
 #if UART_PRINT_DEBUG_ENABLE
         printf("Reboot module\r\n");
