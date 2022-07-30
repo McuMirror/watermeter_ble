@@ -19,7 +19,8 @@
 
 /**************************** Configure UART ***************************************/
 #if UART_PRINT_DEBUG_ENABLE
-#define PRINT_BAUD_RATE         115200
+//#define PRINT_BAUD_RATE         115200
+#define PRINT_BAUD_RATE         230400
 #define DEBUG_INFO_TX_PIN       UART_TX_PB1
 #define PB1_DATA_OUT            ON
 #define PB1_OUTPUT_ENABLE       ON
