@@ -1,6 +1,5 @@
 #include "tl_common.h"
 
-#include "app_adc.h"
 #include "pulse.h"
 #include "cfg.h"
 
@@ -77,7 +76,7 @@ _attribute_ram_code_ static void water_counters() {
 _attribute_ram_code_ uint8_t task_counters() {
     uint8_t save_config = false;
 
-    for (uint16_t i = 0; i < TASK_COUNT && !hot_counter.count && !cold_counter.count; i++) {
+    for (uint16_t i = 0; i < TASK_COUNT; i++) {
         water_counters();
     }
 
