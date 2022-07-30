@@ -55,16 +55,20 @@ void cmd_parser(void * p) {
         write_config();
 	} else if (*in_data == CMD_RESET_WL && len == 1) {
 #if UART_PRINT_DEBUG_ENABLE
-	    printf("Reset whitelist\r\n");
+	    printf("Reset whitelist\r\nDisconnect\r\n");
 #endif /* UART_PRINT_DEBUG_ENABLE */
 	    bls_smp_eraseAllParingInformation();
 	    ev_adv_timeout(0,0,0);
 	    bls_ll_terminateConnection(HCI_ERR_REMOTE_USER_TERM_CONN);
     } else if (*in_data == CMD_RESET && len == 1) {
 #if UART_PRINT_DEBUG_ENABLE
-        printf("Reboot module\r\n");
+        printf("Disconnect\r\n");
 #endif /* UART_PRINT_DEBUG_ENABLE */
         bls_ll_terminateConnection(HCI_ERR_REMOTE_USER_TERM_CONN);
+        sleep_ms(2000);
+#if UART_PRINT_DEBUG_ENABLE
+        printf("Reboot module\r\n");
+#endif /* UART_PRINT_DEBUG_ENABLE */
         start_reboot();
     }
 
