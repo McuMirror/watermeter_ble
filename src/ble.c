@@ -17,7 +17,7 @@ _attribute_data_retention_ uint8_t    ble_name[BLE_NAME_SIZE];
 _attribute_data_retention_ adv_data_t adv_data;
 _attribute_data_retention_ uint8_t    mac_public[6], mac_random_static[6];
 _attribute_data_retention_ uint8_t    ble_connected = 0;
-_attribute_data_retention_ uint8_t    ota_is_working = 0;
+//_attribute_data_retention_ uint8_t    ota_is_working = 0;
 _attribute_data_retention_ uint8_t    first_start;
 
 _attribute_data_retention_ uint8_t    blt_rxfifo_b[64 * 8] = {0};
@@ -37,11 +37,11 @@ void print_mac(uint8_t num, uint8_t *mac) {
 #endif /* UART_PRINT_DEBUG_ENABLE */
 
 
-void app_enter_ota_mode(void)
-{
-    ota_is_working = 1;
-    bls_ota_setTimeout(5 * 1000000);
-}
+//void app_enter_ota_mode(void)
+//{
+//    ota_is_working = 1;
+//    bls_ota_setTimeout(5 * 1000000);
+//}
 
 int RxTxWrite(void * p)
 {
@@ -92,7 +92,7 @@ void ble_disconnect_cb(uint8_t e,uint8_t *p, int n) {
     }
 
     ble_connected = 0;
-    ota_is_working = 0;
+//    ota_is_working = 0;
 }
 
 void ev_adv_timeout(u8 e, u8 *p, int n) {
@@ -230,8 +230,8 @@ __attribute__((optimize("-Os"))) void init_ble(void) {
     blc_pm_setDeepsleepRetentionEarlyWakeupTiming(200); // 240
     blc_pm_setDeepsleepRetentionType(DEEPSLEEP_MODE_RET_SRAM_LOW32K);
 
-    bls_ota_clearNewFwDataArea(); //must
-    bls_ota_registerStartCmdCb(app_enter_ota_mode);
+//    bls_ota_clearNewFwDataArea(); //must
+//    bls_ota_registerStartCmdCb(app_enter_ota_mode);
 
     bls_app_registerEventCallback (BLT_EV_FLAG_ADV_DURATION_TIMEOUT, &ev_adv_timeout);
     set_adv_data();

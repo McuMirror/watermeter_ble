@@ -86,12 +86,12 @@ _attribute_data_retention_ u8 my_RxTx_Data[16];
 _attribute_data_retention_ u16 RxTxValueInCCC;
 
 
-/////////////////////////////////////////////////////////
-static const  u8 my_OtaUUID[16]            = WRAPPING_BRACES(TELINK_SPP_DATA_OTA);
-static const  u8 my_OtaServiceUUID[16]     = WRAPPING_BRACES(TELINK_OTA_UUID_SERVICE);
-static u8 my_OtaData                       = 0x00;
-
-static const u8  my_OtaName[] = {'O', 'T', 'A'};
+///////////////////////////////////////////////////////////
+//static const  u8 my_OtaUUID[16]            = WRAPPING_BRACES(TELINK_SPP_DATA_OTA);
+//static const  u8 my_OtaServiceUUID[16]     = WRAPPING_BRACES(TELINK_OTA_UUID_SERVICE);
+//static u8 my_OtaData                       = 0x00;
+//
+//static const u8  my_OtaName[] = {'O', 'T', 'A'};
 
 
 //// GAP attribute values
@@ -193,12 +193,12 @@ static const u8 my_coldCharVal[5] = {
     U16_LO(CHARACTERISTIC_UUID_COUNT2), U16_HI(CHARACTERISTIC_UUID_COUNT2)
 };
 
-//// OTA attribute values
-static const u8 my_OtaCharVal[19] = {
-	CHAR_PROP_READ | CHAR_PROP_WRITE_WITHOUT_RSP | CHAR_PROP_NOTIFY,
-	U16_LO(OTA_CMD_OUT_DP_H), U16_HI(OTA_CMD_OUT_DP_H),
-	TELINK_SPP_DATA_OTA,
-};
+////// OTA attribute values
+//static const u8 my_OtaCharVal[19] = {
+//	CHAR_PROP_READ | CHAR_PROP_WRITE_WITHOUT_RSP | CHAR_PROP_NOTIFY,
+//	U16_LO(OTA_CMD_OUT_DP_H), U16_HI(OTA_CMD_OUT_DP_H),
+//	TELINK_SPP_DATA_OTA,
+//};
 
 //// RxTx attribute values
 static const u8 my_RxTxCharVal[5] = {
@@ -271,12 +271,12 @@ _attribute_data_retention_ attribute_t my_Attributes[] = {
     {0,ATT_PERMISSIONS_READ,2,sizeof(watermeter_config.counters.cold_water_count),(u8*)(&my_coldCharUUID),(u8*)(&watermeter_config.counters.cold_water_count), 0},   //value
     {0,ATT_PERMISSIONS_RDWR,2,sizeof(coldValueInCCC),(u8*)(&clientCharacterCfgUUID),(u8*)(&coldValueInCCC), 0},   //value
 
-	////////////////////////////////////// OTA /////////////////////////////////////////////////////
-	// 0032 - 0036
-	{4,ATT_PERMISSIONS_READ, 2,16,(u8*)(&my_primaryServiceUUID), 	(u8*)(&my_OtaServiceUUID), 0},
-	{0,ATT_PERMISSIONS_READ, 2, sizeof(my_OtaCharVal),(u8*)(&my_characterUUID), (u8*)(my_OtaCharVal), 0},				//prop
-	{0,ATT_PERMISSIONS_RDWR,16,sizeof(my_OtaData),(u8*)(&my_OtaUUID),	(&my_OtaData), &otaWrite, NULL},				//value
-	{0,ATT_PERMISSIONS_READ, 2,sizeof (my_OtaName),(u8*)(&userdesc_UUID), (u8*)(my_OtaName), 0},
+//	////////////////////////////////////// OTA /////////////////////////////////////////////////////
+//	// 0032 - 0036
+//	{4,ATT_PERMISSIONS_READ, 2,16,(u8*)(&my_primaryServiceUUID), 	(u8*)(&my_OtaServiceUUID), 0},
+//	{0,ATT_PERMISSIONS_READ, 2, sizeof(my_OtaCharVal),(u8*)(&my_characterUUID), (u8*)(my_OtaCharVal), 0},				//prop
+//	{0,ATT_PERMISSIONS_RDWR,16,sizeof(my_OtaData),(u8*)(&my_OtaUUID),	(&my_OtaData), &otaWrite, NULL},				//value
+//	{0,ATT_PERMISSIONS_READ, 2,sizeof (my_OtaName),(u8*)(&userdesc_UUID), (u8*)(my_OtaName), 0},
 
     ////////////////////////////////////// RxTx ////////////////////////////////////////////////////
     // RxTx Communication

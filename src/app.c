@@ -54,12 +54,12 @@ _attribute_ram_code_ void user_init_deepRetn(void) {
 
 _attribute_ram_code_ void blt_pm_proc(void)
 {
-    if(ota_is_working){
-        bls_pm_setSuspendMask(SUSPEND_DISABLE);
-        bls_pm_setManualLatency(0);
-    }else{
+//    if(ota_is_working){
+//        bls_pm_setSuspendMask(SUSPEND_DISABLE);
+//        bls_pm_setManualLatency(0);
+//    }else{
         bls_pm_setSuspendMask (SUSPEND_ADV | DEEPSLEEP_RETENTION_ADV | SUSPEND_CONN | DEEPSLEEP_RETENTION_CONN);
-    }
+//    }
 }
 
 
