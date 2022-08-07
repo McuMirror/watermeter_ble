@@ -4,6 +4,7 @@
 #include <stdint.h>
 
 extern uint32_t conn_timeout;
+extern uint32_t time_sec;
 
 void user_init_normal(void);
 void user_init_deepRetn(void);

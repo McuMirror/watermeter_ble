@@ -3,6 +3,7 @@
 #include "drivers.h"
 #include "stack/ble/ble.h"
 #include "drivers/8258/pm.h"
+#include "drivers/8258/timer.h"
 
 #include "app.h"
 #include "app_att.h"
@@ -17,14 +18,18 @@
 
 #define UPDATE_PERIOD       5000UL      /* 5 sec */
 #define BATTERY_PERIOD      300000UL    /* 5 min */
-#define CONN_TIMEOUT        120000UL    /* 2 min */
+#define CONN_TIMEOUT        120         /* 2 min */
 _attribute_data_retention_  uint32_t update_interval;
 _attribute_data_retention_  uint32_t battery_interval;
 _attribute_data_retention_  uint32_t conn_timeout;
 
+_attribute_data_retention_  uint32_t time_sec_tick;
+_attribute_data_retention_  uint32_t time_tick_step = CLOCK_16M_SYS_TIMER_CLK_1S; // adjust time clock (in 1/16 us for 1 sec)
+_attribute_data_retention_  uint32_t time_sec = 0;
+
 void user_init_normal(void) {
 
-#if UART_PRINT_DEBUG_ENABLE
+    #if UART_PRINT_DEBUG_ENABLE
     printf("Start user_init_normal()\r\n");
 #endif /* UART_PRINT_DEBUG_ENABLE */
 
@@ -65,10 +70,30 @@ _attribute_ram_code_ void blt_pm_proc(void)
 
 void main_loop (void) {
 
+    blt_sdk_main_loop();
+
+    while (clock_time() -  time_sec_tick > time_tick_step) {
+        time_sec_tick += time_tick_step;
+        time_sec++; // + 1 sec
+    }
+
+
     if (task_counters()) {
         adv_data.adv_hot.counter  = watermeter_config.counters.hot_water_count;
         adv_data.adv_cold.counter = watermeter_config.counters.cold_water_count;
         set_adv_data();
+    }
+
+    if(blc_ll_getCurrentState() & BLS_LINK_STATE_CONN) {
+        /* connection time 2 min. */
+        if ((time_sec - conn_timeout) > CONN_TIMEOUT) {
+#if UART_PRINT_DEBUG_ENABLE
+            printf("Connection timeout 2 min.\r\n");
+#endif /* UART_PRINT_DEBUG_ENABLE */
+            bls_ll_terminateConnection(HCI_ERR_REMOTE_USER_TERM_CONN);
+            conn_timeout = time_sec;
+        }
+
     }
 
     if ((clock_time() - update_interval) > UPDATE_PERIOD*CLOCK_SYS_CLOCK_1MS) {
@@ -86,37 +111,24 @@ void main_loop (void) {
             battery_interval = clock_time();
         }
 
-        if(blc_ll_getCurrentState() & BLS_LINK_STATE_CONN) {
+        if((blc_ll_getCurrentState() & BLS_LINK_STATE_CONN) && blc_ll_getTxFifoNumber() < 9) {
 
-            if (blc_ll_getTxFifoNumber() < 9) {
-                if (batteryValueInCCC) {
-                    ble_send_battery();
-                }
-
-                if (hotValueInCCC) {
-                    ble_send_hotwater();
-                }
-
-                if (coldValueInCCC) {
-                    ble_send_coldwater();
-                }
+            if (batteryValueInCCC) {
+                ble_send_battery();
             }
 
-            /* connection time 2 min. */
-            if ((clock_time() - conn_timeout) > CONN_TIMEOUT*CLOCK_SYS_CLOCK_1MS) {
-#if UART_PRINT_DEBUG_ENABLE
-                printf("Connection timeout 2 min.\r\n");
-#endif /* UART_PRINT_DEBUG_ENABLE */
-                bls_ll_terminateConnection(HCI_ERR_REMOTE_USER_TERM_CONN);
-                conn_timeout = clock_time();
+            if (hotValueInCCC) {
+                ble_send_hotwater();
             }
 
+            if (coldValueInCCC) {
+                ble_send_coldwater();
+            }
         }
 
         update_interval = clock_time();
     }
 
-    blt_sdk_main_loop();
     blt_pm_proc();
 }
 

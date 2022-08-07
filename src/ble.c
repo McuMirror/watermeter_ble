@@ -69,7 +69,8 @@ void ble_connect_cb(uint8_t e, uint8_t *p, int n) {
 
     ble_connected = 1;
     bls_l2cap_requestConnParamUpdate (CONN_INTERVAL_10MS, CONN_INTERVAL_10MS, 249, CONN_TIMEOUT_8S);  // 2.5 S
-    conn_timeout = clock_time();
+//    conn_timeout = clock_time();
+    conn_timeout = time_sec;
 
 }
 
