@@ -34,10 +34,6 @@ void init_config() {
     watermeter_config_t config;
     uint32_t flash_addr = BEGIN_USER_DATA;
 
-#if WHITELIST_ENABLE
-    whitelist_enable = ON;
-#endif /* WHITELIST_ENABLE */
-
     while(1) {
         flash_read_page(flash_addr, sizeof(watermeter_config_t), (uint8_t*)&(config));
 
