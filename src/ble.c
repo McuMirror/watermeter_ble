@@ -178,7 +178,7 @@ __attribute__((optimize("-Os"))) void init_ble(void) {
     adv_data.flg_type  = GAP_ADTYPE_FLAGS;  /* 0x01  */
     adv_data.flg       = 0x06;              /* flags */
 
-    adv_data.head.size = (sizeof(adv_head_uuid16_t) + 3 + sizeof(adv_battery_t) + sizeof(adv_counter_t)*2 - 1) & 0xFF;
+    adv_data.head.size = (sizeof(adv_head_uuid16_t) + 3 + sizeof(adv_battery_t) + (sizeof(adv_counter_t)*2) - 1) & 0xFF;
     adv_data.head.type =  GAP_ADTYPE_SERVICE_DATA_UUID_16BIT;
     adv_data.head.UUID = ADV_HA_BLE_NS_UUID16;
 
