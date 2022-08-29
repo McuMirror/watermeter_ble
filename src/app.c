@@ -13,7 +13,7 @@
 #include "ble.h"
 
 #if UART_PRINT_DEBUG_ENABLE
-//_attribute_data_retention_ static uint32t deepRetn_count = 0;
+//_attribute_data_retention_ static uint32_t deepRetn_count = 0;
 #endif /* UART_PRINT_DEBUG_ENABLE */
 
 #define UPDATE_PERIOD       5000UL      /* 5 sec */
@@ -79,8 +79,8 @@ void main_loop (void) {
 
 
     if (task_counters()) {
-        adv_data.adv_hot.counter  = watermeter_config.counters.hot_water_count;
-        adv_data.adv_cold.counter = watermeter_config.counters.cold_water_count;
+        adv_data.hot.counter  = watermeter_config.counters.hot_water_count;
+        adv_data.cold.counter = watermeter_config.counters.cold_water_count;
         set_adv_data();
     }
 
@@ -101,11 +101,18 @@ void main_loop (void) {
         if ((clock_time() - battery_interval) > BATTERY_PERIOD*CLOCK_SYS_CLOCK_1MS) {
             check_battery();
 
-            if (battery_level != adv_data.adv_battery.level) {
+            if (battery_level != adv_data.battery.level) {
 #if UART_PRINT_DEBUG_ENABLE
-                printf("b_level - %u, adv_b_level - %u\r\n", battery_level, adv_data.adv_battery.level);
+                printf("New battery level - %u, last battery level - %u\r\n", battery_level, adv_data.battery.level);
 #endif /* UART_PRINT_DEBUG_ENABLE */
-                adv_data.adv_battery.level = battery_level;
+                adv_data.battery.level = battery_level;
+                set_adv_data();
+            }
+            if (battery_mv != adv_data.voltage.voltage) {
+#if UART_PRINT_DEBUG_ENABLE
+                printf("New battery mv - %u, last battery mv - %u\r\n", battery_mv, adv_data.voltage.voltage);
+#endif /* UART_PRINT_DEBUG_ENABLE */
+                adv_data.voltage.voltage = battery_mv;
                 set_adv_data();
             }
             battery_interval = clock_time();
