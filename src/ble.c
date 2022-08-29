@@ -178,28 +178,37 @@ __attribute__((optimize("-Os"))) void init_ble(void) {
     adv_data.flg_type  = GAP_ADTYPE_FLAGS;  /* 0x01  */
     adv_data.flg       = 0x06;              /* flags */
 
-    adv_data.head.size = (sizeof(adv_head_uuid16_t) + 3 + sizeof(adv_battery_t) + (sizeof(adv_counter_t)*2) - 1) & 0xFF;
-    adv_data.head.type =  GAP_ADTYPE_SERVICE_DATA_UUID_16BIT;
+    adv_data.head.size = (sizeof(adv_head_uuid16_t) +
+                          sizeof(adv_pid_t) +
+                          sizeof(adv_battery_t) +
+                          sizeof(adv_voltage_t) +
+                          (sizeof(adv_counter_t)*2) - 1) & 0xFF;
+    adv_data.head.type = GAP_ADTYPE_SERVICE_DATA_UUID_16BIT;
     adv_data.head.UUID = ADV_HA_BLE_NS_UUID16;
 
-    adv_data.type_len  = HaBleType_uint | ((sizeof(adv_data.id) + sizeof(adv_data.pid)) & 0x1F);
-    adv_data.id        = HaBleID_PacketId;
-    adv_data.pid       = 0;
+    adv_data.pid.type_len = HaBleType_uint | ((sizeof(adv_data.pid.id) + sizeof(adv_data.pid.pid)) & 0x1F);
+    adv_data.pid.id       = HaBleID_PacketId;
+    adv_data.pid.pid      = 0;
 
-    adv_data.adv_battery.type_len = HaBleType_uint |
-            ((sizeof(adv_data.adv_battery.id) + sizeof(adv_data.adv_battery.level)) & 0x1F);
-    adv_data.adv_battery.id       = HaBleID_battery;
-    adv_data.adv_battery.level = battery_level;
+    adv_data.battery.type_len = HaBleType_uint |
+            ((sizeof(adv_data.battery.id) + sizeof(adv_data.battery.level)) & 0x1F);
+    adv_data.battery.id = HaBleID_battery;
+    adv_data.battery.level = battery_level;
 
-    adv_data.adv_hot.type_len = HaBleType_uint |
-            ((sizeof(adv_data.adv_hot.id) + sizeof(adv_data.adv_hot.counter)) & 0x1F);
-    adv_data.adv_hot.id  = HaBleID_count;
-    adv_data.adv_hot.counter = watermeter_config.counters.hot_water_count;
+    adv_data.voltage.type_len = HaBleType_uint |
+            ((sizeof(adv_data.voltage.id) + sizeof(adv_data.voltage.voltage)) & 0x1F);
+    adv_data.voltage.id = HaBleID_voltage;
+    adv_data.voltage.voltage = battery_mv;
 
-    adv_data.adv_cold.type_len = HaBleType_uint |
-            ((sizeof(adv_data.adv_cold.id) + sizeof(adv_data.adv_cold.counter)) & 0x1F);
-    adv_data.adv_cold.id  = HaBleID_count;
-    adv_data.adv_cold.counter = watermeter_config.counters.cold_water_count;
+    adv_data.hot.type_len = HaBleType_uint |
+            ((sizeof(adv_data.hot.id) + sizeof(adv_data.hot.counter)) & 0x1F);
+    adv_data.hot.id = HaBleID_count;
+    adv_data.hot.counter = watermeter_config.counters.hot_water_count;
+
+    adv_data.cold.type_len = HaBleType_uint |
+            ((sizeof(adv_data.cold.id) + sizeof(adv_data.cold.counter)) & 0x1F);
+    adv_data.cold.id  = HaBleID_count;
+    adv_data.cold.counter = watermeter_config.counters.cold_water_count;
 
     ///////////////////// Controller Initialization /////////////////////
     blc_ll_initBasicMCU();                      //mandatory
@@ -245,7 +254,7 @@ void set_adv_data() {
     printf("set_adv_data()\r\n");
 #endif /* UART_PRINT_DEBUG_ENABLE */
 
-    adv_data.pid = (adv_data.pid+1) & 0xFF;
+    adv_data.pid.pid = (adv_data.pid.pid+1) & 0xFF;
 
     bls_ll_setAdvData((uint8_t*)&adv_data, sizeof(adv_data_t));
 }
