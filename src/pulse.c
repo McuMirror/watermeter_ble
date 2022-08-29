@@ -78,7 +78,7 @@ _attribute_ram_code_ uint8_t task_counters() {
 
     for (uint16_t i = 0; i < TASK_COUNT; i++) {
         water_counters();
-        sleep_ms(2);
+        sleep_ms(3);
     }
 
     if (hot_counter.count) {
