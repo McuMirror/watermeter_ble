@@ -216,7 +216,6 @@ __attribute__((optimize("-Os"))) void init_ble(void) {
     blc_ll_initAdvertising_module(mac_public);  //adv module:        mandatory for BLE slave,
     blc_ll_initConnection_module();             //connection module  mandatory for BLE slave/master
     blc_ll_initSlaveRole_module();              //slave module:      mandatory for BLE slave,
-    blc_ll_initPowerManagement_module();        //pm module:         optional
 
     ///////////////////// Host Initialization /////////////////////
     blc_gap_peripheral_init();    //gap initialization
