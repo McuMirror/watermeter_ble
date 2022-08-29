@@ -3,7 +3,7 @@
 #include "pulse.h"
 #include "cfg.h"
 
-#define BIT_COUNT   256                         /* number of polls for debounce */
+#define BIT_COUNT   16                          /* number of polls for debounce */
 #define TASK_COUNT  (BIT_COUNT/2+BIT_COUNT)     /* task duration                */
 
 _attribute_data_retention_ static water_counter_t hot_counter;
@@ -78,6 +78,7 @@ _attribute_ram_code_ uint8_t task_counters() {
 
     for (uint16_t i = 0; i < TASK_COUNT; i++) {
         water_counters();
+        sleep_ms(2);
     }
 
     if (hot_counter.count) {
