@@ -39,7 +39,7 @@ typedef enum {
 
 
 typedef struct __attribute__((packed)) _adv_head_uuid16_t {
-    uint8_t  size;          /* sun sizes adv_head_uuid16_t+adv_pid_t+adv_battery_t+adv_voltage_t+2*adv_counter_t-1 */
+    uint8_t  size;          /* sum sizes adv_head_uuid16_t+adv_pid_t+adv_battery_t+adv_voltage_t+2*adv_counter_t-1 */
     uint8_t  type;          /* 0x16, 16-bit UUID            */
     uint16_t UUID;          /* 0x181C, GATT Service HA_BLE  */
 } adv_head_uuid16_t;
