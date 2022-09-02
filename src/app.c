@@ -31,7 +31,6 @@ void user_init_normal(void) {
 
     #if UART_PRINT_DEBUG_ENABLE
     printf("Start user_init_normal()\r\n");
-    printf("sizeof(watermeter_config_t) - %u\r\n", sizeof(watermeter_config_t));
 #endif /* UART_PRINT_DEBUG_ENABLE */
 
     adc_power_on_sar_adc(OFF);
