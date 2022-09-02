@@ -98,13 +98,13 @@ typedef int (*blc_main_loop_phyTest_callback_t)(void);
 
 
 #if (MCU_CORE_TYPE == MCU_CORE_825x || MCU_CORE_TYPE == MCU_CORE_827x)
-	my_fifo_t			blt_rxfifo;
-//	u8					blt_rxfifo_b[];
-    u8                  blt_rxfifo_b[64*8];
+my_fifo_t           blt_rxfifo;
+//  u8                  blt_rxfifo_b[];
+u8                  blt_rxfifo_b[64*8];
 
-	my_fifo_t			blt_txfifo;
-//	u8					blt_txfifo_b[];
-    u8                  blt_txfifo_b[40*16];
+my_fifo_t           blt_txfifo;
+//  u8                  blt_txfifo_b[];
+u8                  blt_txfifo_b[40*16];
 #endif
 typedef struct {
 	u16		connEffectiveMaxRxOctets;
