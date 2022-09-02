@@ -35,7 +35,7 @@ void init_config() {
     uint32_t flash_addr = BEGIN_USER_DATA;
     uint32_t i;
 
-    for (i = 0; i < (END_USER_DATA-BEGIN_USER_DATA)/256; i++) {
+    for (i = 0; i < (END_USER_DATA-BEGIN_USER_DATA)/FLASH_PAGE_SIZE; i++) {
         flash_read_page(flash_addr, sizeof(watermeter_config_t), (uint8_t*)&(config));
         if (config.id == ID_CONFIG) {
             if (config.active) {
@@ -46,6 +46,11 @@ void init_config() {
                     clear_user_data();
                     if (config.counters.id == ID_COUNTERS) {
                         /* save old count in new config */
+#if UART_PRINT_DEBUG_ENABLE
+                        printf("Find old water counters data.\r\n");
+                        printf("Hot  counter - %u\r\n", config.counters.hot_water_count);
+                        printf("Cold counter - %u\r\n", config.counters.cold_water_count);
+#endif /* UART_PRINT_DEBUG_ENABLE */
                         init_default_config(config.counters.hot_water_count, config.counters.cold_water_count);
                     } else {
 #if UART_PRINT_DEBUG_ENABLE
@@ -65,7 +70,7 @@ void init_config() {
         }
         flash_addr += FLASH_PAGE_SIZE;
     }
-    if (i == (END_USER_DATA-BEGIN_USER_DATA)/256) {
+    if (i == (END_USER_DATA-BEGIN_USER_DATA)/FLASH_PAGE_SIZE) {
 #if UART_PRINT_DEBUG_ENABLE
         printf("No saved config! Init.\r\n");
 #endif /* UART_PRINT_DEBUG_ENABLE */
