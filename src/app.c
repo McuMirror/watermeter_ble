@@ -31,6 +31,7 @@ void user_init_normal(void) {
 
     #if UART_PRINT_DEBUG_ENABLE
     printf("Start user_init_normal()\r\n");
+    printf("sizeof(watermeter_config_t) - %u\r\n", sizeof(watermeter_config_t));
 #endif /* UART_PRINT_DEBUG_ENABLE */
 
     adc_power_on_sar_adc(OFF);
@@ -55,6 +56,8 @@ _attribute_ram_code_ void user_init_deepRetn(void) {
 	blc_ll_recoverDeepRetention();
 
 	irq_enable();
+
+	write_config();
 }
 
 _attribute_ram_code_ void blt_pm_proc(void)
@@ -109,11 +112,14 @@ void main_loop (void) {
                 set_adv_data();
             }
             if (battery_mv != adv_data.voltage.voltage) {
+                if ((battery_mv > adv_data.voltage.voltage && (battery_mv - adv_data.voltage.voltage) > 50) ||
+                    (battery_mv < adv_data.voltage.voltage && (adv_data.voltage.voltage - battery_mv) > 50)) {
 #if UART_PRINT_DEBUG_ENABLE
-                printf("New battery mv - %u, last battery mv - %u\r\n", battery_mv, adv_data.voltage.voltage);
+                    printf("New battery mv - %u, last battery mv - %u\r\n", battery_mv, adv_data.voltage.voltage);
 #endif /* UART_PRINT_DEBUG_ENABLE */
-                adv_data.voltage.voltage = battery_mv;
-                set_adv_data();
+                    adv_data.voltage.voltage = battery_mv;
+                    set_adv_data();
+                }
             }
             battery_interval = clock_time();
         }

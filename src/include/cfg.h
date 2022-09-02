@@ -3,8 +3,8 @@
 
 #include "stdint.h"
 
-#define ID_CONFIG        0xFED1410
-#define ID_COUNTERS      0xFED1965
+#define ID_CONFIG       0xFED1410
+#define ID_COUNTERS     0xFED1965
 
 typedef struct __attribute__((packed)) _counters_config_t {
     uint32_t id;                /* ID - ID_COUNTERS                     */
@@ -12,6 +12,7 @@ typedef struct __attribute__((packed)) _counters_config_t {
     uint32_t cold_water_count;  /* Last number of litres cold water     */
 } counters_config_t;
 
+/* must be no more than FLASH_PAGE_SIZE (256) bytes */
 typedef struct __attribute__((packed)) _watermeter_config_t {
     uint32_t id;                        /* 1st place only! ID - ID_CONFIG       */
     uint8_t  active;                    /* 2st place only! current active cfg   */

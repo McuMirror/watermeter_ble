@@ -60,6 +60,7 @@
 #define BEGIN_USER_DATA         0x40000
 #define END_USER_DATA           0x74000
 #define FLASH_SECTOR_SIZE       0x1000
+#define FLASH_PAGE_SIZE         PAGE_SIZE // 0x100
 #define FLASH_SECTOR_MAC        0x76000
 
 /////////////////// watchdog  //////////////////////////////

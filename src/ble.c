@@ -122,6 +122,9 @@ void ev_adv_timeout(u8 e, u8 *p, int n) {
         bls_ll_setAdvParam( ADV_INTERVAL_MIN, ADV_INTERVAL_MAX,
                             ADV_TYPE_CONNECTABLE_UNDIRECTED, OWN_ADDRESS_PUBLIC,
                             0,  NULL, BLT_ENABLE_ADV_ALL, ADV_FP_ALLOW_SCAN_ANY_ALLOW_CONN_WL);
+#if UART_PRINT_DEBUG_ENABLE
+        printf("Bound, start with whitelist!\r\n");
+#endif /* UART_PRINT_DEBUG_ENABLE */
     } else {
 
         bls_ll_setAdvParam( ADV_INTERVAL_MIN, ADV_INTERVAL_MAX,
