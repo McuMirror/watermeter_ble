@@ -55,6 +55,8 @@ _attribute_ram_code_ void user_init_deepRetn(void) {
 	blc_ll_recoverDeepRetention();
 
 	irq_enable();
+
+	write_config();
 }
 
 _attribute_ram_code_ void blt_pm_proc(void)
