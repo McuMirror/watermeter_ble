@@ -3,8 +3,9 @@
 
 #include "stdint.h"
 
-#define ID_CONFIG       0xFED1410
-#define ID_COUNTERS     0xFED1965
+#define ID_CONFIG       0x0FED1410
+#define ID_COUNTERS     0x0FED1965
+#define TOP_MASK        0xFFFFFFFF
 
 typedef struct __attribute__((packed)) _counters_t {
     uint32_t id;                        /* ID - ID_COUNTERS                     */
