@@ -56,7 +56,7 @@ void init_config() {
 
         if (config_next->id == ID_CONFIG) {
             if ((config_curr->top + 1) == config_next->top ||
-                    (config_curr->top == 0xFFFFFFFF && config_next->top == 0)) {
+                    (config_curr->top == TOP_MASK && config_next->top == 0)) {
                 *config_curr = *config_next;
                 flash_addr += FLASH_PAGE_SIZE;
                 continue;
@@ -119,7 +119,7 @@ void write_config() {
             flash_erase_sector(watermeter_config.flash_addr);
         }
         watermeter_config.top++;
-        watermeter_config.top &= 0xFFFFFFFF;
+        watermeter_config.top &= TOP_MASK;
 printf("save top - 0x%x\r\n", watermeter_config.top);
         flash_write_page(watermeter_config.flash_addr, sizeof(watermeter_config_t), (uint8_t*)&(watermeter_config));
     }
