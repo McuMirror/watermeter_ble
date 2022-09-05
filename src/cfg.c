@@ -7,7 +7,7 @@
 _attribute_data_retention_ watermeter_config_t watermeter_config;
 _attribute_data_retention_ static uint8_t default_config = false;
 
-static void clear_user_data() {
+_attribute_ram_code_ static void clear_user_data() {
     uint32_t flash_addr = BEGIN_USER_DATA;
 
     while(flash_addr < END_USER_DATA) {
@@ -30,7 +30,7 @@ static void init_default_config(uint32_t hot_count, uint32_t cold_count) {
     write_config();
 }
 
-void init_config() {
+_attribute_ram_code_ void init_config() {
     watermeter_config_t configA, configB, *config_curr, *config_next;
     uint32_t flash_addr = BEGIN_USER_DATA;
     uint8_t find_config = false;
@@ -105,7 +105,7 @@ void init_config() {
     }
 }
 
-void write_config() {
+_attribute_ram_code_ void write_config() {
     if (default_config) {
         flash_erase_sector(watermeter_config.flash_addr);
         flash_write_page(watermeter_config.flash_addr, sizeof(watermeter_config_t), (uint8_t*)&(watermeter_config));
