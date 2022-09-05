@@ -20,7 +20,7 @@ static void init_default_config(uint32_t hot_count, uint32_t cold_count) {
     memset(&watermeter_config, 0, sizeof(watermeter_config_t));
     watermeter_config.size = sizeof(watermeter_config_t);
     watermeter_config.id = ID_CONFIG;
-    watermeter_config.top = 0xffffff00;
+    watermeter_config.top = 0;
     watermeter_config.flash_addr = BEGIN_USER_DATA;
     watermeter_config.liters_per_pulse = LITERS_PER_PULSE;
     watermeter_config.counters.id = ID_COUNTERS;
@@ -31,8 +31,7 @@ static void init_default_config(uint32_t hot_count, uint32_t cold_count) {
 }
 
 void init_config() {
-    watermeter_config_t configA, configB;
-    watermeter_config_t *config_curr, *config_next;
+    watermeter_config_t configA, configB, *config_curr, *config_next;
     uint32_t flash_addr = BEGIN_USER_DATA;
     uint8_t find_config = false;
 
