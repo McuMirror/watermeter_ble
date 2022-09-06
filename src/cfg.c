@@ -120,7 +120,6 @@ _attribute_ram_code_ void write_config() {
         }
         watermeter_config.top++;
         watermeter_config.top &= TOP_MASK;
-printf("save top - 0x%x\r\n", watermeter_config.top);
         flash_write_page(watermeter_config.flash_addr, sizeof(watermeter_config_t), (uint8_t*)&(watermeter_config));
     }
 #if UART_PRINT_DEBUG_ENABLE
