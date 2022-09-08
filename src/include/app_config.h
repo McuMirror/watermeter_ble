@@ -1,7 +1,7 @@
 #pragma once
 
-#define VERSION                     0x10    /* BCD format (0x10 -> '1.0')   */
-#define DEV_NAME_CHR               'W','a','t','e','r','m','e','t','e','r','_','B','L','E'
+#define VERSION                     0x11    /* BCD format (0x10 -> '1.0')   */
+#define DEV_NAME_CHR                'W','a','t','e','r','m','e','t','e','r','_','B','L','E'
 #define DEV_NAME_STR                "Watermeter_BLE"
 /* 0x16,0x09,'W','a','t','e','r','m','e','t','e','r','_','B','L','E','_',0x00,0x00,0x00,0x00,0x00,0x00 */
 #define BLE_NAME_SIZE               23
@@ -11,9 +11,12 @@
 
 #define UART_PRINT_DEBUG_ENABLE     1       /* if 1 use printf() over uart  */
 
+
 /************************ Advertising_Interval *************************************/
-#define ADV_INTERVAL_MIN        4000        /* 4000 * 0.625 = 2500 ms or 2.5 sec */
-#define ADV_INTERVAL_MAX        4200        /* 4200 * 0.625 = 2625 ms or 2.6 sec */
+//#define ADV_INTERVAL_MIN        4000        /* 4000 * 0.625 = 2500 ms or 2.5 sec */
+//#define ADV_INTERVAL_MAX        4200        /* 4200 * 0.625 = 2625 ms or 2.6 sec */
+#define ADV_INTERVAL_MIN        ADV_INTERVAL_250MS
+#define ADV_INTERVAL_MAX        ADV_INTERVAL_300MS
 
 #define MY_RF_POWER_INDEX       RF_POWER_P0p04dBm
 
@@ -57,6 +60,16 @@
 #define SHL_ADC_VBAT            9 //C4P
 
 /************************* For 512K Flash only ***************************************/
+/* Flash map:
+  0x00000 Old Firmware bin
+  0x20000 OTA New bin storage Area
+  0x40000 User Data Area
+  0x74000 Pair & Security info
+  0x76000 MAC address
+  0x77000 Customize freq_offset adjust cap value
+  0x78000 User Data Area (conflict in master mode)
+  0x80000 End Flash
+ */
 #define BEGIN_USER_DATA         0x40000
 #define END_USER_DATA           0x74000
 #define FLASH_SECTOR_SIZE       0x1000

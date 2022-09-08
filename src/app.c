@@ -59,12 +59,12 @@ _attribute_ram_code_ void user_init_deepRetn(void) {
 
 _attribute_ram_code_ void blt_pm_proc(void)
 {
-//    if(ota_is_working){
-//        bls_pm_setSuspendMask(SUSPEND_DISABLE);
-//        bls_pm_setManualLatency(0);
-//    }else{
+    if(ota_is_working){
+        bls_pm_setSuspendMask(SUSPEND_DISABLE);
+        bls_pm_setManualLatency(0);
+    }else{
         bls_pm_setSuspendMask (SUSPEND_ADV | DEEPSLEEP_RETENTION_ADV | SUSPEND_CONN | DEEPSLEEP_RETENTION_CONN);
-//    }
+    }
 }
 
 
@@ -86,13 +86,13 @@ void main_loop (void) {
 
     if(blc_ll_getCurrentState() & BLS_LINK_STATE_CONN) {
         /* connection time 2 min. */
-        if ((time_sec - conn_timeout) > CONN_TIMEOUT) {
-#if UART_PRINT_DEBUG_ENABLE
-            printf("Connection timeout 2 min.\r\n");
-#endif /* UART_PRINT_DEBUG_ENABLE */
-            bls_ll_terminateConnection(HCI_ERR_REMOTE_USER_TERM_CONN);
-            conn_timeout = time_sec;
-        }
+//        if ((time_sec - conn_timeout) > CONN_TIMEOUT) {
+//#if UART_PRINT_DEBUG_ENABLE
+//            printf("Connection timeout 2 min.\r\n");
+//#endif /* UART_PRINT_DEBUG_ENABLE */
+//            bls_ll_terminateConnection(HCI_ERR_REMOTE_USER_TERM_CONN);
+//            conn_timeout = time_sec;
+//        }
 
     }
 

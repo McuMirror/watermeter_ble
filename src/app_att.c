@@ -67,9 +67,9 @@ static const u16 my_batServiceUUID        = SERVICE_UUID_BATTERY;
 static const u16 my_batCharUUID       	  = CHARACTERISTIC_UUID_BATTERY_LEVEL;
 _attribute_data_retention_ uint16_t batteryValueInCCC;
 
-#define SERVICE_UUID_BINARY_SENSOR      0x183B
-#define CHARACTERISTIC_UUID_COUNT1      0x2AEA
-#define CHARACTERISTIC_UUID_COUNT2      0x2AEB
+#define SERVICE_UUID_BINARY_SENSOR      0x183b
+#define CHARACTERISTIC_UUID_COUNT1      0x2aea
+#define CHARACTERISTIC_UUID_COUNT2      0x2aeb
 
 //////////////////////// Counters /////////////////////////////////////////////////
 static const u16 my_countServiceUUID      = SERVICE_UUID_BINARY_SENSOR; // Binary Sensor
@@ -87,11 +87,11 @@ _attribute_data_retention_ u16 RxTxValueInCCC;
 
 
 ///////////////////////////////////////////////////////////
-//static const  u8 my_OtaUUID[16]            = WRAPPING_BRACES(TELINK_SPP_DATA_OTA);
-//static const  u8 my_OtaServiceUUID[16]     = WRAPPING_BRACES(TELINK_OTA_UUID_SERVICE);
-//static u8 my_OtaData                       = 0x00;
-//
-//static const u8  my_OtaName[] = {'O', 'T', 'A'};
+static const  u8 my_OtaUUID[16]            = WRAPPING_BRACES(TELINK_SPP_DATA_OTA);
+static const  u8 my_OtaServiceUUID[16]     = WRAPPING_BRACES(TELINK_OTA_UUID_SERVICE);
+static u8 my_OtaData                       = 0x00;
+
+static const u8  my_OtaName[] = {'O', 'T', 'A'};
 
 
 //// GAP attribute values
@@ -167,7 +167,7 @@ static const u8 my_ManCharVal[5] = {
 };
 
 static const u8 my_ModelStr[]               = {DEV_NAME_STR};
-static const u8 my_SerialStr[]              = {"0123456789--"};
+static const u8 my_SerialStr[]              = {"EMYZE-FL1O9"};
 static const u8 my_FirmStr[]                = {"github.com/slacky1965"};
 static const u8 my_HardStr[]                = {"TB-04"};
 static const u8 my_SoftStr[]                = {'V','0'+(VERSION>>4),'.','0'+(VERSION&0x0f)}; // "0100"
@@ -193,12 +193,12 @@ static const u8 my_coldCharVal[5] = {
     U16_LO(CHARACTERISTIC_UUID_COUNT2), U16_HI(CHARACTERISTIC_UUID_COUNT2)
 };
 
-////// OTA attribute values
-//static const u8 my_OtaCharVal[19] = {
-//	CHAR_PROP_READ | CHAR_PROP_WRITE_WITHOUT_RSP | CHAR_PROP_NOTIFY,
-//	U16_LO(OTA_CMD_OUT_DP_H), U16_HI(OTA_CMD_OUT_DP_H),
-//	TELINK_SPP_DATA_OTA,
-//};
+//// OTA attribute values
+static const u8 my_OtaCharVal[19] = {
+	CHAR_PROP_READ | CHAR_PROP_WRITE_WITHOUT_RSP | CHAR_PROP_NOTIFY,
+	U16_LO(OTA_CMD_OUT_DP_H), U16_HI(OTA_CMD_OUT_DP_H),
+	TELINK_SPP_DATA_OTA,
+};
 
 //// RxTx attribute values
 static const u8 my_RxTxCharVal[5] = {
@@ -271,12 +271,12 @@ _attribute_data_retention_ attribute_t my_Attributes[] = {
     {0,ATT_PERMISSIONS_READ,2,sizeof(watermeter_config.counters.cold_water_count),(u8*)(&my_coldCharUUID),(u8*)(&watermeter_config.counters.cold_water_count), 0},   //value
     {0,ATT_PERMISSIONS_RDWR,2,sizeof(coldValueInCCC),(u8*)(&clientCharacterCfgUUID),(u8*)(&coldValueInCCC), 0},   //value
 
-//	////////////////////////////////////// OTA /////////////////////////////////////////////////////
-//	// 0032 - 0036
-//	{4,ATT_PERMISSIONS_READ, 2,16,(u8*)(&my_primaryServiceUUID), 	(u8*)(&my_OtaServiceUUID), 0},
-//	{0,ATT_PERMISSIONS_READ, 2, sizeof(my_OtaCharVal),(u8*)(&my_characterUUID), (u8*)(my_OtaCharVal), 0},				//prop
-//	{0,ATT_PERMISSIONS_RDWR,16,sizeof(my_OtaData),(u8*)(&my_OtaUUID),	(&my_OtaData), &otaWrite, NULL},				//value
-//	{0,ATT_PERMISSIONS_READ, 2,sizeof (my_OtaName),(u8*)(&userdesc_UUID), (u8*)(my_OtaName), 0},
+	////////////////////////////////////// OTA /////////////////////////////////////////////////////
+	// 0032 - 0036
+	{4,ATT_PERMISSIONS_READ, 2,16,(u8*)(&my_primaryServiceUUID), 	(u8*)(&my_OtaServiceUUID), 0},
+	{0,ATT_PERMISSIONS_READ, 2, sizeof(my_OtaCharVal),(u8*)(&my_characterUUID), (u8*)(my_OtaCharVal), 0},	 //prop
+	{0,ATT_PERMISSIONS_RDWR,16,sizeof(my_OtaData),(u8*)(&my_OtaUUID),	(&my_OtaData), &otaWrite, NULL}, //value
+	{0,ATT_PERMISSIONS_READ, 2,sizeof (my_OtaName),(u8*)(&userdesc_UUID), (u8*)(my_OtaName), 0},
 
     ////////////////////////////////////// RxTx ////////////////////////////////////////////////////
     // RxTx Communication

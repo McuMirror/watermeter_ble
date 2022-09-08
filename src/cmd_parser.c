@@ -4,12 +4,8 @@
 
 #include "cfg.h"
 #include "ble.h"
-
-#define CMD_SET_HW      0xF1    /* set hot water        */
-#define CMD_SET_CW      0xF2    /* set cold water       */
-#define CMD_SET_LPP     0xF3    /* set liters per pulse */
-#define CMD_RESET_WL    0xF4    /* reset whitelist      */
-#define CMD_RESET       0xF5    /* reset module         */
+#include "pulse.h"
+#include "cmd_parser.h"
 
 void cmd_parser(void * p) {
 	rf_packet_att_data_t *req = (rf_packet_att_data_t*)p;
@@ -17,45 +13,37 @@ void cmd_parser(void * p) {
 	uint8_t len = req->l2cap-3;
 	uint32_t counter = 0;
 
-    if ((*in_data == CMD_SET_HW || *in_data == CMD_SET_CW) && len > 1) {
+    if ((*in_data == CMD_SET_HOT_COUNTER || *in_data == CMD_SET_COLD_COUNTER) && len > 1) {
 
-        for (uint8_t i = 1; i < len; i++) {
-            if (i == 1) {
-                counter |= (in_data[i] & 0xFF);
-            } else if (i == 2) {
-                counter |= ((in_data[i] << 8) & 0xFF00);
-            } else if ( i == 3) {
-                counter |= ((in_data[i] << 16) & 0xFF0000);
-            } else {
-                counter |= ((in_data[i] << 24) & 0xFF000000);
-            }
-        }
+        len--;
+        if (len) counter |= (in_data[len--] & 0xFF);
+        if (len) counter |= ((in_data[len--] << 8) & 0xFF00);
+        if (len) counter |= ((in_data[len--] << 16) & 0xFF0000);
+        if (len) counter |= ((in_data[len] << 24) & 0xFF000000);
 
-        if (*in_data == CMD_SET_HW) {
-            watermeter_config.counters.hot_water_count = counter;
-            if (watermeter_config.counters.hot_water_count > (COUNTERS_OVERFLOW-LITERS_PER_PULSE)) {
-                watermeter_config.counters.hot_water_count -= (COUNTERS_OVERFLOW-LITERS_PER_PULSE);
-            }
+
+        if (*in_data == CMD_SET_HOT_COUNTER) {
+            watermeter_config.counters.hot_water_count = check_counter_overflow(counter);
 #if UART_PRINT_DEBUG_ENABLE
             printf("New counter - %u. Set hot water - %u\r\n", counter, watermeter_config.counters.hot_water_count);
 #endif /* UART_PRINT_DEBUG_ENABLE */
         } else {
-            watermeter_config.counters.cold_water_count = counter;
-            if (watermeter_config.counters.cold_water_count > (COUNTERS_OVERFLOW-LITERS_PER_PULSE)) {
-                watermeter_config.counters.cold_water_count -= (COUNTERS_OVERFLOW-LITERS_PER_PULSE);
-            }
+            watermeter_config.counters.cold_water_count = check_counter_overflow(counter);
 #if UART_PRINT_DEBUG_ENABLE
             printf("New counter - %u. Set cold water - %u\r\n", counter, watermeter_config.counters.cold_water_count);
 #endif /* UART_PRINT_DEBUG_ENABLE */
         }
         write_config();
         set_adv_data();
-    } else if (*in_data == CMD_SET_LPP && len == 2) {
+    } else if (*in_data == CMD_SET_LITERS_PER_PULSE && len == 2) {
 	    watermeter_config.liters_per_pulse = in_data[1];
         write_config();
-	} else if (*in_data == CMD_RESET_WL && len == 1) {
 #if UART_PRINT_DEBUG_ENABLE
-	    printf("Reset whitelist\r\nDisconnect\r\n");
+            printf("New liters per pulse - %u\r\n", watermeter_config.liters_per_pulse);
+#endif /* UART_PRINT_DEBUG_ENABLE */
+	} else if (*in_data == CMD_CLEAR_WHIYELIST && len == 1) {
+#if UART_PRINT_DEBUG_ENABLE
+	    printf("Reset whitelist\r\n");
 #endif /* UART_PRINT_DEBUG_ENABLE */
 	    bls_smp_eraseAllParingInformation();
 	    ev_adv_timeout(0,0,0);
@@ -70,8 +58,14 @@ void cmd_parser(void * p) {
         printf("Reboot module\r\n");
 #endif /* UART_PRINT_DEBUG_ENABLE */
         start_reboot();
+    } else if (*in_data == CMD_TEST && len == 1) {
+#if UART_PRINT_DEBUG_ENABLE
+        printf("Test command ok\r\n");
+#endif /* UART_PRINT_DEBUG_ENABLE */
+    } else {
+#if UART_PRINT_DEBUG_ENABLE
+        printf("Unknown or incomplete command 0x%X\r\n", *in_data);
+#endif /* UART_PRINT_DEBUG_ENABLE */
+
     }
-
-
-
 }
