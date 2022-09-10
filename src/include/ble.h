@@ -3,6 +3,7 @@
 
 #define ADV_HA_BLE_NS_UUID16 0x181C // 16-bit UUID Service 0x181C HA_BLE, no security
 #define ADV_HA_BLE_SE_UUID16 0x181E // 16-bit UUID Service 0x181E HA_BLE, security enable
+#define NOTIFI_MAX 3
 
 // https://github.com/custom-components/ble_monitor/issues/548
 typedef enum {
