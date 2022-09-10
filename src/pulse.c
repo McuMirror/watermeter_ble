@@ -2,6 +2,7 @@
 
 #include "pulse.h"
 #include "cfg.h"
+#include "app.h"
 
 #define BIT_COUNT   16                          /* number of polls for debounce */
 #define TASK_COUNT  (BIT_COUNT/2+BIT_COUNT)     /* task duration                */
@@ -98,14 +99,11 @@ _attribute_ram_code_ uint8_t task_counters() {
 
     if (hot_counter.count) {
         save_config = true;
+        /* detect hot counter overflow */
         watermeter_config.counters.hot_water_count = check_counter_overflow(watermeter_config.counters.hot_water_count +
                 (hot_counter.count * watermeter_config.liters_per_pulse));
-//        watermeter_config.counters.hot_water_count += (hot_counter.count * watermeter_config.liters_per_pulse);
         hot_counter.count = 0;
-//        /* detect hot counter overflow */
-//        if (watermeter_config.counters.hot_water_count > COUNTERS_OVERFLOW) {
-//            watermeter_config.counters.hot_water_count -= COUNTERS_OVERFLOW;
-//        }
+        hot_change = 1;
 #if UART_PRINT_DEBUG_ENABLE
         printf("hot counter - %u\r\n", watermeter_config.counters.hot_water_count);
 #endif /* UART_PRINT_DEBUG_ENABLE */
@@ -113,15 +111,12 @@ _attribute_ram_code_ uint8_t task_counters() {
 
     if (cold_counter.count) {
         save_config = true;
+        /* detect cold counter overflow */
         watermeter_config.counters.cold_water_count = check_counter_overflow(watermeter_config.counters.cold_water_count +
                 (cold_counter.count * watermeter_config.liters_per_pulse));
-//        watermeter_config.counters.cold_water_count += (cold_counter.count * watermeter_config.liters_per_pulse);
         cold_counter.count = 0;
-//        /* detect cold counter overflow */
-//        if (watermeter_config.counters.cold_water_count > COUNTERS_OVERFLOW) {
-//            watermeter_config.counters.cold_water_count -= COUNTERS_OVERFLOW;
-//        }
-#if UART_PRINT_DEBUG_ENABLE
+        cold_change = 1;
+        #if UART_PRINT_DEBUG_ENABLE
         printf("cold counter - %u\r\n", watermeter_config.counters.cold_water_count);
 #endif /* UART_PRINT_DEBUG_ENABLE */
     }
