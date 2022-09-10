@@ -13,16 +13,15 @@
 
 
 /************************ Advertising_Interval *************************************/
-//#define ADV_INTERVAL_MIN        4000        /* 4000 * 0.625 = 2500 ms or 2.5 sec */
-//#define ADV_INTERVAL_MAX        4200        /* 4200 * 0.625 = 2625 ms or 2.6 sec */
-#define ADV_INTERVAL_MIN        ADV_INTERVAL_250MS
-#define ADV_INTERVAL_MAX        ADV_INTERVAL_300MS
+#define ADV_INTERVAL_MIN        4000        /* 4000 * 0.625 = 2500 ms or 2.5 sec */
+#define ADV_INTERVAL_MAX        4200        /* 4200 * 0.625 = 2625 ms or 2.6 sec */
+//#define ADV_INTERVAL_MIN        ADV_INTERVAL_250MS
+//#define ADV_INTERVAL_MAX        ADV_INTERVAL_300MS
 
 #define MY_RF_POWER_INDEX       RF_POWER_P0p04dBm
 
 /**************************** Configure UART ***************************************/
 #if UART_PRINT_DEBUG_ENABLE
-//#define PRINT_BAUD_RATE         115200
 #define PRINT_BAUD_RATE         230400
 #define DEBUG_INFO_TX_PIN       UART_TX_PB1
 #define PB1_DATA_OUT            ON
