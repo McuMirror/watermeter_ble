@@ -18,14 +18,19 @@
 
 #define UPDATE_PERIOD       5000UL      /* 5 sec */
 #define BATTERY_PERIOD      300000UL    /* 5 min */
-#define CONN_TIMEOUT        120         /* 2 min */
-_attribute_data_retention_  uint32_t update_interval;
-_attribute_data_retention_  uint32_t battery_interval;
-_attribute_data_retention_  uint32_t conn_timeout;
+#define CONN_TIMEOUT        300         /* 5 min */
+_attribute_data_retention_ uint32_t update_interval;
+_attribute_data_retention_ uint32_t battery_interval;
+_attribute_data_retention_ uint32_t conn_timeout;
 
-_attribute_data_retention_  uint32_t time_sec_tick;
-_attribute_data_retention_  uint32_t time_tick_step = CLOCK_16M_SYS_TIMER_CLK_1S; // adjust time clock (in 1/16 us for 1 sec)
-_attribute_data_retention_  uint32_t time_sec = 0;
+_attribute_data_retention_ uint32_t time_sec_tick;
+_attribute_data_retention_ uint32_t time_tick_step = CLOCK_16M_SYS_TIMER_CLK_1S; // adjust time clock (in 1/16 us for 1 sec)
+_attribute_data_retention_ uint32_t time_sec = 0;
+
+_attribute_data_retention_ uint8_t battery_change = 1;
+_attribute_data_retention_ uint8_t hot_change = 1;
+_attribute_data_retention_ uint8_t cold_change = 1;
+
 
 void user_init_normal(void) {
 
@@ -60,7 +65,7 @@ _attribute_ram_code_ void user_init_deepRetn(void) {
 _attribute_ram_code_ void blt_pm_proc(void)
 {
     if(ota_is_working){
-        bls_pm_setSuspendMask(SUSPEND_DISABLE);
+        bls_pm_setSuspendMask (SUSPEND_ADV | SUSPEND_CONN); // SUSPEND_DISABLE
         bls_pm_setManualLatency(0);
     }else{
         bls_pm_setSuspendMask (SUSPEND_ADV | DEEPSLEEP_RETENTION_ADV | SUSPEND_CONN | DEEPSLEEP_RETENTION_CONN);
@@ -77,68 +82,73 @@ void main_loop (void) {
         time_sec++; // + 1 sec
     }
 
-
     if (task_counters()) {
         adv_data.hot.counter  = watermeter_config.counters.hot_water_count;
         adv_data.cold.counter = watermeter_config.counters.cold_water_count;
         set_adv_data();
     }
 
-    if(blc_ll_getCurrentState() & BLS_LINK_STATE_CONN) {
-        /* connection time 2 min. */
-//        if ((time_sec - conn_timeout) > CONN_TIMEOUT) {
-//#if UART_PRINT_DEBUG_ENABLE
-//            printf("Connection timeout 2 min.\r\n");
-//#endif /* UART_PRINT_DEBUG_ENABLE */
-//            bls_ll_terminateConnection(HCI_ERR_REMOTE_USER_TERM_CONN);
-//            conn_timeout = time_sec;
-//        }
+    if(!ota_is_working) {
 
-    }
-
-    if ((clock_time() - update_interval) > UPDATE_PERIOD*CLOCK_SYS_CLOCK_1MS) {
-
-        if ((clock_time() - battery_interval) > BATTERY_PERIOD*CLOCK_SYS_CLOCK_1MS) {
-            check_battery();
-
-            if (battery_level != adv_data.battery.level) {
+        if(blc_ll_getCurrentState() & BLS_LINK_STATE_CONN) {
+            /* connection time 5 min. */
+        if ((time_sec - conn_timeout) > CONN_TIMEOUT) {
 #if UART_PRINT_DEBUG_ENABLE
-                printf("New battery level - %u, last battery level - %u\r\n", battery_level, adv_data.battery.level);
+            printf("Connection timeout 5 min.\r\n");
 #endif /* UART_PRINT_DEBUG_ENABLE */
-                adv_data.battery.level = battery_level;
-                set_adv_data();
-            }
-            if (battery_mv != adv_data.voltage.voltage) {
-                if ((battery_mv > adv_data.voltage.voltage && (battery_mv - adv_data.voltage.voltage) > 50) ||
-                    (battery_mv < adv_data.voltage.voltage && (adv_data.voltage.voltage - battery_mv) > 50)) {
-#if UART_PRINT_DEBUG_ENABLE
-                    printf("New battery mv - %u, last battery mv - %u\r\n", battery_mv, adv_data.voltage.voltage);
-#endif /* UART_PRINT_DEBUG_ENABLE */
-                    adv_data.voltage.voltage = battery_mv;
+            bls_ll_terminateConnection(HCI_ERR_REMOTE_USER_TERM_CONN);
+            conn_timeout = time_sec;
+        }
+
+        }
+
+        if ((clock_time() - update_interval) > UPDATE_PERIOD*CLOCK_SYS_CLOCK_1MS) {
+
+            if ((clock_time() - battery_interval) > BATTERY_PERIOD*CLOCK_SYS_CLOCK_1MS) {
+                check_battery();
+
+                if (battery_level != adv_data.battery.level) {
+    #if UART_PRINT_DEBUG_ENABLE
+                    printf("New battery level - %u, last battery level - %u\r\n", battery_level, adv_data.battery.level);
+    #endif /* UART_PRINT_DEBUG_ENABLE */
+                    adv_data.battery.level = battery_level;
                     set_adv_data();
                 }
+                if (battery_mv != adv_data.voltage.voltage) {
+                    if ((battery_mv > adv_data.voltage.voltage && (battery_mv - adv_data.voltage.voltage) > 50) ||
+                        (battery_mv < adv_data.voltage.voltage && (adv_data.voltage.voltage - battery_mv) > 50)) {
+    #if UART_PRINT_DEBUG_ENABLE
+                        printf("New battery mv - %u, last battery mv - %u\r\n", battery_mv, adv_data.voltage.voltage);
+    #endif /* UART_PRINT_DEBUG_ENABLE */
+                        adv_data.voltage.voltage = battery_mv;
+                        set_adv_data();
+                    }
+                }
+                battery_interval = clock_time();
             }
-            battery_interval = clock_time();
+
+            if((blc_ll_getCurrentState() & BLS_LINK_STATE_CONN) && blc_ll_getTxFifoNumber() < 9) {
+
+                if (batteryValueInCCC && battery_change) {
+                    if (battery_change++ < NOTIFI_MAX+1) ble_send_battery();
+                    else battery_change = 0;
+                }
+
+                if (hotValueInCCC && hot_change) {
+                    if (hot_change++ < NOTIFI_MAX+1) ble_send_hotwater();
+                    else hot_change = 0;
+                }
+
+                if (coldValueInCCC && cold_change) {
+                    if (cold_change++ < NOTIFI_MAX+1) ble_send_coldwater();
+                    else cold_change = 0;
+                }
+            }
+
+            update_interval = clock_time();
         }
 
-        if((blc_ll_getCurrentState() & BLS_LINK_STATE_CONN) && blc_ll_getTxFifoNumber() < 9) {
-
-            if (batteryValueInCCC) {
-                ble_send_battery();
-            }
-
-            if (hotValueInCCC) {
-                ble_send_hotwater();
-            }
-
-            if (coldValueInCCC) {
-                ble_send_coldwater();
-            }
-        }
-
-        update_interval = clock_time();
     }
-
     blt_pm_proc();
 }
 
