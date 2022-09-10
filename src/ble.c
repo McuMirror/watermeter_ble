@@ -3,6 +3,7 @@
 #include "tl_common.h"
 #include "drivers.h"
 #include "stack/ble/ble.h"
+#include "stack/ble/service/ota/ota.h"
 #include "drivers/8258/pm.h"
 
 #include "ble.h"
@@ -41,8 +42,74 @@ void app_enter_ota_mode(void)
 {
     ota_is_working = 1;
     bls_pm_setManualLatency(0);
-    bls_ota_setTimeout(45 * 1000000); // set OTA timeout  45 seconds
+    bls_ota_setTimeout(120 * 1000000); // set OTA timeout  120 seconds
+#if UART_PRINT_DEBUG_ENABLE
+    printf("Start OTA update\r\n");
+#endif /* UART_PRINT_DEBUG_ENABLE */
 }
+
+#if UART_PRINT_DEBUG_ENABLE
+void app_debug_ota_result(int result) {
+
+    printf("OTA return 0x%X. ", result);
+
+        switch(result) {
+
+            case OTA_SUCCESS:
+                printf("OTA_SUCCESS\r\n");
+                break;
+            case OTA_DATA_PACKET_SEQ_ERR:
+                printf("OTA_DATA_PACKET_SEQ_ERR\r\n");
+                break;
+            case OTA_PACKET_INVALID:
+                printf("OTA_PACKET_INVALID\r\n");
+                break;
+            case OTA_DATA_CRC_ERR:
+                printf("OTA_DATA_CRC_ERR\r\n");
+                break;
+            case OTA_WRITE_FLASH_ERR :
+                printf("OTA_WRITE_FLASH_ERR\r\n");
+                break;
+            case OTA_DATA_UNCOMPLETE:
+                printf("OTA_DATA_UNCOMPLETE\r\n");
+                break;
+            case OTA_FLOW_ERR:
+                printf("OTA_FLOW_ERR\r\n");
+                break;
+            case OTA_FW_CHECK_ERR:
+                printf("OTA_FLOW_ERR\r\n");
+                break;
+            case OTA_VERSION_COMPARE_ERR:
+                printf("OTA_VERSION_COMPARE_ERR\r\n");
+                break;
+            case OTA_PDU_LEN_ERR:
+                printf("OTA_PDU_LEN_ERR\r\n");
+                break;
+            case OTA_FIRMWARE_MARK_ERR:
+                printf("OTA_FIRMWARE_MARK_ERR\r\n");
+                break;
+            case OTA_FW_SIZE_ERR:
+                printf("OTA_FW_SIZE_ERR\r\n");
+                break;
+            case OTA_DATA_PACKET_TIMEOUT:
+                printf("OTA_DATA_PACKET_TIMEOUT\r\n");
+                break;
+            case OTA_TIMEOUT:
+                printf("OTA_TIMEOUT\r\n");
+                break;
+            case OTA_FAIL_DUE_TO_CONNECTION_TERMIANTE:
+                printf("OTA_FAIL_DUE_TO_CONNECTION_TERMIANTE\r\n");
+                break;
+            case OTA_LOGIC_ERR:
+                printf("OTA_LOGIC_ERR\r\n");
+                break;
+            default:
+                printf("Unknown return code\r\n");
+                break;
+        }
+}
+#endif /* UART_PRINT_DEBUG_ENABLE */
+
 
 int RxTxWrite(void * p)
 {
@@ -95,11 +162,7 @@ void ble_disconnect_cb(uint8_t e,uint8_t *p, int n) {
 
     ble_connected = 0;
 
-    if (ota_is_working) {
-        ota_is_working = 0;
-        bls_smp_eraseAllParingInformation();
-        ev_adv_timeout(0,0,0);
-    }
+    ota_is_working = 0;
 }
 
 void ev_adv_timeout(u8 e, u8 *p, int n) {
@@ -249,6 +312,9 @@ __attribute__((optimize("-Os"))) void init_ble(void) {
 
     bls_ota_clearNewFwDataArea(); //must
     bls_ota_registerStartCmdCb(app_enter_ota_mode);
+#if UART_PRINT_DEBUG_ENABLE
+    bls_ota_registerResultIndicateCb(app_debug_ota_result);  //debug
+#endif /* UART_PRINT_DEBUG_ENABLE */
 
     bls_app_registerEventCallback (BLT_EV_FLAG_ADV_DURATION_TIMEOUT, &ev_adv_timeout);
     set_adv_data();
