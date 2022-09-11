@@ -7,7 +7,7 @@ enum {
     CMD_SET_LITERS_PER_PULSE    = 0xF3,     /* set liters per pulse */
     CMD_CLEAR_WHIYELIST         = 0xF4,     /* reset whitelist      */
     CMD_RESET                   = 0xF5,     /* reset module         */
-    CMD_TEST                    = 0xF6      /* test command         */
+    CMD_MAIN_NOTIFY             = 0xF6      /* Start/stop notify    */
 } cmd_key;
 
 void cmd_parser(void * p);

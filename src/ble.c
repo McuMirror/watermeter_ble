@@ -20,6 +20,7 @@ _attribute_data_retention_ uint8_t    mac_public[6], mac_random_static[6];
 _attribute_data_retention_ uint8_t    ble_connected = 0;
 _attribute_data_retention_ uint8_t    ota_is_working = 0;
 _attribute_data_retention_ uint8_t    first_start;
+_attribute_data_retention_ uint16_t   watermeter_id = WATERMETER_ID;
 
 _attribute_data_retention_ uint8_t    blt_rxfifo_b[64 * 8] = {0};
 _attribute_data_retention_ my_fifo_t  blt_rxfifo = { 64, 8, 0, 0, blt_rxfifo_b,};
@@ -344,6 +345,11 @@ void ble_send_hotwater() {
 void ble_send_coldwater() {
     bls_att_pushNotifyData(COLD_LEVEL_INPUT_DP_H, (uint8_t *)&watermeter_config.counters.cold_water_count,
             sizeof(watermeter_config.counters.cold_water_count));
+}
+
+void ble_send_tx() {
+    bls_att_pushNotifyData(RxTx_CMD_OUT_DP_H, (uint8_t *)&watermeter_id,
+            sizeof(watermeter_id));
 }
 
 

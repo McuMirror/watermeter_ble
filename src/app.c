@@ -27,9 +27,10 @@ _attribute_data_retention_ uint32_t time_sec_tick;
 _attribute_data_retention_ uint32_t time_tick_step = CLOCK_16M_SYS_TIMER_CLK_1S; // adjust time clock (in 1/16 us for 1 sec)
 _attribute_data_retention_ uint32_t time_sec = 0;
 
-_attribute_data_retention_ uint8_t battery_change = 1;
-_attribute_data_retention_ uint8_t hot_change = 1;
-_attribute_data_retention_ uint8_t cold_change = 1;
+_attribute_data_retention_ uint8_t battery_notify = 1;
+_attribute_data_retention_ uint8_t hot_notify = 1;
+_attribute_data_retention_ uint8_t cold_notify = 1;
+_attribute_data_retention_ uint8_t tx_notify = 0;
 
 
 void user_init_normal(void) {
@@ -129,19 +130,25 @@ void main_loop (void) {
 
             if((blc_ll_getCurrentState() & BLS_LINK_STATE_CONN) && blc_ll_getTxFifoNumber() < 9) {
 
-                if (batteryValueInCCC && battery_change) {
-                    if (battery_change++ < NOTIFI_MAX+1) ble_send_battery();
-                    else battery_change = 0;
+                if (RxTxValueInCCC) {
+                    if (tx_notify--) {
+                        ble_send_tx();
+                    }
                 }
 
-                if (hotValueInCCC && hot_change) {
-                    if (hot_change++ < NOTIFI_MAX+1) ble_send_hotwater();
-                    else hot_change = 0;
+                if (batteryValueInCCC && battery_notify) {
+                    if (battery_notify++ < NOTIFY_MAX+1) ble_send_battery();
+                    else battery_notify = 0;
                 }
 
-                if (coldValueInCCC && cold_change) {
-                    if (cold_change++ < NOTIFI_MAX+1) ble_send_coldwater();
-                    else cold_change = 0;
+                if (hotValueInCCC && hot_notify) {
+                    if (hot_notify++ < NOTIFY_MAX+1) ble_send_hotwater();
+                    else hot_notify = 0;
+                }
+
+                if (coldValueInCCC && cold_notify) {
+                    if (cold_notify++ < NOTIFY_MAX+1) ble_send_coldwater();
+                    else cold_notify = 0;
                 }
             }
 

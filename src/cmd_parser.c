@@ -5,6 +5,7 @@
 #include "cfg.h"
 #include "ble.h"
 #include "pulse.h"
+#include "app.h"
 #include "cmd_parser.h"
 
 void cmd_parser(void * p) {
@@ -58,10 +59,18 @@ void cmd_parser(void * p) {
         printf("Reboot module\r\n");
 #endif /* UART_PRINT_DEBUG_ENABLE */
         start_reboot();
-    } else if (*in_data == CMD_TEST && len == 1) {
+    } else if (*in_data == CMD_MAIN_NOTIFY && (len > 0 && len < 3)) {
+        if (len == 1) {
+            tx_notify = 0;
 #if UART_PRINT_DEBUG_ENABLE
-        printf("Test command ok\r\n");
+            printf("Main notify stop\r\n");
 #endif /* UART_PRINT_DEBUG_ENABLE */
+        } else {
+            tx_notify = in_data[1] & 0x03; /* no more than 3 times */
+#if UART_PRINT_DEBUG_ENABLE
+            printf("Main notify start\r\n");
+#endif /* UART_PRINT_DEBUG_ENABLE */
+        }
     } else {
 #if UART_PRINT_DEBUG_ENABLE
         printf("Unknown or incomplete command 0x%X\r\n", *in_data);

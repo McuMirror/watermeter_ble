@@ -80,11 +80,12 @@ typedef enum
 
 }ATT_HANDLE;
 
-extern int otaWritePre(void * p);
+extern int otaWrite(void * p);
 extern int RxTxWrite(void * p);
 extern uint16_t batteryValueInCCC;
 extern uint16_t hotValueInCCC;
 extern uint16_t coldValueInCCC;
+extern uint16_t RxTxValueInCCC;
 void my_att_init(void);
 uint32_t size_my_devName();
 
