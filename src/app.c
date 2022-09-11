@@ -27,9 +27,9 @@ _attribute_data_retention_ uint32_t time_sec_tick;
 _attribute_data_retention_ uint32_t time_tick_step = CLOCK_16M_SYS_TIMER_CLK_1S; // adjust time clock (in 1/16 us for 1 sec)
 _attribute_data_retention_ uint32_t time_sec = 0;
 
-_attribute_data_retention_ uint8_t battery_notify = 1;
-_attribute_data_retention_ uint8_t hot_notify = 1;
-_attribute_data_retention_ uint8_t cold_notify = 1;
+_attribute_data_retention_ uint8_t battery_notify = NOTIFY_MAX;
+_attribute_data_retention_ uint8_t hot_notify = NOTIFY_MAX;
+_attribute_data_retention_ uint8_t cold_notify = NOTIFY_MAX;
 _attribute_data_retention_ uint8_t tx_notify = 0;
 
 
@@ -113,6 +113,7 @@ void main_loop (void) {
                     printf("New battery level - %u, last battery level - %u\r\n", battery_level, adv_data.battery.level);
     #endif /* UART_PRINT_DEBUG_ENABLE */
                     adv_data.battery.level = battery_level;
+                    battery_notify = NOTIFY_MAX;
                     set_adv_data();
                 }
                 if (battery_mv != adv_data.voltage.voltage) {
@@ -131,24 +132,19 @@ void main_loop (void) {
             if((blc_ll_getCurrentState() & BLS_LINK_STATE_CONN) && blc_ll_getTxFifoNumber() < 9) {
 
                 if (RxTxValueInCCC) {
-                    if (tx_notify--) {
-                        ble_send_tx();
-                    }
+                    if (tx_notify--) ble_send_tx();
                 }
 
                 if (batteryValueInCCC && battery_notify) {
-                    if (battery_notify++ < NOTIFY_MAX+1) ble_send_battery();
-                    else battery_notify = 0;
+                    if (battery_notify--) ble_send_battery();
                 }
 
                 if (hotValueInCCC && hot_notify) {
-                    if (hot_notify++ < NOTIFY_MAX+1) ble_send_hotwater();
-                    else hot_notify = 0;
+                    if (hot_notify--) ble_send_hotwater();
                 }
 
                 if (coldValueInCCC && cold_notify) {
-                    if (cold_notify++ < NOTIFY_MAX+1) ble_send_coldwater();
-                    else cold_notify = 0;
+                    if (cold_notify--) ble_send_coldwater();
                 }
             }
 
