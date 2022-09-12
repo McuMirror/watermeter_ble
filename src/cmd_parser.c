@@ -60,7 +60,10 @@ void cmd_parser(void * p) {
 #endif /* UART_PRINT_DEBUG_ENABLE */
         start_reboot();
     } else if (*in_data == CMD_MAIN_NOTIFY) {
-        tx_notify = NOTIFY_MAX;
+        main_notify.id = WATERMETER_ID;
+        memcpy(&main_notify.version, VERSION, sizeof(VERSION));
+        tx_notify = NOTIFY_MAX-1;
+        ble_send_tx();
 #if UART_PRINT_DEBUG_ENABLE
         printf("Main notify start\r\n");
 #endif /* UART_PRINT_DEBUG_ENABLE */
