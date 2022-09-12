@@ -14,18 +14,18 @@
 #include "cfg.h"
 #include "cmd_parser.h"
 
-_attribute_data_retention_ uint8_t    ble_name[BLE_NAME_SIZE];
-_attribute_data_retention_ adv_data_t adv_data;
-_attribute_data_retention_ uint8_t    mac_public[6], mac_random_static[6];
-_attribute_data_retention_ uint8_t    ble_connected = 0;
-_attribute_data_retention_ uint8_t    ota_is_working = 0;
-_attribute_data_retention_ uint8_t    first_start;
-_attribute_data_retention_ uint16_t   watermeter_id = WATERMETER_ID;
+_attribute_data_retention_ uint8_t       ble_name[BLE_NAME_SIZE];
+_attribute_data_retention_ adv_data_t    adv_data;
+_attribute_data_retention_ main_notify_t main_notify;
+_attribute_data_retention_ uint8_t       mac_public[6], mac_random_static[6];
+_attribute_data_retention_ uint8_t       ble_connected = 0;
+_attribute_data_retention_ uint8_t       ota_is_working = 0;
+_attribute_data_retention_ uint8_t       first_start;
 
-_attribute_data_retention_ uint8_t    blt_rxfifo_b[64 * 8] = {0};
-_attribute_data_retention_ my_fifo_t  blt_rxfifo = { 64, 8, 0, 0, blt_rxfifo_b,};
-_attribute_data_retention_ uint8_t    blt_txfifo_b[40 * 16] = {0};
-_attribute_data_retention_ my_fifo_t  blt_txfifo = { 40, 16, 0, 0, blt_txfifo_b,};
+_attribute_data_retention_ uint8_t       blt_rxfifo_b[64 * 8] = {0};
+_attribute_data_retention_ my_fifo_t     blt_rxfifo = { 64, 8, 0, 0, blt_rxfifo_b,};
+_attribute_data_retention_ uint8_t       blt_txfifo_b[40 * 16] = {0};
+_attribute_data_retention_ my_fifo_t     blt_txfifo = { 40, 16, 0, 0, blt_txfifo_b,};
 
 #if UART_PRINT_DEBUG_ENABLE
 void print_mac(uint8_t num, uint8_t *mac) {
@@ -348,7 +348,7 @@ void ble_send_coldwater() {
 }
 
 void ble_send_tx() {
-    bls_att_pushNotifyData(RxTx_CMD_OUT_DP_H, (uint8_t *)&watermeter_id, sizeof(watermeter_id));
+    bls_att_pushNotifyData(RxTx_CMD_OUT_DP_H, (uint8_t *)&main_notify, sizeof(main_notify_t));
 }
 
 
