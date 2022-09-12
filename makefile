@@ -17,9 +17,6 @@ LIBS := -llt_825x -llt_general_stack
 
 SDK_PATH := ./SDK
 
-#FLAVOR = release
-FLAVOR = debug
-
 # Set Project Name
 PROJECT_NAME := watermeter_ble
 
@@ -27,9 +24,10 @@ PROJECT_NAME := watermeter_ble
 DOWNLOAD_PORT := COM4
 
 SRC_PATH := ./src
-OUT_PATH := ./$(FLAVOR)
+OUT_PATH := ./out
 UTILS_PATH := ./utils
 MAKE_INCLUDES := ./make
+VERSION := $(shell awk -F " " '/VERSION/ {gsub("\"",""); print $$3}' $(SRC_PATH)/include/app_config.h)
 
 TL_Check = $(UTILS_PATH)/tl_check_fw.py
 
@@ -89,8 +87,8 @@ SIZEDUMMY := sizedummy
 all: clean pre-build main-build
 
 flash: $(BIN_FILE)
-#	@python3 $(UTILS_PATH)/TlsrComProg.py -p$(DOWNLOAD_PORT) -f $(UTILS_PATH)/floader.bin we 0 $(BIN_FILE)
-	@python3 $(UTILS_PATH)/TlsrPgm.py -p$(DOWNLOAD_PORT) -t50 -a2550 -m -w we 0 $(BIN_FILE)
+	@python3 $(UTILS_PATH)/TlsrComProg.py -p$(DOWNLOAD_PORT) -f $(UTILS_PATH)/floader.bin we 0 $(BIN_FILE)
+#	@python3 $(UTILS_PATH)/TlsrPgm.py -p$(DOWNLOAD_PORT) -t50 -a2550 -m -w we 0 $(BIN_FILE)
 
 reset:
 	@python3 $(UTILS_PATH)/TlsrPgm.py -p$(DOWNLOAD_PORT) -t50 -a2550 -m -w i
@@ -102,8 +100,8 @@ go:
 	@python3 $(UTILS_PATH)/TlsrPgm.py -p$(DOWNLOAD_PORT) -w -m
 	
 erase-flash:
-#	@python3 $(UTILS_PATH)/TlsrComProg.py -p$(DOWNLOAD_PORT) -f $(UTILS_PATH)/floader.bin ea
-	@python3 $(UTILS_PATH)/TlsrPgm.py -p$(DOWNLOAD_PORT) -t50 -a2550 ea
+	@python3 $(UTILS_PATH)/TlsrComProg.py -p$(DOWNLOAD_PORT) -f $(UTILS_PATH)/floader.bin ea
+#	@python3 $(UTILS_PATH)/TlsrPgm.py -p$(DOWNLOAD_PORT) -t50 -a2550 ea
 	
 
 # Main-build Target
@@ -129,6 +127,7 @@ $(BIN_FILE): $(ELF_FILE)
 	@python3 $(TL_Check) $(BIN_FILE)
 	@echo 'Finished building: $@'
 	@echo ' '
+	@cp $(BIN_FILE) $(PROJECT_NAME)_$(VERSION).bin
 
 sizedummy: $(ELF_FILE)
 	@echo 'Invoking: Print Size'
@@ -138,13 +137,13 @@ sizedummy: $(ELF_FILE)
 
 # Other Targets
 clean:
-	-$(RM) $(FLASH_IMAGE) $(ELFS) $(OBJS) $(LST) $(SIZEDUMMY) $(ELF_FILE) $(BIN_FILE) $(LST_FILE)
+	-$(RM) $(FLASH_IMAGE) $(ELFS) $(OBJS) $(LST) $(SIZEDUMMY) $(ELF_FILE) $(BIN_FILE) $(LST_FILE) $(PROJECT_NAME)*.bin
 	-@echo ' '
 
 pre-build:
 	mkdir -p $(foreach s,$(OUT_DIR),$(OUT_PATH)$(s))
 	-@echo ' '
-
+	
 secondary-outputs: $(BIN_FILE) $(LST_FILE) $(SIZEDUMMY)
 
 .PHONY: all clean dependents flash erase_fw monitor combine_fw pre-build
