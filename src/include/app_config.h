@@ -1,6 +1,6 @@
 #pragma once
 
-#define VERSION                     0x11    /* BCD format (0x10 -> '1.0')   */
+#define VERSION                     "V1.2"
 #define WATERMETER_ID               0xFED5  /* uint16_t                     */
 #define DEV_NAME_CHR                'W','a','t','e','r','m','e','t','e','r','_','B','L','E'
 #define DEV_NAME_STR                "Watermeter_BLE"
@@ -14,10 +14,10 @@
 
 
 /************************ Advertising_Interval *************************************/
-#define ADV_INTERVAL_MIN        4000        /* 4000 * 0.625 = 2500 ms or 2.5 sec */
-#define ADV_INTERVAL_MAX        4200        /* 4200 * 0.625 = 2625 ms or 2.6 sec */
-//#define ADV_INTERVAL_MIN        ADV_INTERVAL_250MS
-//#define ADV_INTERVAL_MAX        ADV_INTERVAL_300MS
+//#define ADV_INTERVAL_MIN        4000        /* 4000 * 0.625 = 2500 ms or 2.5 sec */
+//#define ADV_INTERVAL_MAX        4200        /* 4200 * 0.625 = 2625 ms or 2.6 sec */
+#define ADV_INTERVAL_MIN        ADV_INTERVAL_250MS
+#define ADV_INTERVAL_MAX        ADV_INTERVAL_300MS
 
 #define MY_RF_POWER_INDEX       RF_POWER_P0p04dBm
 
