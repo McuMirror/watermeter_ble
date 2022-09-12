@@ -81,11 +81,17 @@ typedef struct __attribute__((packed)) _adv_data_t {
     adv_counter_t       cold;
 } adv_data_t;
 
+typedef struct __attribute__((packed)) _main_notify_t {
+    uint16_t id;
+    uint8_t  version[sizeof(VERSION)];
+} main_notify_t;
+
 extern uint8_t ble_connected;
 extern uint8_t ota_is_working;
 extern uint8_t mac_public[6], mac_random_static[6];
 extern uint8_t ble_name[BLE_NAME_SIZE];
 extern adv_data_t adv_data;
+extern main_notify_t main_notify;
 
 void init_ble();
 void set_adv_data();
