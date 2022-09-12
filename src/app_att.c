@@ -170,7 +170,7 @@ static const u8 my_ModelStr[]               = {DEV_NAME_STR};
 static const u8 my_SerialStr[]              = {"EMYZE-FL1O9"};
 static const u8 my_FirmStr[]                = {"github.com/slacky1965"};
 static const u8 my_HardStr[]                = {"TB-04"};
-static const u8 my_SoftStr[]                = {'V','0'+(VERSION>>4),'.','0'+(VERSION&0x0f)}; // "0100"
+static const u8 my_SoftStr[]                = {VERSION};
 static const u8 my_ManStr[]                 = {"ai-thinker.com"};
 
 //// Battery attribute values
@@ -280,7 +280,7 @@ _attribute_data_retention_ attribute_t my_Attributes[] = {
 
     ////////////////////////////////////// RxTx ////////////////////////////////////////////////////
     // RxTx Communication
-    {4,ATT_PERMISSIONS_READ, 2,2,(u8*)(&my_primaryServiceUUID),     (u8*)(&my_RxTx_ServiceUUID), 0},
+    {4,ATT_PERMISSIONS_RDWR, 2,2,(u8*)(&my_primaryServiceUUID),     (u8*)(&my_RxTx_ServiceUUID), 0},
     {0,ATT_PERMISSIONS_READ, 2, sizeof(my_RxTxCharVal), (u8*)(&my_characterUUID), (u8*)(my_RxTxCharVal), 0},             //prop
     {0,ATT_PERMISSIONS_RDWR, 2,sizeof(my_RxTx_Data),(u8*)(&my_RxTxUUID), (u8*)&my_RxTx_Data, &RxTxWrite, 0},
     {0,ATT_PERMISSIONS_RDWR, 2,sizeof(RxTxValueInCCC),(u8*)(&clientCharacterCfgUUID),   (u8*)(&RxTxValueInCCC), 0}, //value
@@ -296,6 +296,8 @@ _attribute_data_retention_ attribute_t my_Attributes[] = {
 void	my_att_init (void)
 {
 	bls_att_setAttributeTable ((u8 *)my_Attributes);
+    my_Attributes[RxTx_CMD_OUT_DP_H].perm = ATT_PERMISSIONS_RDWR;
+
 }
 
 uint32_t size_my_devName() {
