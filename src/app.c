@@ -132,19 +132,31 @@ void main_loop (void) {
             if((blc_ll_getCurrentState() & BLS_LINK_STATE_CONN) && blc_ll_getTxFifoNumber() < 9) {
 
                 if (RxTxValueInCCC) {
-                    if (tx_notify--) ble_send_tx();
+                    if (tx_notify) {
+                        ble_send_tx();
+                        tx_notify--;
+                    }
                 }
 
-                if (batteryValueInCCC && battery_notify) {
-                    if (battery_notify--) ble_send_battery();
+                if (batteryValueInCCC) {
+                    if (battery_notify) {
+                        ble_send_battery();
+                        battery_notify--;
+                    }
                 }
 
-                if (hotValueInCCC && hot_notify) {
-                    if (hot_notify--) ble_send_hotwater();
+                if (hotValueInCCC) {
+                    if (hot_notify) {
+                        ble_send_hotwater();
+                        hot_notify--;
+                    }
                 }
 
-                if (coldValueInCCC && cold_notify) {
-                    if (cold_notify--) ble_send_coldwater();
+                if (coldValueInCCC) {
+                    if (cold_notify) {
+                        ble_send_coldwater();
+                        cold_notify--;
+                    }
                 }
             }
 
