@@ -348,7 +348,7 @@ void ble_send_coldwater() {
 }
 
 void ble_send_tx() {
-    ble_sts_t ret = bls_att_pushNotifyData(RxTx_CMD_OUT_DP_H, (uint8_t *)&watermeter_id, sizeof(watermeter_id));
+    bls_att_pushNotifyData(RxTx_CMD_OUT_DP_H, (uint8_t *)&watermeter_id, sizeof(watermeter_id));
 }
 
 
