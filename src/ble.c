@@ -52,62 +52,63 @@ void app_enter_ota_mode(void)
 #if UART_PRINT_DEBUG_ENABLE
 void app_debug_ota_result(int result) {
 
+    printf("OTA update return code: 0x%X - ", result);
+
         switch(result) {
 
             case OTA_SUCCESS:
-                printf("OTA_SUCCESS.");
+                printf("OTA_SUCCESS\r\n");
                 break;
             case OTA_DATA_PACKET_SEQ_ERR:
-                printf("OTA_DATA_PACKET_SEQ_ERR.");
+                printf("OTA_DATA_PACKET_SEQ_ERR\r\n");
                 break;
             case OTA_PACKET_INVALID:
-                printf("OTA_PACKET_INVALID.");
+                printf("OTA_PACKET_INVALID\r\n");
                 break;
             case OTA_DATA_CRC_ERR:
-                printf("OTA_DATA_CRC_ERR.");
+                printf("OTA_DATA_CRC_ERR\r\n");
                 break;
             case OTA_WRITE_FLASH_ERR :
-                printf("OTA_WRITE_FLASH_ERR.");
+                printf("OTA_WRITE_FLASH_ERR\r\n");
                 break;
             case OTA_DATA_UNCOMPLETE:
-                printf("OTA_DATA_UNCOMPLETE.");
+                printf("OTA_DATA_UNCOMPLETE\r\n");
                 break;
             case OTA_FLOW_ERR:
-                printf("OTA_FLOW_ERR.");
+                printf("OTA_FLOW_ERR\r\n");
                 break;
             case OTA_FW_CHECK_ERR:
-                printf("OTA_FLOW_ERR.");
+                printf("OTA_FLOW_ERR\r\n");
                 break;
             case OTA_VERSION_COMPARE_ERR:
-                printf("OTA_VERSION_COMPARE_ERR.");
+                printf("OTA_VERSION_COMPARE_ERR\r\n");
                 break;
             case OTA_PDU_LEN_ERR:
-                printf("OTA_PDU_LEN_ERR.");
+                printf("OTA_PDU_LEN_ERR\r\n");
                 break;
             case OTA_FIRMWARE_MARK_ERR:
-                printf("OTA_FIRMWARE_MARK_ERR.");
+                printf("OTA_FIRMWARE_MARK_ERR\r\n");
                 break;
             case OTA_FW_SIZE_ERR:
-                printf("OTA_FW_SIZE_ERR.");
+                printf("OTA_FW_SIZE_ERR\r\n");
                 break;
             case OTA_DATA_PACKET_TIMEOUT:
-                printf("OTA_DATA_PACKET_TIMEOUT.");
+                printf("OTA_DATA_PACKET_TIMEOUT\r\n");
                 break;
             case OTA_TIMEOUT:
-                printf("OTA_TIMEOUT.");
+                printf("OTA_TIMEOUT\r\n");
                 break;
             case OTA_FAIL_DUE_TO_CONNECTION_TERMIANTE:
-                printf("OTA_FAIL_DUE_TO_CONNECTION_TERMIANTE.");
+                printf("OTA_FAIL_DUE_TO_CONNECTION_TERMIANTE\r\n");
                 break;
             case OTA_LOGIC_ERR:
-                printf("OTA_LOGIC_ERR.");
+                printf("OTA_LOGIC_ERR\r\n");
                 break;
             default:
-                printf("Unknown.");
+                printf("Unknown\r\n");
                 break;
         }
 
-        printf(" Return code: 0x%X\r\n", result);
 }
 #endif /* UART_PRINT_DEBUG_ENABLE */
 
