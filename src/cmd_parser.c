@@ -25,11 +25,13 @@ void cmd_parser(void * p) {
 
         if (*in_data == CMD_SET_HOT_COUNTER) {
             watermeter_config.counters.hot_water_count = check_counter_overflow(counter);
+            hot_notify = NOTIFY_MAX;
 #if UART_PRINT_DEBUG_ENABLE
             printf("New counter - %u. Set hot water - %u\r\n", counter, watermeter_config.counters.hot_water_count);
 #endif /* UART_PRINT_DEBUG_ENABLE */
         } else {
             watermeter_config.counters.cold_water_count = check_counter_overflow(counter);
+            cold_notify = NOTIFY_MAX;
 #if UART_PRINT_DEBUG_ENABLE
             printf("New counter - %u. Set cold water - %u\r\n", counter, watermeter_config.counters.cold_water_count);
 #endif /* UART_PRINT_DEBUG_ENABLE */
@@ -37,10 +39,11 @@ void cmd_parser(void * p) {
         write_config();
         set_adv_data();
     } else if (*in_data == CMD_SET_LITERS_PER_PULSE && len == 2) {
-	    watermeter_config.liters_per_pulse = in_data[1];
+        main_notify.liter_per_pulse = watermeter_config.liters_per_pulse = in_data[1];
         write_config();
+        tx_notify = NOTIFY_MAX;
 #if UART_PRINT_DEBUG_ENABLE
-            printf("New liters per pulse - %u\r\n", watermeter_config.liters_per_pulse);
+        printf("New liters per pulse - %u\r\n", watermeter_config.liters_per_pulse);
 #endif /* UART_PRINT_DEBUG_ENABLE */
 	} else if (*in_data == CMD_CLEAR_WHIYELIST && len == 1) {
 #if UART_PRINT_DEBUG_ENABLE
@@ -61,6 +64,7 @@ void cmd_parser(void * p) {
         start_reboot();
     } else if (*in_data == CMD_MAIN_NOTIFY) {
         main_notify.id = WATERMETER_ID;
+        main_notify.liter_per_pulse = watermeter_config.liters_per_pulse;
         memcpy(&main_notify.version, VERSION, sizeof(VERSION));
         tx_notify = NOTIFY_MAX-1;
         ble_send_tx();
