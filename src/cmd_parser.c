@@ -41,7 +41,6 @@ void cmd_parser(void * p) {
     } else if (*in_data == CMD_SET_LITERS_PER_PULSE && len == 2) {
         main_notify.liter_per_pulse = watermeter_config.liters_per_pulse = in_data[1];
         write_config();
-        tx_notify = NOTIFY_MAX;
 #if UART_PRINT_DEBUG_ENABLE
         printf("New liters per pulse - %u\r\n", watermeter_config.liters_per_pulse);
 #endif /* UART_PRINT_DEBUG_ENABLE */
