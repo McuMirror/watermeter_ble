@@ -43,7 +43,7 @@ void app_enter_ota_mode(void)
 {
     ota_is_working = 1;
     bls_pm_setManualLatency(0);
-    bls_ota_setTimeout(120 * 1000000); // set OTA timeout  120 seconds
+    bls_ota_setTimeout(40 * 1000000); // set OTA timeout  40 seconds
 #if UART_PRINT_DEBUG_ENABLE
     printf("Start OTA update\r\n");
 #endif /* UART_PRINT_DEBUG_ENABLE */
