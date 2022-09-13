@@ -1,6 +1,6 @@
 #pragma once
 
-#define VERSION                     "V1.3"
+#define VERSION                     "V1.4"
 #define WATERMETER_ID               0xFED5  /* uint16_t                     */
 #define DEV_NAME_CHR                'W','a','t','e','r','m','e','t','e','r','_','B','L','E'
 #define DEV_NAME_STR                "Watermeter_BLE"
