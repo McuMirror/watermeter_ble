@@ -5,7 +5,7 @@
 #include "app.h"
 #include "ble.h"
 
-#define BIT_COUNT   16                          /* number of polls for debounce */
+#define BIT_COUNT   32                          /* number of polls for debounce */
 #define TASK_COUNT  (BIT_COUNT/2+BIT_COUNT)     /* task duration                */
 
 _attribute_data_retention_ static water_counter_t hot_counter;
@@ -94,9 +94,9 @@ _attribute_ram_code_ uint8_t task_counters() {
     uint8_t save_config = false;
 
     if ((!gpio_read(HOT_GPIO) && hot_counter.bit == 1) ||
-         (gpio_read(HOT_GPIO) && hot_counter.bit == BIT_COUNT) ||
-         (!gpio_read(COLD_GPIO) && cold_counter.bit == 1) ||
-         (gpio_read(COLD_GPIO) && cold_counter.bit ==BIT_COUNT)) {
+        (gpio_read(HOT_GPIO) && hot_counter.bit == BIT_COUNT) ||
+        (!gpio_read(COLD_GPIO) && cold_counter.bit == 1) ||
+        (gpio_read(COLD_GPIO) && cold_counter.bit ==BIT_COUNT)) {
 
         for (uint16_t i = 0; i < TASK_COUNT; i++) {
             water_counters();
