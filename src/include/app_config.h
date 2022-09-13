@@ -14,10 +14,8 @@
 
 
 /************************ Advertising_Interval *************************************/
-//#define ADV_INTERVAL_MIN        4000        /* 4000 * 0.625 = 2500 ms or 2.5 sec */
-//#define ADV_INTERVAL_MAX        4200        /* 4200 * 0.625 = 2625 ms or 2.6 sec */
-#define ADV_INTERVAL_MIN        ADV_INTERVAL_250MS
-#define ADV_INTERVAL_MAX        ADV_INTERVAL_300MS
+#define ADV_INTERVAL_MIN        4000        /* 4000 * 0.625 = 2500 ms or 2.5 sec */
+#define ADV_INTERVAL_MAX        4200        /* 4200 * 0.625 = 2625 ms or 2.6 sec */
 
 #define MY_RF_POWER_INDEX       RF_POWER_P0p04dBm
 
