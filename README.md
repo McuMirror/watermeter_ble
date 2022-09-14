@@ -9,7 +9,7 @@
 Испытывалось все на вот такой плате
 <img src="https://raw.githubusercontent.com/slacky1965/watermeter_ble/main/doc/images/TB-04-KIT-top.jpg" alt="Ai-Thinker TB-04-KIT"/>
 
-Что в этот модуль залить прошивку нужно 2 ножку микросхемы CH340 замкнуть на SWS.
+Чтобы в этот модуль залить прошивку нужно 2 ножку микросхемы CH340 замкнуть на SWS.
 <img src="https://raw.githubusercontent.com/slacky1965/watermeter_ble/main/doc/images/TB-04-KIT-wire.jpg" alt="Ai-Thinker TB-04-KIT"/>
 
 Саму программу заливки можно скачать у pvvx - [TlsrComProg](https://github.com/pvvx/TlsrComProg825x). Спасибо ему еще раз.
