@@ -23,7 +23,12 @@ _Сразу хочу выразить благодарность Виктору 
 Саму программу заливки можно скачать у pvvx - [TlsrComProg](https://github.com/pvvx/TlsrComProg825x). Спасибо ему еще раз.
 По большому счету нужны всего два файла **TlsrComProg.py** и **floader.bin**
 
-Решение самодостаточного модуля было подсмотрено у [waterius](https://github.com/dontsovcmc/waterius).
+Решение самодостаточного модуля было подсмотрено в проекте [waterius](https://github.com/dontsovcmc/waterius).
+Чтобы не изобретать, куда это потом все прятать, берем, так называемый, Battery Holder Box на 3 батарейки АА. Переделываем на 2 батарейки и получаем питание 3 вольта и один сегмент под плату.
+<img src="https://raw.githubusercontent.com/slacky1965/watermeter_ble/main/doc/box/box1.jpg" alt="BOX 3AA"/>
+<img src="https://raw.githubusercontent.com/slacky1965/watermeter_ble/main/doc/box/box2.jpg" alt="BOX 3AA"/>
+<img src="https://raw.githubusercontent.com/slacky1965/watermeter_ble/main/doc/box/box3.jpg" alt="BOX 3AA"/>
+<img src="https://raw.githubusercontent.com/slacky1965/watermeter_ble/main/doc/box/box4.jpg" alt="BOX 3AA"/>
 
 Плата.
 
