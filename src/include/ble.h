@@ -84,7 +84,7 @@ typedef struct __attribute__((packed)) _adv_data_t {
 typedef struct __attribute__((packed)) _main_notify_t {
     uint16_t id;
     uint8_t  liter_per_pulse;
-    uint8_t  version[sizeof(VERSION)];
+    uint8_t  version;
 } main_notify_t;
 
 extern uint8_t ble_connected;
