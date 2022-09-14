@@ -170,7 +170,7 @@ static const u8 my_ModelStr[]               = {DEV_NAME_STR};
 static const u8 my_SerialStr[]              = {"EMYZE-FL1O9"};
 static const u8 my_FirmStr[]                = {"github.com/slacky1965"};
 static const u8 my_HardStr[]                = {"TB-04"};
-static const u8 my_SoftStr[]                = {VERSION};
+static const u8 my_SoftStr[]                = {'V','0'+(VERSION>>4),'.','0'+(VERSION&0x0f)}; // "0100"
 static const u8 my_ManStr[]                 = {"ai-thinker.com"};
 
 //// Battery attribute values
