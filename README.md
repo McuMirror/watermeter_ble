@@ -42,7 +42,7 @@ _Сразу хочу выразить благодарность Виктору 
 
 **Софт**
 
-[Прошивку](https://raw.githubusercontent.com/slacky1965/watermeter_ble/main/watermeter_ble_V1.6.bin) нужно залить в модуль. Затем соедиться с ним через [Web](https://www.slacky.ru/watermeter_ble/TelinkFlasherAndConfig.html) и настроить начальные данные - число литров горячей воды, число литров холодно воды, а также количество литров на один импульс (смотрите документацию на ваш счетчик).
+[Прошивку](https://raw.githubusercontent.com/slacky1965/watermeter_ble/main/watermeter_ble_V1.6.bin) нужно залить в модуль с помощью [github.com/pvvx/TLSRPGM](https://github.com/pvvx/TLSRPGM) или [github.com/pvvx/TlsrComProg825x](https://github.com/pvvx/TlsrComProg825x). Это уж как кому нравиться. Затем соедиться с ним через [Web](https://www.slacky.ru/watermeter_ble/TelinkFlasherAndConfig.html) и настроить начальные данные - число литров горячей воды, число литров холодно воды, а также количество литров на один импульс (смотрите документацию на ваш счетчик).
 <img src="https://raw.githubusercontent.com/slacky1965/watermeter_ble/main/doc/images/connect.jpg" alt="Web flasher"/>
 
 Первое соединение происходит достаточно быстро, потому что период обнаружения выбран малый, 250 мсек. После первого соединение этот период увеличавется до 2.5 секунд для экономии батарейки. Потому на последующие соединения, если таковые будут нужны, понадобится больше времени (не пугайтесь, все работает).
