@@ -64,7 +64,7 @@ void cmd_parser(void * p) {
     } else if (*in_data == CMD_MAIN_NOTIFY) {
         main_notify.id = WATERMETER_ID;
         main_notify.liter_per_pulse = watermeter_config.liters_per_pulse;
-        memcpy(&main_notify.version, VERSION, sizeof(VERSION));
+        main_notify.version = VERSION;
         tx_notify = NOTIFY_MAX-1;
         ble_send_tx();
 #if UART_PRINT_DEBUG_ENABLE
