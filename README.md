@@ -2,8 +2,8 @@
 
 _Сразу хочу выразить благодарность Виктору pvvx за его работу [ATC_MiThermomete](https://github.com/pvvx/ATC_MiThermometer). Это мне помогло разобраться в нюансах программирования BLE (хотя не факт, что я написал полностью правильный код :)). Ну и еще он отвечал на мои глупые вопросы на [форуме](https://esp8266.ru/forum/threads/ble-moduli-tb-04-tb-03f-tlsr8253f512.5362). Спасибо._
 
-**Описание**
----
+#Описание
+
 * Рассчитано на два счетчика воды.
 * Не работает с системой namur, только замыкание-размыкание (сухой контакт).
 * Ведет подсчет замыканий-размыканий, увеличивая каждый раз количество литров на заданное значение от 1 до 10 литров (по умолчанию 10 литров на один импульс).
@@ -12,8 +12,8 @@ _Сразу хочу выразить благодарность Виктору 
 * Первоначальная настройка происходит через [WEB-интерфейс](https://www.slacky.ru/watermeter_ble/TelinkFlasherAndConfig.html). 
 * Соединиться с модулем можно только с того устройства, с которого производили первое соединение. Первый раз соединиться можно с любого устройства.
 
-**Железо**
----
+#Железо
+
 Испытывалось все на вот такой плате
 <img src="https://raw.githubusercontent.com/slacky1965/watermeter_ble/main/doc/images/TB-04-KIT-top.jpg" alt="Ai-Thinker TB-04-KIT"/>
 
@@ -23,6 +23,8 @@ _Сразу хочу выразить благодарность Виктору 
 Саму программу заливки можно скачать у pvvx - [TlsrComProg](https://github.com/pvvx/TlsrComProg825x). Спасибо ему еще раз.
 По большому счету нужны всего два файла **TlsrComProg.py** и **floader.bin**
 
+**Корпус**
+
 Решение самодостаточного модуля было подсмотрено в проекте [waterius](https://github.com/dontsovcmc/waterius).
 Чтобы не изобретать, куда это потом все прятать, берем, так называемый, Battery Holder Box на 3 батарейки АА. Переделываем на 2 батарейки и получаем питание 3 вольта и один сегмент под плату.
 <img src="https://raw.githubusercontent.com/slacky1965/watermeter_ble/main/doc/box/box1.jpg" alt="BOX 3AA"/>
@@ -30,10 +32,15 @@ _Сразу хочу выразить благодарность Виктору 
 <img src="https://raw.githubusercontent.com/slacky1965/watermeter_ble/main/doc/box/box3.jpg" alt="BOX 3AA"/>
 <img src="https://raw.githubusercontent.com/slacky1965/watermeter_ble/main/doc/box/box4.jpg" alt="BOX 3AA"/>
 
-Плата.
+**Плата**
 
+[Схема и плата](https://oshwlab.com/slacky/watermeter_tlsr8253).
 
----
+<img src="https://raw.githubusercontent.com/slacky1965/watermeter_ble/main/doc/board/board_top.jpg" alt="PCB"/>
+
+<img src="https://raw.githubusercontent.com/slacky1965/watermeter_ble/main/doc/board/module.jpg" alt="PCB"/>
+
+#Софт
 
 Продолжение следует ...
 
