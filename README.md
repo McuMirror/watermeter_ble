@@ -18,6 +18,7 @@ _Сразу хочу выразить благодарность Виктору 
 <img src="https://raw.githubusercontent.com/slacky1965/watermeter_ble/main/doc/images/TB-04-KIT-top.jpg" alt="Ai-Thinker TB-04-KIT"/>
 
 Чтобы в этот модуль залить прошивку нужно 2-ю ножку микросхемы CH340 соединить с выводом SWS.
+
 <img src="https://raw.githubusercontent.com/slacky1965/watermeter_ble/main/doc/images/TB-04-KIT-wire.jpg" alt="Ai-Thinker TB-04-KIT"/>
 
 Саму программу заливки можно скачать у pvvx - [TlsrComProg](https://github.com/pvvx/TlsrComProg825x). Спасибо ему еще раз.
