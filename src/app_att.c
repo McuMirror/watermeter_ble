@@ -2,6 +2,7 @@
 #include "tl_common.h"
 #include "stack/ble/ble.h"
 
+#include "log.h"
 #include "ble.h"
 #include "app.h"
 #include "app_att.h"

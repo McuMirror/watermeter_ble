@@ -6,6 +6,7 @@
 #include "stack/ble/service/ota/ota.h"
 #include "drivers/8258/pm.h"
 
+#include "log.h"
 #include "ble.h"
 #include "app.h"
 #include "app_att.h"
@@ -18,7 +19,7 @@ _attribute_data_retention_ uint8_t       ble_name[BLE_NAME_SIZE];
 _attribute_data_retention_ adv_data_t    adv_data;
 _attribute_data_retention_ main_notify_t main_notify;
 _attribute_data_retention_ uint8_t       mac_public[6], mac_random_static[6];
-_attribute_data_retention_ uint8_t       ble_connected = 0;
+_attribute_data_retention_ uint16_t       ble_connected = conn_disconnect;
 _attribute_data_retention_ uint8_t       ota_is_working = 0;
 _attribute_data_retention_ uint8_t       first_start;
 
@@ -41,7 +42,7 @@ void print_mac(uint8_t num, uint8_t *mac) {
 
 void app_enter_ota_mode(void)
 {
-    ota_is_working = 1;
+    ota_is_working = true;
     bls_pm_setManualLatency(0);
     bls_ota_setTimeout(40 * 1000000); // set OTA timeout  40 seconds
 #if UART_PRINT_DEBUG_ENABLE
@@ -133,14 +134,16 @@ _attribute_ram_code_ void suspend_exit_cb (uint8_t e, uint8_t *p, int n)
 
 void ble_connect_cb(uint8_t e, uint8_t *p, int n) {
 
+    log_buff_clear();
+
 #if UART_PRINT_DEBUG_ENABLE
     printf("Connect\r\n");
 #endif /* UART_PRINT_DEBUG_ENABLE */
 
-    ble_connected = 1;
+    ble_connected = conn_connect;
     bls_l2cap_requestConnParamUpdate (CONN_INTERVAL_10MS, CONN_INTERVAL_10MS, 249, CONN_TIMEOUT_8S);  // 2.5 S
-//    conn_timeout = clock_time();
     conn_timeout = time_sec;
+
 
 }
 
@@ -162,9 +165,21 @@ void ble_disconnect_cb(uint8_t e,uint8_t *p, int n) {
         }
     }
 
-    ble_connected = 0;
+    ota_is_working = false;
 
-    ota_is_working = 0;
+    send_log_enable = false;
+
+    if (ble_connected & conn_delayed_reset) {
+        bls_ll_terminateConnection(HCI_ERR_REMOTE_USER_TERM_CONN);
+        sleep_ms(2000);
+#if UART_PRINT_DEBUG_ENABLE
+        printf("Reboot module\r\n");
+#endif /* UART_PRINT_DEBUG_ENABLE */
+        start_reboot();
+    }
+
+    ble_connected = conn_disconnect;
+
 }
 
 void ev_adv_timeout(u8 e, u8 *p, int n) {
@@ -325,10 +340,6 @@ __attribute__((optimize("-Os"))) void init_ble(void) {
 
 void set_adv_data() {
 
-#if UART_PRINT_DEBUG_ENABLE
-    printf("set_adv_data()\r\n");
-#endif /* UART_PRINT_DEBUG_ENABLE */
-
     adv_data.pid.pid = (adv_data.pid.pid+1) & 0xFF;
 
     bls_ll_setAdvData((uint8_t*)&adv_data, sizeof(adv_data_t));
@@ -352,4 +363,6 @@ void ble_send_tx() {
     bls_att_pushNotifyData(RxTx_CMD_OUT_DP_H, (uint8_t *)&main_notify, sizeof(main_notify_t));
 }
 
-
+void ble_send_log() {
+    bls_att_pushNotifyData(RxTx_CMD_OUT_DP_H, (uint8_t *)&log_notify, sizeof(log_notify_t));
+}

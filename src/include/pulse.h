@@ -11,7 +11,7 @@ typedef struct _water_conter_t {
     uint16_t count;
 } water_counter_t;
 
-void pulse_init();
+void init_pulse();
 bool task_counters();
 uint32_t check_counter_overflow(uint32_t check_count);
 

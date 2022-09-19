@@ -3,6 +3,7 @@
 #include "stack/ble/ble.h"
 
 #include "cfg.h"
+#include "log.h"
 #include "ble.h"
 #include "pulse.h"
 #include "app.h"
@@ -24,17 +25,21 @@ void cmd_parser(void * p) {
 
 
         if (*in_data == CMD_SET_HOT_COUNTER) {
-            watermeter_config.counters.hot_water_count = check_counter_overflow(counter);
-            hot_notify = NOTIFY_MAX;
+            if (watermeter_config.counters.hot_water_count != counter) {
+                watermeter_config.counters.hot_water_count = check_counter_overflow(counter);
+                hot_notify = NOTIFY_MAX;
 #if UART_PRINT_DEBUG_ENABLE
-            printf("New counter - %u. Set hot water - %u\r\n", counter, watermeter_config.counters.hot_water_count);
+                printf("New counter - %u. Set hot water - %u\r\n", counter, watermeter_config.counters.hot_water_count);
 #endif /* UART_PRINT_DEBUG_ENABLE */
+            }
         } else {
-            watermeter_config.counters.cold_water_count = check_counter_overflow(counter);
-            cold_notify = NOTIFY_MAX;
+            if (watermeter_config.counters.cold_water_count != counter) {
+                watermeter_config.counters.cold_water_count = check_counter_overflow(counter);
+                cold_notify = NOTIFY_MAX;
 #if UART_PRINT_DEBUG_ENABLE
-            printf("New counter - %u. Set cold water - %u\r\n", counter, watermeter_config.counters.cold_water_count);
+                printf("New counter - %u. Set cold water - %u\r\n", counter, watermeter_config.counters.cold_water_count);
 #endif /* UART_PRINT_DEBUG_ENABLE */
+            }
         }
         write_config();
         set_adv_data();
@@ -50,26 +55,32 @@ void cmd_parser(void * p) {
 #endif /* UART_PRINT_DEBUG_ENABLE */
 	    bls_smp_eraseAllParingInformation();
 	    ev_adv_timeout(0,0,0);
-	    bls_ll_terminateConnection(HCI_ERR_REMOTE_USER_TERM_CONN);
+//	    bls_ll_terminateConnection(HCI_ERR_REMOTE_USER_TERM_CONN);
     } else if (*in_data == CMD_RESET && len == 1) {
 #if UART_PRINT_DEBUG_ENABLE
-        printf("Disconnect\r\n");
+        printf("Reset is enabled after disconnection\r\n");
 #endif /* UART_PRINT_DEBUG_ENABLE */
-        bls_ll_terminateConnection(HCI_ERR_REMOTE_USER_TERM_CONN);
-        sleep_ms(2000);
-#if UART_PRINT_DEBUG_ENABLE
-        printf("Reboot module\r\n");
-#endif /* UART_PRINT_DEBUG_ENABLE */
-        start_reboot();
+        ble_connected |= conn_delayed_reset;
     } else if (*in_data == CMD_MAIN_NOTIFY) {
         main_notify.id = WATERMETER_ID;
         main_notify.liter_per_pulse = watermeter_config.liters_per_pulse;
         main_notify.version = VERSION;
-        tx_notify = NOTIFY_MAX-1;
+        tx_notify = NOTIFY_MAX;
         ble_send_tx();
 #if UART_PRINT_DEBUG_ENABLE
         printf("Main notify start\r\n");
 #endif /* UART_PRINT_DEBUG_ENABLE */
+    } else if (*in_data == CMD_LOG_NOTIFY) {
+        if (!send_log_enable) {
+            send_log_enable = true;
+            lg_notify = NOTIFY_MAX;
+//            if (!log_notify.debug_enabled) {
+//                ble_send_log();
+//            }
+#if UART_PRINT_DEBUG_ENABLE
+            printf("Log notify start\r\n");
+#endif /* UART_PRINT_DEBUG_ENABLE */
+        }
     } else {
 #if UART_PRINT_DEBUG_ENABLE
         printf("Unknown or incomplete command 0x%X\r\n", *in_data);

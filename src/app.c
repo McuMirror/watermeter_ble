@@ -10,6 +10,7 @@
 #include "battery.h"
 #include "pulse.h"
 #include "cfg.h"
+#include "log.h"
 #include "ble.h"
 
 #if UART_PRINT_DEBUG_ENABLE
@@ -18,7 +19,7 @@
 
 #define UPDATE_PERIOD       5000UL      /* 5 sec */
 #define BATTERY_PERIOD      300000UL    /* 5 min */
-#define CONN_TIMEOUT        300         /* 5 min */
+#define CONN_TIMEOUT        5           /* 5 min */
 _attribute_data_retention_ uint32_t update_interval;
 _attribute_data_retention_ uint32_t battery_interval;
 _attribute_data_retention_ uint32_t conn_timeout;
@@ -31,20 +32,23 @@ _attribute_data_retention_ uint8_t battery_notify = NOTIFY_MAX;
 _attribute_data_retention_ uint8_t hot_notify = NOTIFY_MAX;
 _attribute_data_retention_ uint8_t cold_notify = NOTIFY_MAX;
 _attribute_data_retention_ uint8_t tx_notify = 0;
+_attribute_data_retention_ uint8_t lg_notify = 0;
 
 
 void user_init_normal(void) {
 
-    #if UART_PRINT_DEBUG_ENABLE
+
+#if UART_PRINT_DEBUG_ENABLE
     printf("Start user_init_normal()\r\n");
 #endif /* UART_PRINT_DEBUG_ENABLE */
 
     adc_power_on_sar_adc(OFF);
     check_battery();
 	random_generator_init();  //this is must
-    pulse_init();
+    init_pulse();
     init_config();
     init_ble();
+    init_log();
     update_interval  = clock_time();
     battery_interval = clock_time();
 }
@@ -52,7 +56,7 @@ void user_init_normal(void) {
 _attribute_ram_code_ void user_init_deepRetn(void) {
 
 #if UART_PRINT_DEBUG_ENABLE
-//    printf("%u Start user_init_deeptn()\r\n", ++deepRetn_count);
+        //printf("%u Start user_init_deeptn()\r\n", ++deepRetn_count);
 #endif /* UART_PRINT_DEBUG_ENABLE */
 
 	blc_ll_initBasicMCU();   //mandatory
@@ -92,49 +96,22 @@ void main_loop (void) {
     if(!ota_is_working) {
 
         if(blc_ll_getCurrentState() & BLS_LINK_STATE_CONN) {
-            /* connection time 5 min. */
-        if ((time_sec - conn_timeout) > CONN_TIMEOUT) {
-#if UART_PRINT_DEBUG_ENABLE
-            printf("Connection timeout 5 min.\r\n");
-#endif /* UART_PRINT_DEBUG_ENABLE */
-            bls_ll_terminateConnection(HCI_ERR_REMOTE_USER_TERM_CONN);
-            conn_timeout = time_sec;
-        }
-
-        }
-
-        if ((clock_time() - update_interval) > UPDATE_PERIOD*CLOCK_SYS_CLOCK_1MS) {
-
-            if ((clock_time() - battery_interval) > BATTERY_PERIOD*CLOCK_SYS_CLOCK_1MS) {
-                check_battery();
-
-                if (battery_level != adv_data.battery.level) {
-    #if UART_PRINT_DEBUG_ENABLE
-                    printf("New battery level - %u, last battery level - %u\r\n", battery_level, adv_data.battery.level);
-    #endif /* UART_PRINT_DEBUG_ENABLE */
-                    adv_data.battery.level = battery_level;
-                    battery_notify = NOTIFY_MAX;
-                    set_adv_data();
-                }
-                if (battery_mv != adv_data.voltage.voltage) {
-                    if ((battery_mv > adv_data.voltage.voltage && (battery_mv - adv_data.voltage.voltage) > 50) ||
-                        (battery_mv < adv_data.voltage.voltage && (adv_data.voltage.voltage - battery_mv) > 50)) {
-    #if UART_PRINT_DEBUG_ENABLE
-                        printf("New battery mv - %u, last battery mv - %u\r\n", battery_mv, adv_data.voltage.voltage);
-    #endif /* UART_PRINT_DEBUG_ENABLE */
-                        adv_data.voltage.voltage = battery_mv;
-                        set_adv_data();
-                    }
-                }
-                battery_interval = clock_time();
-            }
-
-            if((blc_ll_getCurrentState() & BLS_LINK_STATE_CONN) && blc_ll_getTxFifoNumber() < 9) {
-
+            if(blc_ll_getTxFifoNumber() < 9) {
                 if (RxTxValueInCCC) {
                     if (tx_notify) {
                         ble_send_tx();
                         tx_notify--;
+                    } else {
+                        if (send_log_enable ) {
+                            if (lg_notify) {
+                                ble_send_log();
+                                lg_notify--;
+                            } else {
+                                if (log_notify.debug_enabled && log_available()) {
+                                    set_log_str();
+                                }
+                            }
+                        }
                     }
                 }
 
@@ -158,6 +135,47 @@ void main_loop (void) {
                         cold_notify--;
                     }
                 }
+            }
+
+            /* connection time 5 min. */
+            if ((time_sec - conn_timeout) > (CONN_TIMEOUT*60)) {
+#if UART_PRINT_DEBUG_ENABLE
+                printf("Connection timeout %u min.\r\n", CONN_TIMEOUT);
+#endif /* UART_PRINT_DEBUG_ENABLE */
+                ble_connected |= conn_delayed_disconnect;
+                conn_timeout = time_sec;
+            }
+        }
+
+        if ((clock_time() - update_interval) > UPDATE_PERIOD*CLOCK_SYS_CLOCK_1MS) {
+
+            if (ble_connected & conn_delayed_disconnect) {
+                bls_ll_terminateConnection(HCI_ERR_REMOTE_USER_TERM_CONN);
+                return;
+            }
+
+            if ((clock_time() - battery_interval) > BATTERY_PERIOD*CLOCK_SYS_CLOCK_1MS) {
+                check_battery();
+
+                if (battery_level != adv_data.battery.level) {
+    #if UART_PRINT_DEBUG_ENABLE
+                    printf("New battery level - %u, last battery level - %u\r\n", battery_level, adv_data.battery.level);
+    #endif /* UART_PRINT_DEBUG_ENABLE */
+                    adv_data.battery.level = battery_level;
+                    battery_notify = NOTIFY_MAX;
+                    set_adv_data();
+                }
+                if (battery_mv != adv_data.voltage.voltage) {
+                    if ((battery_mv > adv_data.voltage.voltage && (battery_mv - adv_data.voltage.voltage) > 50) ||
+                        (battery_mv < adv_data.voltage.voltage && (adv_data.voltage.voltage - battery_mv) > 50)) {
+    #if UART_PRINT_DEBUG_ENABLE
+                        printf("New battery mv - %u, last battery mv - %u\r\n", battery_mv, adv_data.voltage.voltage);
+    #endif /* UART_PRINT_DEBUG_ENABLE */
+                        adv_data.voltage.voltage = battery_mv;
+                        set_adv_data();
+                    }
+                }
+                battery_interval = clock_time();
             }
 
             update_interval = clock_time();

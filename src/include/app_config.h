@@ -1,6 +1,6 @@
 #pragma once
 
-#define VERSION                     0x16    /* BCD format (0x10 -> '1.0')   */
+#define VERSION                     0x17    /* BCD format (0x10 -> '1.0')   */
 #define WATERMETER_ID               0xFED5  /* uint16_t                     */
 #define DEV_NAME_CHR                'W','a','t','e','r','m','e','t','e','r','_','B','L','E'
 #define DEV_NAME_STR                "Watermeter_BLE"
@@ -10,7 +10,7 @@
 #define ON                          1
 #define OFF                         0
 
-#define UART_PRINT_DEBUG_ENABLE     1       /* if 1 use printf() over uart  */
+#define UART_PRINT_DEBUG_ENABLE     0       /* if 1 use printf() over uart  */
 
 
 /************************ Advertising_Interval *************************************/

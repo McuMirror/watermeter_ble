@@ -9,7 +9,10 @@ $(OUT_PATH)/src/battery.o \
 $(OUT_PATH)/src/cfg.o \
 $(OUT_PATH)/src/cmd_parser.o \
 $(OUT_PATH)/src/pulse.o \
+$(OUT_PATH)/src/log.o \
 $(OUT_PATH)/src/main.o
+
+
 
 # Each subdirectory must supply rules for building sources it contributes
 $(OUT_PATH)/src/%.o: $(SRC_PATH)/%.c

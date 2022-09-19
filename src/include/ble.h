@@ -3,7 +3,7 @@
 
 #define ADV_HA_BLE_NS_UUID16 0x181C // 16-bit UUID Service 0x181C HA_BLE, no security
 #define ADV_HA_BLE_SE_UUID16 0x181E // 16-bit UUID Service 0x181E HA_BLE, security enable
-#define NOTIFY_MAX 3
+#define NOTIFY_MAX 2
 
 // https://github.com/custom-components/ble_monitor/issues/548
 typedef enum {
@@ -31,13 +31,19 @@ typedef enum {
 
 // Type bit 5-7
 typedef enum {
-    HaBleType_uint = 0,
-    HaBleType_sint = (1<<5),
-    HaBleType_float = (2<<5),
-    HaBleType_string  = (3<<5),
-    HaBleType_MAC  = (4<<5)
+    HaBleType_uint      = 0,
+    HaBleType_sint      = (1<<5),
+    HaBleType_float     = (2<<5),
+    HaBleType_string    = (3<<5),
+    HaBleType_MAC       = (4<<5)
 } HaBleTypes_e;
 
+typedef enum {
+    conn_disconnect         = 0x0000,
+    conn_connect            = 0x0001,
+    conn_delayed_disconnect = 0x0010,
+    conn_delayed_reset      = 0x0100
+} conn_t;
 
 typedef struct __attribute__((packed)) _adv_head_uuid16_t {
     uint8_t  size;          /* sum sizes adv_head_uuid16_t+adv_pid_t+adv_battery_t+adv_voltage_t+2*adv_counter_t-1 */
@@ -87,7 +93,7 @@ typedef struct __attribute__((packed)) _main_notify_t {
     uint8_t  version;
 } main_notify_t;
 
-extern uint8_t ble_connected;
+extern uint16_t ble_connected;
 extern uint8_t ota_is_working;
 extern uint8_t mac_public[6], mac_random_static[6];
 extern uint8_t ble_name[BLE_NAME_SIZE];
@@ -101,5 +107,6 @@ void ble_send_battery();
 void ble_send_hotwater();
 void ble_send_coldwater();
 void ble_send_tx();
+void ble_send_log();
 
 #endif /* SRC_INCLUDE_BLE_H_ */

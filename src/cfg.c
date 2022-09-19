@@ -3,6 +3,7 @@
 #include "tl_common.h"
 
 #include "cfg.h"
+#include "log.h"
 
 _attribute_data_retention_ watermeter_config_t watermeter_config;
 _attribute_data_retention_ static uint8_t default_config = false;
