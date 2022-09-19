@@ -2,6 +2,8 @@
 
 _Сразу хочу выразить благодарность Виктору pvvx за его работу [ATC_MiThermomete](https://github.com/pvvx/ATC_MiThermometer). Это мне помогло разобраться в нюансах программирования BLE (хотя не факт, что я написал полностью правильный код :)). Ну и еще он отвечал на мои глупые вопросы на [форуме](https://esp8266.ru/forum/threads/ble-moduli-tb-04-tb-03f-tlsr8253f512.5362). Спасибо._
 
+[Repository watermeter_ble](https://github.com/slacky1965/watermeter_ble)
+
 **Описание**
 
 * Рассчитано на два счетчика воды.
