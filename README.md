@@ -20,6 +20,10 @@ _А также моему сыну Алексею, который помог м�
 
 **Железо**
 
+Выбор пал на недорогой модуль от Ai-Thinker TB-04 (чуть больше 120 рублей)
+
+<img src="https://raw.githubusercontent.com/slacky1965/watermeter_ble/main/doc/images/TB-04-top.jpg" alt="Ai-Thinker TB-04"/>
+
 Испытывалось все на вот таком модуле от Ai-Thinker TB-04-KIT
 
 <img src="https://raw.githubusercontent.com/slacky1965/watermeter_ble/main/doc/images/TB-04-KIT-top.jpg" alt="Ai-Thinker TB-04-KIT"/>
