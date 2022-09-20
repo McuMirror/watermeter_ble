@@ -4,11 +4,8 @@
 #include "stdint.h"
 
 typedef struct _water_conter_t {
-    uint8_t  pressed;
-    uint8_t  released;
-    uint8_t  state;
+    uint8_t  status;
     uint16_t bit;
-    uint16_t count;
 } water_counter_t;
 
 void init_pulse();
