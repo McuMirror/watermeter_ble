@@ -86,6 +86,9 @@ _attribute_ram_code_ static void water_counters() {
 _attribute_ram_code_ uint8_t task_counters() {
     uint8_t save_config = false;
 
+    gpio_setup_up_down_resistor(HOT_GPIO, PM_PIN_PULLUP_10K);
+    gpio_setup_up_down_resistor(COLD_GPIO, PM_PIN_PULLUP_10K);
+
     if ((!gpio_read(HOT_GPIO) && hot_counter.bit == 1) ||
         (gpio_read(HOT_GPIO) && hot_counter.bit == BIT_COUNT) ||
         (!gpio_read(COLD_GPIO) && cold_counter.bit == 1) ||
@@ -128,6 +131,9 @@ _attribute_ram_code_ uint8_t task_counters() {
             write_config();
         }
     }
+
+    gpio_setup_up_down_resistor(HOT_GPIO, PM_PIN_PULLUP_1M);
+    gpio_setup_up_down_resistor(COLD_GPIO, PM_PIN_PULLUP_1M);
 
     return save_config;
 }
