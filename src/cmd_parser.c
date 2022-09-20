@@ -41,8 +41,10 @@ void cmd_parser(void * p) {
 #endif /* UART_PRINT_DEBUG_ENABLE */
             }
         }
-        write_config();
-        set_adv_data();
+        if ( hot_notify || cold_notify) {
+            write_config();
+            set_adv_data();
+        }
     } else if (*in_data == CMD_SET_LITERS_PER_PULSE && len == 2) {
         main_notify.liter_per_pulse = watermeter_config.liters_per_pulse = in_data[1];
         write_config();
