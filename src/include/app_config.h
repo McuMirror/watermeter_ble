@@ -1,21 +1,21 @@
 #pragma once
 
-#define VERSION                     0x17    /* BCD format (0x10 -> '1.0')   */
-#define WATERMETER_ID               0xFED5  /* uint16_t                     */
-#define DEV_NAME_CHR                'W','a','t','e','r','m','e','t','e','r','_','B','L','E'
-#define DEV_NAME_STR                "Watermeter_BLE"
+#define VERSION                 0x17    /* BCD format (0x10 -> '1.0')   */
+#define WATERMETER_ID           0xFED5  /* uint16_t                     */
+#define DEV_NAME_CHR            'W','a','t','e','r','m','e','t','e','r','_','B','L','E'
+#define DEV_NAME_STR            "Watermeter_BLE"
 /* 0x16,0x09,'W','a','t','e','r','m','e','t','e','r','_','B','L','E','_',0x00,0x00,0x00,0x00,0x00,0x00 */
-#define BLE_NAME_SIZE               23
+#define BLE_NAME_SIZE           23
 
-#define ON                          1
-#define OFF                         0
+#define ON                      1
+#define OFF                     0
 
-#define UART_PRINT_DEBUG_ENABLE     0       /* if 1 use printf() over uart  */
+#define UART_PRINT_DEBUG_ENABLE 0       /* if 1 use printf() over uart  */
 
 
 /************************ Advertising_Interval *************************************/
-#define ADV_INTERVAL_MIN        4000        /* 4000 * 0.625 = 2500 ms or 2.5 sec */
-#define ADV_INTERVAL_MAX        4200        /* 4200 * 0.625 = 2625 ms or 2.6 sec */
+#define ADV_INTERVAL_MIN        3200        /* 3200 * 0.625 = 2000 ms or 2.0 sec */
+#define ADV_INTERVAL_MAX        4000        /* 4000 * 0.625 = 2500 ms or 2.5 sec */
 
 #define MY_RF_POWER_INDEX       RF_POWER_P0p04dBm
 
