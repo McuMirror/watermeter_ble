@@ -102,7 +102,8 @@ _attribute_ram_code_ uint8_t task_counters() {
         if (hot_counter.status == status_pressed) {
             save_config = true;
             /* detect hot counter overflow */
-            watermeter_config.counters.hot_water_count = check_counter_overflow(watermeter_config.counters.hot_water_count +
+            watermeter_config.counters.hot_water_count =
+                    check_counter_overflow(watermeter_config.counters.hot_water_count +
                     watermeter_config.liters_per_pulse);
             hot_counter.status = status_nothing;
             hot_notify = NOTIFY_MAX;
@@ -116,7 +117,8 @@ _attribute_ram_code_ uint8_t task_counters() {
         if (cold_counter.status == status_pressed) {
             save_config = true;
             /* detect cold counter overflow */
-            watermeter_config.counters.cold_water_count = check_counter_overflow(watermeter_config.counters.cold_water_count +
+            watermeter_config.counters.cold_water_count =
+                    check_counter_overflow(watermeter_config.counters.cold_water_count +
                     watermeter_config.liters_per_pulse);
             cold_counter.status = status_nothing;
             cold_notify = NOTIFY_MAX;
