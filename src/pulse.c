@@ -92,7 +92,7 @@ _attribute_ram_code_ uint8_t task_counters() {
     if ((!gpio_read(HOT_GPIO) && hot_counter.bit == 1) ||
         (gpio_read(HOT_GPIO) && hot_counter.bit == BIT_COUNT) ||
         (!gpio_read(COLD_GPIO) && cold_counter.bit == 1) ||
-        (gpio_read(COLD_GPIO) && cold_counter.bit ==BIT_COUNT)) {
+        (gpio_read(COLD_GPIO) && cold_counter.bit == BIT_COUNT)) {
 
         for (uint16_t i = 0; i < TASK_COUNT; i++) {
             water_counters();
