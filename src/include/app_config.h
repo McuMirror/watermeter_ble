@@ -25,7 +25,7 @@
 #define DEBUG_INFO_TX_PIN       UART_TX_PB1
 #define PB1_DATA_OUT            ON
 #define PB1_OUTPUT_ENABLE       ON
-#define PULL_WAKEUP_SRC_PB1     PM_PIN_PULLUP_1M
+#define PULL_WAKEUP_SRC_PB1     PM_PIN_PULLUP_10K //PM_PIN_PULLUP_1M
 #define PB1_FUNC                AS_GPIO
 #endif /* UART_PRINT_DEBUG_ENABLE */
 
@@ -39,7 +39,7 @@
 #define PB6_DATA_OUT            OFF
 #define PB6_OUTPUT_ENABLE       OFF
 #define PB6_FUNC                AS_GPIO
-#define PULL_WAKEUP_SRC_PB6     PM_PIN_PULLUP_1M
+#define PULL_WAKEUP_SRC_PB6     PM_PIN_PULLUP_10K //PM_PIN_PULLUP_1M
 
 /************************* Configure COLD GPIO **************************************/
 #define COLD_GPIO               GPIO_PB7
