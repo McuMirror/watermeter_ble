@@ -11,8 +11,8 @@
 
 enum {
     status_nothing = 0,
-    status_unpressed,
-    status_pressed
+    status_open,
+    status_close
 };
 
 _attribute_data_retention_ static water_counter_t hot_counter;
@@ -55,13 +55,13 @@ _attribute_ram_code_ static void water_counters() {
 
     if (!gpio_read(HOT_GPIO)) {
         if (hot_counter.bit == BIT_COUNT) {
-            hot_counter.status = status_pressed;
+            hot_counter.status = status_close;
         } else {
             hot_counter.bit <<= 1;
         }
     } else {
         if (hot_counter.bit == 1) {
-            hot_counter.status = status_unpressed;
+            hot_counter.status = status_open;
         } else {
             hot_counter.bit >>= 1;
         }
@@ -69,13 +69,13 @@ _attribute_ram_code_ static void water_counters() {
 
     if (!gpio_read(COLD_GPIO)) {
         if (cold_counter.bit == BIT_COUNT) {
-            cold_counter.status = status_pressed;
+            cold_counter.status = status_close;
         } else {
             cold_counter.bit <<= 1;
         }
     } else {
         if (cold_counter.bit == 1) {
-            cold_counter.status = status_unpressed;
+            cold_counter.status = status_open;
         } else {
             cold_counter.bit >>= 1;
         }
@@ -99,7 +99,7 @@ _attribute_ram_code_ uint8_t task_counters() {
             sleep_ms(3);
         }
 
-        if (hot_counter.status == status_pressed) {
+        if (hot_counter.status == status_close) {
             save_config = true;
             /* detect hot counter overflow */
             watermeter_config.counters.hot_water_count =
@@ -110,11 +110,11 @@ _attribute_ram_code_ uint8_t task_counters() {
 #if UART_PRINT_DEBUG_ENABLE
             printf("hot counter - %u\r\n", watermeter_config.counters.hot_water_count);
 #endif /* UART_PRINT_DEBUG_ENABLE */
-        } else if (hot_counter.status == status_unpressed) {
+        } else if (hot_counter.status == status_open) {
             hot_counter.status = status_nothing;
         }
 
-        if (cold_counter.status == status_pressed) {
+        if (cold_counter.status == status_close) {
             save_config = true;
             /* detect cold counter overflow */
             watermeter_config.counters.cold_water_count =
@@ -125,7 +125,7 @@ _attribute_ram_code_ uint8_t task_counters() {
 #if UART_PRINT_DEBUG_ENABLE
             printf("cold counter - %u\r\n", watermeter_config.counters.cold_water_count);
 #endif /* UART_PRINT_DEBUG_ENABLE */
-        } else if (cold_counter.status == status_unpressed) {
+        } else if (cold_counter.status == status_open) {
             cold_counter.status = status_nothing;
         }
 
