@@ -1,8 +1,6 @@
 #ifndef SRC_INCLUDE_PULSE_H_
 #define SRC_INCLUDE_PULSE_H_
 
-#include "stdint.h"
-
 typedef struct _water_conter_t {
     uint8_t  status;
     uint16_t bit;

@@ -1,6 +1,6 @@
 #pragma once
 
-#define VERSION                 0x17    /* BCD format (0x10 -> '1.0')   */
+#define VERSION                 0x18    /* BCD format (0x10 -> '1.0')   */
 #define WATERMETER_ID           0xFED5  /* uint16_t                     */
 #define DEV_NAME_CHR            'W','a','t','e','r','m','e','t','e','r','_','B','L','E'
 #define DEV_NAME_STR            "Watermeter_BLE"
@@ -25,7 +25,7 @@
 #define DEBUG_INFO_TX_PIN       UART_TX_PB1
 #define PB1_DATA_OUT            ON
 #define PB1_OUTPUT_ENABLE       ON
-#define PULL_WAKEUP_SRC_PB1     PM_PIN_PULLUP_10K //PM_PIN_PULLUP_1M
+#define PULL_WAKEUP_SRC_PB1     PM_PIN_PULLUP_1M
 #define PB1_FUNC                AS_GPIO
 #endif /* UART_PRINT_DEBUG_ENABLE */
 
@@ -47,7 +47,15 @@
 #define PB7_DATA_OUT            OFF
 #define PB7_OUTPUT_ENABLE       OFF
 #define PB7_FUNC                AS_GPIO
-#define PULL_WAKEUP_SRC_PB7     PM_PIN_PULLUP_1M
+#define PULL_WAKEUP_SRC_PB7     PM_PIN_PULLUP_10K //PM_PIN_PULLUP_1M
+
+/************************* Configure RWL GPIO **************************************/
+#define RWL_GPIO                GPIO_PA7
+#define PA7_INPUT_ENABLE        ON
+#define PA7_DATA_OUT            OFF
+#define PA7_OUTPUT_ENABLE       OFF
+#define PA7_FUNC                AS_GPIO
+#define PULL_WAKEUP_SRC_PA7     PM_PIN_PULLUP_1M
 
 /************************* Configure VBAT GPIO ***************************************/
 #define GPIO_VBAT               GPIO_PC4

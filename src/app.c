@@ -19,7 +19,9 @@
 
 #define UPDATE_PERIOD       5000UL      /* 5 sec */
 #define BATTERY_PERIOD      300000UL    /* 5 min */
-#define CONN_TIMEOUT        5           /* 5 min */
+#define CONN_TIMEOUT        300         /* 5 min */
+#define RESET_WL_TIMEOUT    5           /* 5 sec */
+
 _attribute_data_retention_ uint32_t update_interval;
 _attribute_data_retention_ uint32_t battery_interval;
 _attribute_data_retention_ uint32_t conn_timeout;
@@ -34,11 +36,33 @@ _attribute_data_retention_ uint8_t cold_notify = NOTIFY_MAX;
 _attribute_data_retention_ uint8_t tx_notify = 0;
 _attribute_data_retention_ uint8_t lg_notify = 0;
 
+_attribute_data_retention_ uint8_t  reset_wl_begin;
+_attribute_data_retention_ uint32_t  reset_wl_timeout;
+
+_attribute_ram_code_ void check_reset_wl() {
+
+    if (!gpio_read(RWL_GPIO)) {
+        if (reset_wl_begin) {
+            if ((time_sec - reset_wl_timeout) > (RESET_WL_TIMEOUT)) {
+#if UART_PRINT_DEBUG_ENABLE
+                printf("Reset whitelist\r\n");
+#endif /* UART_PRINT_DEBUG_ENABLE */
+                bls_smp_eraseAllParingInformation();
+                ev_adv_timeout(0,0,0);
+                reset_wl_begin = false;
+            }
+        } else {
+            reset_wl_timeout = time_sec;
+            reset_wl_begin = true;
+        }
+    } else {
+        reset_wl_begin = false;
+    }
+}
 
 void user_init_normal(void) {
 
-
-#if UART_PRINT_DEBUG_ENABLE
+    #if UART_PRINT_DEBUG_ENABLE
     printf("Start user_init_normal()\r\n");
 #endif /* UART_PRINT_DEBUG_ENABLE */
 
@@ -51,6 +75,9 @@ void user_init_normal(void) {
     init_log();
     update_interval  = clock_time();
     battery_interval = clock_time();
+
+    reset_wl_begin = false;
+
 }
 
 _attribute_ram_code_ void user_init_deepRetn(void) {
@@ -95,6 +122,8 @@ void main_loop (void) {
 
     if(!ota_is_working) {
 
+        check_reset_wl();
+
         if(blc_ll_getCurrentState() & BLS_LINK_STATE_CONN) {
             if(blc_ll_getTxFifoNumber() < 9) {
                 if (RxTxValueInCCC) {
@@ -138,9 +167,9 @@ void main_loop (void) {
             }
 
             /* connection time 5 min. */
-            if ((time_sec - conn_timeout) > (CONN_TIMEOUT*60)) {
+            if ((time_sec - conn_timeout) > (CONN_TIMEOUT)) {
 #if UART_PRINT_DEBUG_ENABLE
-                printf("Connection timeout %u min.\r\n", CONN_TIMEOUT);
+                printf("Connection timeout %u min %u sec.\r\n", CONN_TIMEOUT/60, CONN_TIMEOUT%60);
 #endif /* UART_PRINT_DEBUG_ENABLE */
                 ble_connected |= conn_delayed_disconnect;
                 conn_timeout = time_sec;
