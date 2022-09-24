@@ -41,6 +41,8 @@ _attribute_data_retention_ uint32_t  reset_wl_timeout;
 
 _attribute_ram_code_ void check_reset_wl() {
 
+    gpio_setup_up_down_resistor(HOT_GPIO, PM_PIN_PULLUP_1M);
+
     if (!gpio_read(RWL_GPIO)) {
         if (reset_wl_begin) {
             if ((time_sec - reset_wl_timeout) > (RESET_WL_TIMEOUT)) {
@@ -58,6 +60,9 @@ _attribute_ram_code_ void check_reset_wl() {
     } else {
         reset_wl_begin = false;
     }
+
+    gpio_setup_up_down_resistor(HOT_GPIO, PM_PIN_UP_DOWN_FLOAT);
+
 }
 
 void user_init_normal(void) {
