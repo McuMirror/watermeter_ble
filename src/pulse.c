@@ -1,3 +1,4 @@
+#include <stdint.h>
 #include "tl_common.h"
 
 #include "pulse.h"
