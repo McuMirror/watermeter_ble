@@ -53,7 +53,7 @@ typedef enum {
     HaBleID_tamper,             //0x2b, uint8,  False = Off
     HaBleID_vibration,          //0x2c, uint8,  True = Detected
     HaBleID_window              //0x2d, uint8,  True = Closed
-} HaBleIDs_e;
+} HaBleIDs_t;
 
 // Type bit 5-7
 typedef enum {
@@ -62,7 +62,7 @@ typedef enum {
     HaBleType_float     = (2<<5),
     HaBleType_string    = (3<<5),
     HaBleType_MAC       = (4<<5)
-} HaBleTypes_e;
+} HaBleTypes_t;
 
 typedef enum {
     conn_disconnect         = 0x0000,
