@@ -5,10 +5,9 @@
 #define ADV_HA_BLE_SE_UUID16 0x181E // 16-bit UUID Service 0x181E HA_BLE, security enable
 #define NOTIFY_MAX 2
 
-// https://github.com/custom-components/ble_monitor/issues/548
 typedef enum {
-    HaBleID_PacketId = 0,       //0x00, uint8
-    HaBleID_battery,            //0x01, uint8, %
+    HaBleID_PacketId = 0,       //0x00, uint8,  0..255
+    HaBleID_battery,            //0x01, uint8,  %
     HaBleID_temperature,        //0x02, sint16, 0.01 °C
     HaBleID_humidity,           //0x03, uint16, 0.01 %
     HaBleID_pressure,           //0x04, uint24, 0.01 hPa
@@ -23,7 +22,7 @@ typedef enum {
     HaBleID_pm2x5,              //0x0D, uint16, ug/m3
     HaBleID_pm10,               //0x0E, uint16, ug/m3
     HaBleID_boolean,            //0x0F, uint8,  True = On
-    HaBleID_power,              //0x10, uint8,  True = On
+    HaBleID_power_s,            //0x10, uint8,  True = On
     HaBleID_opening,            //0x11, uint8,  False = Closed
     HaBleID_co2,                //0x12, uint16, ppm
     HaBleID_tvoc,               //0x13, uint16, ug/m3
