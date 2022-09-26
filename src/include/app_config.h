@@ -55,7 +55,7 @@
 #define PA7_DATA_OUT            OFF
 #define PA7_OUTPUT_ENABLE       OFF
 #define PA7_FUNC                AS_GPIO
-#define PULL_WAKEUP_SRC_PA7     PM_PIN_UP_DOWN_FLOAT //PM_PIN_PULLUP_1M
+//#define PULL_WAKEUP_SRC_PA7     PM_PIN_UP_DOWN_FLOAT //PM_PIN_PULLUP_1M
 
 /************************* Configure VBAT GPIO ***************************************/
 #define GPIO_VBAT               GPIO_PC4
