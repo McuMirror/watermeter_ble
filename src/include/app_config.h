@@ -1,6 +1,6 @@
 #pragma once
 
-#define VERSION                 0x18    /* BCD format (0x10 -> '1.0')   */
+#define VERSION                 0x19    /* BCD format (0x10 -> '1.0')   */
 #define WATERMETER_ID           0xFED5  /* uint16_t                     */
 #define DEV_NAME_CHR            'W','a','t','e','r','m','e','t','e','r','_','B','L','E'
 #define DEV_NAME_STR            "Watermeter_BLE"
@@ -10,18 +10,21 @@
 #define ON                      1
 #define OFF                     0
 
-#define UART_PRINT_DEBUG_ENABLE 0       /* if 1 use printf() over uart  */
+#define UART_PRINT_DEBUG_ENABLE OFF     /* if 1 use printf() over uart  */
 
 
 /************************ Advertising_Interval *************************************/
-#define ADV_INTERVAL_MIN        3200        /* 3200 * 0.625 = 2000 ms or 2.0 sec */
-#define ADV_INTERVAL_MAX        4000        /* 4000 * 0.625 = 2500 ms or 2.5 sec */
+
+#define ADV_INTERVAL_MIN        4000        /* 4000 * 0.625 = 2500 ms or 2.5 sec */
+#define ADV_INTERVAL_MAX        4010        /* 4010 * 0.625 = 2506 ms or 2.5 sec */
+//#define ADV_INTERVAL_MIN        ADV_INTERVAL_250MS
+//#define ADV_INTERVAL_MAX        ADV_INTERVAL_300MS
 
 #define MY_RF_POWER_INDEX       RF_POWER_P0p04dBm
 
 /**************************** Configure UART ***************************************/
 #if UART_PRINT_DEBUG_ENABLE
-#define PRINT_BAUD_RATE         230400
+#define PRINT_BAUD_RATE         115200
 #define DEBUG_INFO_TX_PIN       UART_TX_PB1
 #define PB1_DATA_OUT            ON
 #define PB1_OUTPUT_ENABLE       ON

@@ -3,7 +3,7 @@
 #include "tl_common.h"
 #include "drivers.h"
 #include "stack/ble/ble.h"
-#include "stack/ble/service/ota/ota.h"
+//#include "stack/ble/service/ota/ota.h"
 #include "drivers/8258/pm.h"
 
 #include "log.h"
@@ -15,18 +15,19 @@
 #include "cfg.h"
 #include "cmd_parser.h"
 
-_attribute_data_retention_ uint8_t       ble_name[BLE_NAME_SIZE];
-_attribute_data_retention_ adv_data_t    adv_data;
-_attribute_data_retention_ main_notify_t main_notify;
-_attribute_data_retention_ uint8_t       mac_public[6], mac_random_static[6];
-_attribute_data_retention_ uint16_t       ble_connected = conn_disconnect;
-_attribute_data_retention_ uint8_t       ota_is_working = 0;
-_attribute_data_retention_ uint8_t       first_start;
+_attribute_data_retention_ uint8_t          ble_name[BLE_NAME_SIZE];
+_attribute_data_retention_ adv_data_t       adv_data;
+_attribute_data_retention_ adv_crypt_data_t adv_crypt_data;
+_attribute_data_retention_ main_notify_t    main_notify;
+_attribute_data_retention_ uint8_t          mac_public[6], mac_random_static[6];
+_attribute_data_retention_ uint16_t         ble_connected = conn_disconnect;
+_attribute_data_retention_ uint8_t          ota_is_working = 0;
+_attribute_data_retention_ uint8_t          first_start;
 
-_attribute_data_retention_ uint8_t       blt_rxfifo_b[64 * 8] = {0};
-_attribute_data_retention_ my_fifo_t     blt_rxfifo = { 64, 8, 0, 0, blt_rxfifo_b,};
-_attribute_data_retention_ uint8_t       blt_txfifo_b[40 * 16] = {0};
-_attribute_data_retention_ my_fifo_t     blt_txfifo = { 40, 16, 0, 0, blt_txfifo_b,};
+_attribute_data_retention_ uint8_t          blt_rxfifo_b[64 * 8] = {0};
+_attribute_data_retention_ my_fifo_t        blt_rxfifo = { 64, 8, 0, 0, blt_rxfifo_b,};
+_attribute_data_retention_ uint8_t          blt_txfifo_b[40 * 16] = {0};
+_attribute_data_retention_ my_fifo_t        blt_txfifo = { 40, 16, 0, 0, blt_txfifo_b,};
 
 #if UART_PRINT_DEBUG_ENABLE
 void print_mac(uint8_t num, uint8_t *mac) {
@@ -141,7 +142,7 @@ void ble_connect_cb(uint8_t e, uint8_t *p, int n) {
 #endif /* UART_PRINT_DEBUG_ENABLE */
 
     ble_connected = conn_connect;
-    bls_l2cap_requestConnParamUpdate (CONN_INTERVAL_10MS, CONN_INTERVAL_10MS, 249, CONN_TIMEOUT_8S);  // 2.5 S
+    bls_l2cap_requestConnParamUpdate (CONN_INTERVAL_10MS, CONN_INTERVAL_10MS, 249, 800);  // 2.5 S
     conn_timeout = time_sec;
 
 
@@ -267,37 +268,22 @@ __attribute__((optimize("-Os"))) void init_ble(void) {
     adv_data.flg_type  = GAP_ADTYPE_FLAGS;  /* 0x01  */
     adv_data.flg       = 0x06;              /* flags */
 
-    adv_data.head.size = (sizeof(adv_head_uuid16_t) +
-                          sizeof(adv_pid_t) +
-                          sizeof(adv_battery_t) +
-                          sizeof(adv_voltage_t) +
-                          (sizeof(adv_counter_t)*2) - 1) & 0xFF;
+    adv_data.head.size = (sizeof(adv_head_uuid16_t)-1 + sizeof(bthome_data_t)) & 0xFF;
     adv_data.head.type = GAP_ADTYPE_SERVICE_DATA_UUID_16BIT;
-    adv_data.head.UUID = ADV_HA_BLE_NS_UUID16;
+    adv_data.head.UUID = ADV_BTHOME_UUID16;
+    adv_data.head.device_info = device_info_encrypt_none | device_info_version;
 
-    adv_data.pid.type_len = HaBleType_uint | ((sizeof(adv_data.pid.id) + sizeof(adv_data.pid.pid)) & 0x1F);
-    adv_data.pid.id       = HaBleID_PacketId;
-    adv_data.pid.pid      = 0;
+    adv_data.bthome_data.battery_id = BTHomeID_battery;
+    adv_data.bthome_data.battery = battery_level;
 
-    adv_data.battery.type_len = HaBleType_uint |
-            ((sizeof(adv_data.battery.id) + sizeof(adv_data.battery.level)) & 0x1F);
-    adv_data.battery.id = HaBleID_battery;
-    adv_data.battery.level = battery_level;
+    adv_data.bthome_data.voltage_id = BTHomeID_voltage;
+    adv_data.bthome_data.voltage = battery_mv;
 
-    adv_data.voltage.type_len = HaBleType_uint |
-            ((sizeof(adv_data.voltage.id) + sizeof(adv_data.voltage.voltage)) & 0x1F);
-    adv_data.voltage.id = HaBleID_voltage;
-    adv_data.voltage.voltage = battery_mv;
+    adv_data.bthome_data.hot_counter_id = BTHomeID_count32;
+    adv_data.bthome_data.hot_counter = watermeter_config.counters.hot_water_count;
 
-    adv_data.hot.type_len = HaBleType_uint |
-            ((sizeof(adv_data.hot.id) + sizeof(adv_data.hot.counter)) & 0x1F);
-    adv_data.hot.id = HaBleID_count;
-    adv_data.hot.counter = watermeter_config.counters.hot_water_count;
-
-    adv_data.cold.type_len = HaBleType_uint |
-            ((sizeof(adv_data.cold.id) + sizeof(adv_data.cold.counter)) & 0x1F);
-    adv_data.cold.id  = HaBleID_count;
-    adv_data.cold.counter = watermeter_config.counters.cold_water_count;
+    adv_data.bthome_data.cold_counter_id  = BTHomeID_count32;
+    adv_data.bthome_data.cold_counter = watermeter_config.counters.cold_water_count;
 
     ///////////////////// Controller Initialization /////////////////////
     blc_ll_initBasicMCU();                      //mandatory
@@ -311,6 +297,7 @@ __attribute__((optimize("-Os"))) void init_ble(void) {
     my_att_init (); //gatt initialization
     blc_l2cap_register_handler (blc_l2cap_packet_receive);      //l2cap initialization
     blc_smp_peripheral_init();
+    blc_smp_setSecurityLevel(No_Security);
 
 
     ///////////////////// USER application initialization ///////////////////
@@ -334,15 +321,28 @@ __attribute__((optimize("-Os"))) void init_ble(void) {
 #endif /* UART_PRINT_DEBUG_ENABLE */
 
     bls_app_registerEventCallback (BLT_EV_FLAG_ADV_DURATION_TIMEOUT, &ev_adv_timeout);
+
+    if (watermeter_config.encrypted) {
+        bthome_beacon_init();
+    }
+
     set_adv_data();
     ev_adv_timeout(0,0,0);
+
+//    bthome_beacon_init();
+//    bthome_encrypt_data_beacon();
 }
 
 void set_adv_data() {
 
-    adv_data.pid.pid = (adv_data.pid.pid+1) & 0xFF;
+    if (watermeter_config.encrypted) {
+        bthome_encrypt_data_beacon();
+        bls_ll_setAdvData((uint8_t*)&adv_crypt_data, sizeof(adv_crypt_data_t));
+    } else {
+        bls_ll_setAdvData((uint8_t*)&adv_data, sizeof(adv_data_t));
+    }
 
-    bls_ll_setAdvData((uint8_t*)&adv_data, sizeof(adv_data_t));
+
 }
 
 void ble_send_battery() {

@@ -5,9 +5,7 @@
 # Add inputs and outputs from these tool invocations to the build variables 
 
 OUT_DIR += \
-/drivers/8258 \
-/drivers/8258/flash
-
+/drivers/8258
 
 OBJS += \
 $(OUT_PATH)/drivers/8258/adc.o \
@@ -28,15 +26,6 @@ $(OUT_PATH)/drivers/8258/spi.o \
 $(OUT_PATH)/drivers/8258/timer.o \
 $(OUT_PATH)/drivers/8258/uart.o \
 $(OUT_PATH)/drivers/8258/watchdog.o \
-$(OUT_PATH)/drivers/8258/flash/flash_mid1060c8.o \
-$(OUT_PATH)/drivers/8258/flash/flash_mid1360c8.o \
-$(OUT_PATH)/drivers/8258/flash/flash_mid1360eb.o \
-$(OUT_PATH)/drivers/8258/flash/flash_mid1460c8.o \
-$(OUT_PATH)/drivers/8258/flash/flash_mid011460c8.o \
-$(OUT_PATH)/drivers/8258/flash/flash_mid13325e.o \
-$(OUT_PATH)/drivers/8258/flash/flash_mid14325e.o \
-$(OUT_PATH)/drivers/8258/flash/flash_mid134051.o \
-$(OUT_PATH)/drivers/8258/flash/flash_mid136085.o
 
 # Each subdirectory must supply rules for building sources it contributes
 $(OUT_PATH)/drivers/8258/%.o: $(SDK_PATH)/drivers/8258/%.c

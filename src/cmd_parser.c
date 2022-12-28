@@ -28,6 +28,7 @@ void cmd_parser(void * p) {
             if (watermeter_config.counters.hot_water_count != counter) {
                 watermeter_config.counters.hot_water_count = check_counter_overflow(counter);
                 hot_notify = NOTIFY_MAX;
+                adv_data.bthome_data.hot_counter = watermeter_config.counters.hot_water_count;
 #if UART_PRINT_DEBUG_ENABLE
                 printf("New counter - %u. Set hot water - %u\r\n", counter, watermeter_config.counters.hot_water_count);
 #endif /* UART_PRINT_DEBUG_ENABLE */
@@ -36,6 +37,7 @@ void cmd_parser(void * p) {
             if (watermeter_config.counters.cold_water_count != counter) {
                 watermeter_config.counters.cold_water_count = check_counter_overflow(counter);
                 cold_notify = NOTIFY_MAX;
+                adv_data.bthome_data.cold_counter = watermeter_config.counters.cold_water_count;
 #if UART_PRINT_DEBUG_ENABLE
                 printf("New counter - %u. Set cold water - %u\r\n", counter, watermeter_config.counters.cold_water_count);
 #endif /* UART_PRINT_DEBUG_ENABLE */
@@ -67,6 +69,8 @@ void cmd_parser(void * p) {
         main_notify.id = WATERMETER_ID;
         main_notify.liter_per_pulse = watermeter_config.liters_per_pulse;
         main_notify.version = VERSION;
+        memcpy(main_notify.bindkey, watermeter_config.bindkey, sizeof(main_notify.bindkey));
+        //main_notify.encrypted = watermeter_config.encrypted;
         tx_notify = NOTIFY_MAX;
         ble_send_tx();
 #if UART_PRINT_DEBUG_ENABLE
@@ -83,6 +87,30 @@ void cmd_parser(void * p) {
             printf("Log notify start\r\n");
 #endif /* UART_PRINT_DEBUG_ENABLE */
         }
+    } else if (*in_data == CMD_SET_BINDKEY && len == 17) {
+        in_data++;
+        memcpy(watermeter_config.bindkey, in_data, sizeof(watermeter_config.bindkey));
+        if (watermeter_config.encrypted == device_info_encrypt_none) {
+            watermeter_config.encrypted = device_info_encrypt;
+            bthome_beacon_init();
+        }
+        write_config();
+        set_adv_data();
+#if UART_PRINT_DEBUG_ENABLE
+        printf("Set new bindkey - \"");
+        for(int i = 0; i < 16; i++) {
+            printf("%02x", watermeter_config.bindkey[i]);
+        }
+        printf("\"\r\n");
+#endif /* UART_PRINT_DEBUG_ENABLE */
+    } else if (*in_data == CMD_RESET_BINDKEY) {
+        watermeter_config.encrypted = device_info_encrypt_none;
+        memset(watermeter_config.bindkey, 0, sizeof(watermeter_config.bindkey));
+        write_config();
+        set_adv_data();
+#if UART_PRINT_DEBUG_ENABLE
+        printf("Reset BindKey\r\n");
+#endif /* UART_PRINT_DEBUG_ENABLE */
     } else {
 #if UART_PRINT_DEBUG_ENABLE
         printf("Unknown or incomplete command 0x%X\r\n", *in_data);

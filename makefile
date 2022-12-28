@@ -72,6 +72,7 @@ LS_FLAGS := $(SDK_PATH)/boot/boot_32k_retn_8253_8258.link
 -include $(MAKE_INCLUDES)/common.mk
 -include $(MAKE_INCLUDES)/application.mk
 -include $(MAKE_INCLUDES)/drivers_8258.mk
+-include $(MAKE_INCLUDES)/flash.mk
 -include $(MAKE_INCLUDES)/project.mk
 -include $(MAKE_INCLUDES)/div_mod.mk
 -include $(MAKE_INCLUDES)/boot.mk

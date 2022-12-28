@@ -120,8 +120,8 @@ void main_loop (void) {
     }
 
     if (task_counters()) {
-        adv_data.hot.counter  = watermeter_config.counters.hot_water_count;
-        adv_data.cold.counter = watermeter_config.counters.cold_water_count;
+        adv_data.bthome_data.hot_counter  = watermeter_config.counters.hot_water_count;
+        adv_data.bthome_data.cold_counter = watermeter_config.counters.cold_water_count;
         set_adv_data();
     }
 
@@ -191,21 +191,21 @@ void main_loop (void) {
             if ((clock_time() - battery_interval) > BATTERY_PERIOD*CLOCK_SYS_CLOCK_1MS) {
                 check_battery();
 
-                if (battery_level != adv_data.battery.level) {
+                if (battery_level != adv_data.bthome_data.battery) {
     #if UART_PRINT_DEBUG_ENABLE
-                    printf("New battery level - %u, last battery level - %u\r\n", battery_level, adv_data.battery.level);
+                    printf("New battery level - %u, last battery level - %u\r\n", battery_level, adv_data.bthome_data.battery);
     #endif /* UART_PRINT_DEBUG_ENABLE */
-                    adv_data.battery.level = battery_level;
+                    adv_data.bthome_data.battery = battery_level;
                     battery_notify = NOTIFY_MAX;
                     set_adv_data();
                 }
-                if (battery_mv != adv_data.voltage.voltage) {
-                    if ((battery_mv > adv_data.voltage.voltage && (battery_mv - adv_data.voltage.voltage) > 50) ||
-                        (battery_mv < adv_data.voltage.voltage && (adv_data.voltage.voltage - battery_mv) > 50)) {
+                if (battery_mv != adv_data.bthome_data.voltage) {
+                    if ((battery_mv > adv_data.bthome_data.voltage && (battery_mv - adv_data.bthome_data.voltage) > 50) ||
+                        (battery_mv < adv_data.bthome_data.voltage && (adv_data.bthome_data.voltage - battery_mv) > 50)) {
     #if UART_PRINT_DEBUG_ENABLE
-                        printf("New battery mv - %u, last battery mv - %u\r\n", battery_mv, adv_data.voltage.voltage);
+                        printf("New battery mv - %u, last battery mv - %u\r\n", battery_mv, adv_data.bthome_data.voltage);
     #endif /* UART_PRINT_DEBUG_ENABLE */
-                        adv_data.voltage.voltage = battery_mv;
+                        adv_data.bthome_data.voltage = battery_mv;
                         set_adv_data();
                     }
                 }

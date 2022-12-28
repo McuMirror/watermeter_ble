@@ -4,6 +4,8 @@
 
 #include "cfg.h"
 #include "log.h"
+#include "bthome.h"
+
 
 _attribute_data_retention_ watermeter_config_t watermeter_config;
 _attribute_data_retention_ static uint8_t default_config = false;
@@ -27,6 +29,7 @@ static void init_default_config(uint32_t hot_count, uint32_t cold_count) {
     watermeter_config.counters.id = ID_COUNTERS;
     watermeter_config.counters.hot_water_count = hot_count;
     watermeter_config.counters.cold_water_count = cold_count;
+    watermeter_config.encrypted = device_info_encrypt_none;
     default_config = true;
     write_config();
 }

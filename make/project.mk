@@ -5,6 +5,8 @@ $(OUT_PATH)/src/app_adc.o \
 $(OUT_PATH)/src/app_att.o \
 $(OUT_PATH)/src/app.o \
 $(OUT_PATH)/src/ble.o \
+$(OUT_PATH)/src/bthome.o \
+$(OUT_PATH)/src/ccm.o \
 $(OUT_PATH)/src/battery.o \
 $(OUT_PATH)/src/cfg.o \
 $(OUT_PATH)/src/cmd_parser.o \
