@@ -1,0 +1,39 @@
+- alias: Hot Water 14-412445
+  trigger:
+    - platform: state
+      entity_id: sensor.watermeter_ble_c3bd16_count_hot
+      not_from:
+        - "unknown"
+        - "unavailable"
+  condition:
+    and:
+      - condition: template
+        value_template: "{{ states('sensor.watermeter_ble_c3bd16_count_hot') | lower != 'unavailable' }}"
+      - condition: template
+        value_template: "{{ states('sensor.watermeter_ble_c3bd16_count_hot') | lower != 'unknown' }}"
+  action:
+    - service: mqtt.publish
+      data:
+        topic: /watermeter/14_412445/hotwater
+        payload: "{{ as_timestamp(now()) | int }} {{ states('sensor.watermeter_ble_c3bd16_count_hot') }}"
+        
+        
+- alias: Cold Water 14-483595
+  trigger:
+    - platform: state
+      entity_id: sensor.watermeter_ble_c3bd16_count_cold
+      not_from:
+        - "unknown"
+        - "unavailable"
+  condition:
+    and:
+      - condition: template
+        value_template: "{{ states('sensor.watermeter_ble_c3bd16_count_cold') | lower != 'unavailable' }}"
+      - condition: template
+        value_template: "{{ states('sensor.watermeter_ble_c3bd16_count_cold') | lower != 'unknown' }}"
+  action:
+    - service: mqtt.publish
+      data:
+        topic: /watermeter/14_483595/coldwater
+        payload: "{{ as_timestamp(now()) | int }} {{ states('sensor.watermeter_ble_c3bd16_count_cold') }}"
+
