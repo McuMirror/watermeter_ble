@@ -2,7 +2,7 @@
 
 Данная автоматизация отправляет время (в виде таймстампа) и значение счетчика при его изменении (увеличении) в mqtt-топик `/watermeter/14_412445/hotwater` вот в таком виде `'1672665759 230'`
 
-В configuration.yaml у вас должно быть что-то типа такого 
+В `configuration.yaml` у вас должно быть что-то типа такого 
 
 `automation: !include_dir_merge_list includes/automation`
 
