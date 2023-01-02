@@ -41,7 +41,7 @@
 
 **trigger**
 
-`entity_id: sensor.watermeter_ble_c3bd16_count_hot` *id нужного датчика, любое изменение состояния этого сенсора приведет с срабатыванию триггера*
+`entity_id: sensor.watermeter_ble_c3bd16_count_hot` *id нужного датчика, любое изменение состояния этого сенсора приведет к срабатыванию триггера*
 
 ```yaml
 not_from:
@@ -56,7 +56,7 @@ not_from:
 
 **action**
 
-`- service: mqtt.publish` *сервис публикации в топик mqtt*
+`- service: mqtt.publish` *сервис публикации в mqtt-топик*
 
 `topic: /watermeter/14_412445/hotwater` *собственно топик*
 
