@@ -43,6 +43,8 @@
 
 `entity_id: sensor.watermeter_ble_c3bd16_count_hot` *id нужного датчика, любое изменение состояния этого сенсора приведет к срабатыванию триггера*
 
+<img src="https://raw.githubusercontent.com/slacky1965/watermeter_ble/main/doc/images/ha_counter_id.jpg" alt="Home Assistant Counter's ID"/>
+
 ```yaml
 not_from:
         - "unknown"
