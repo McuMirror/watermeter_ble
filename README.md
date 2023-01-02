@@ -65,4 +65,4 @@ _А также моему сыну Алексею, который помог м�
 
 <img src="https://raw.githubusercontent.com/slacky1965/watermeter_ble/main/doc/images/homeassistant.jpg" alt="Home Assistant"/>
 
-[Пример автоматизации](https://github.com/slacky1965/watermeter_ble/tree/main/doc/HomeAssistant/automation)
+[Пример автоматизации для Home Assistant](https://github.com/slacky1965/watermeter_ble/tree/main/doc/HomeAssistant/automation)
