@@ -61,6 +61,8 @@ _А также моему сыну Алексею, который помог м�
 
 Вроде все. Будут вопросы, задавайте, если смогу, отвечу.
 
-P.S. Скриншот из Home Assistant
+Скриншот из Home Assistant
 
 <img src="https://raw.githubusercontent.com/slacky1965/watermeter_ble/main/doc/images/homeassistant.jpg" alt="Home Assistant"/>
+
+[Пример автоматизации](https://github.com/slacky1965/watermeter_ble/tree/main/doc/HomeAssistant/automation)
