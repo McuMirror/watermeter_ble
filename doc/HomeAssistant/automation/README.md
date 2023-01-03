@@ -6,7 +6,7 @@
 
 `automation: !include_dir_merge_list includes/automation`
 
-Где будут лежать все файлы с автоматизациями. Кладем туда `watermeter.yaml`. Проверяем конфиг на правильный синтаксис и если все нормально, обновляем автоматизации.
+`includes/automation` - директория, где будут лежать все файлы с автоматизациями. Кладем туда `watermeter.yaml`. Проверяем конфиг на правильный синтаксис и если все нормально, обновляем автоматизации.
 
 <img src="https://raw.githubusercontent.com/slacky1965/watermeter_ble/main/doc/images/ha_dt.jpg" alt="Home Assistant Developer Tools"/>
 
