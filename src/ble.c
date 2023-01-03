@@ -297,7 +297,6 @@ __attribute__((optimize("-Os"))) void init_ble(void) {
     my_att_init (); //gatt initialization
     blc_l2cap_register_handler (blc_l2cap_packet_receive);      //l2cap initialization
     blc_smp_peripheral_init();
-    blc_smp_setSecurityLevel(No_Security);
 
 
     ///////////////////// USER application initialization ///////////////////
