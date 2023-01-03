@@ -7,7 +7,7 @@
 #include "log.h"
 #include "ble.h"
 
-#define BIT_COUNT   32                          /* number of polls for debounce */
+#define BIT_COUNT   64                          /* number of polls for debounce */
 #define TASK_COUNT  (BIT_COUNT/2+BIT_COUNT)     /* task duration                */
 
 enum {
