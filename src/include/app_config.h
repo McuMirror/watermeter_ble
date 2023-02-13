@@ -1,6 +1,6 @@
 #pragma once
 
-#define VERSION                 0x19    /* BCD format (0x10 -> '1.0')   */
+#define VERSION                 0x20    /* BCD format (0x10 -> '1.0')   */
 #define WATERMETER_ID           0xFED5  /* uint16_t                     */
 #define DEV_NAME_CHR            'W','a','t','e','r','m','e','t','e','r','_','B','L','E'
 #define DEV_NAME_STR            "Watermeter_BLE"
@@ -10,7 +10,7 @@
 #define ON                      1
 #define OFF                     0
 
-#define UART_PRINT_DEBUG_ENABLE OFF     /* if 1 use printf() over uart  */
+#define UART_PRINT_DEBUG_ENABLE ON     /* if 1 use printf() over uart  */
 
 
 /************************ Advertising_Interval *************************************/
@@ -37,20 +37,20 @@
 #define COUNTERS_OVERFLOW       100000000       /* counters overflow             */
 
 /************************* Configure HOT GPIO ***************************************/
-#define HOT_GPIO                GPIO_PB6
-#define PB6_INPUT_ENABLE        ON
-#define PB6_DATA_OUT            OFF
-#define PB6_OUTPUT_ENABLE       OFF
-#define PB6_FUNC                AS_GPIO
-#define PULL_WAKEUP_SRC_PB6     PM_PIN_PULLUP_10K //PM_PIN_PULLUP_1M
-
-/************************* Configure COLD GPIO **************************************/
-#define COLD_GPIO               GPIO_PB7
+#define HOT_GPIO                GPIO_PB7
 #define PB7_INPUT_ENABLE        ON
 #define PB7_DATA_OUT            OFF
 #define PB7_OUTPUT_ENABLE       OFF
 #define PB7_FUNC                AS_GPIO
-#define PULL_WAKEUP_SRC_PB7     PM_PIN_PULLUP_10K //PM_PIN_PULLUP_1M
+#define PULL_WAKEUP_SRC_PB7     PM_PIN_PULLUP_1M
+
+/************************* Configure COLD GPIO **************************************/
+#define COLD_GPIO               GPIO_PB4
+#define PB4_INPUT_ENABLE        ON
+#define PB4_DATA_OUT            OFF
+#define PB4_OUTPUT_ENABLE       OFF
+#define PB4_FUNC                AS_GPIO
+#define PULL_WAKEUP_SRC_PB4     PM_PIN_PULLUP_1M
 
 /************************* Configure RWL GPIO **************************************/
 #define RWL_GPIO                GPIO_PA7

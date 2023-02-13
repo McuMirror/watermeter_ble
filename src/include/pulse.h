@@ -2,7 +2,9 @@
 #define SRC_INCLUDE_PULSE_H_
 
 typedef struct _water_conter_t {
-    uint8_t  status;
+    uint8_t  status     :1;
+    uint8_t  pressed    :1;
+    uint8_t  reserve    :6;
     uint16_t bit;
 } water_counter_t;
 
