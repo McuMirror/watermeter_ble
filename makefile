@@ -27,7 +27,7 @@ SRC_PATH := ./src
 OUT_PATH := ./out
 UTILS_PATH := ./utils
 MAKE_INCLUDES := ./make
-VERSION := V$(shell awk -F " " '/VERSION/ {gsub("0x",""); print $$3/10.0}' $(SRC_PATH)/include/app_config.h)
+VERSION := V$(shell awk -F " " '/VERSION/ {gsub("0x",""); printf "%.1f", $$3/10.0}' $(SRC_PATH)/include/app_config.h)
 
 TL_Check = $(UTILS_PATH)/tl_check_fw.py
 
