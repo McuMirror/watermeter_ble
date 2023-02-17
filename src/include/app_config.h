@@ -10,7 +10,7 @@
 #define ON                      1
 #define OFF                     0
 
-#define UART_PRINT_DEBUG_ENABLE ON     /* if 1 use printf() over uart  */
+#define UART_PRINT_DEBUG_ENABLE OFF         /* if 1 use printf() over uart  */
 
 
 /************************ Advertising_Interval *************************************/
