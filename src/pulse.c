@@ -134,7 +134,7 @@ _attribute_ram_code_ uint8_t task_counters() {
                     check_counter_overflow(watermeter_config.counters.hot_water_count +
                     (watermeter_config.liters_per_pulse * hot_counter.counter));
             hot_counter.counter = 0;
-            hot_notify = NOTIFY_MAX;
+            if (ble_connected & conn_connect) hot_notify = NOTIFY_MAX;
 #if UART_PRINT_DEBUG_ENABLE
             printf("hot counter - %u\r\n", watermeter_config.counters.hot_water_count);
 #endif /* UART_PRINT_DEBUG_ENABLE */
@@ -147,7 +147,7 @@ _attribute_ram_code_ uint8_t task_counters() {
                     check_counter_overflow(watermeter_config.counters.cold_water_count +
                     (watermeter_config.liters_per_pulse * cold_counter.counter));
             cold_counter.counter = 0;
-            cold_notify = NOTIFY_MAX;
+            if (ble_connected & conn_connect) cold_notify = NOTIFY_MAX;
 #if UART_PRINT_DEBUG_ENABLE
             printf("cold counter - %u\r\n", watermeter_config.counters.cold_water_count);
 #endif /* UART_PRINT_DEBUG_ENABLE */
