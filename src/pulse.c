@@ -7,8 +7,7 @@
 #include "log.h"
 #include "ble.h"
 
-#define BIT_COUNT   64                          /* number of polls for debounce */
-#define TASK_COUNT  (BIT_COUNT/2+BIT_COUNT)     /* task duration                */
+#define BIT_COUNT   256                         /* number of polls for debounce */
 
 #define ST_CLOSE    1
 #define ST_OPEN     0
@@ -117,46 +116,44 @@ _attribute_ram_code_ uint8_t task_counters() {
     gpio_setup_up_down_resistor(COLD_GPIO, PM_PIN_PULLUP_10K);
 #endif
 
-    if ((!gpio_read(HOT_GPIO) && hot_counter.bit == 1) ||
-        (gpio_read(HOT_GPIO) && hot_counter.bit == BIT_COUNT) ||
-        (!gpio_read(COLD_GPIO) && cold_counter.bit == 1) ||
-        (gpio_read(COLD_GPIO) && cold_counter.bit == BIT_COUNT)) {
+    do {
+        water_counters();
+        sleep_ms(1);
+    } while ((hot_counter.bit != BIT_COUNT && hot_counter.bit != 1) ||
+             (hot_counter.bit == BIT_COUNT && hot_counter.status != ST_CLOSE) ||
+             (hot_counter.bit == 1 && hot_counter.status != ST_OPEN) ||
+             (cold_counter.bit != BIT_COUNT && cold_counter.bit != 1) ||
+             (cold_counter.bit == BIT_COUNT && cold_counter.status != ST_CLOSE) ||
+             (cold_counter.bit == 1 && cold_counter.status != ST_OPEN));
 
-        for (uint16_t i = 0; i < TASK_COUNT; i++) {
-            water_counters();
-            sleep_ms(3);
-        }
-
-        if (hot_counter.counter) {
-            save_config = true;
-            /* detect hot counter overflow */
-            watermeter_config.counters.hot_water_count =
-                    check_counter_overflow(watermeter_config.counters.hot_water_count +
-                    (watermeter_config.liters_per_pulse * hot_counter.counter));
-            hot_counter.counter = 0;
-            if (ble_connected & conn_connect) hot_notify = NOTIFY_MAX;
+    if (hot_counter.counter) {
+        save_config = true;
+        /* detect hot counter overflow */
+        watermeter_config.counters.hot_water_count =
+                check_counter_overflow(watermeter_config.counters.hot_water_count +
+                (watermeter_config.liters_per_pulse * hot_counter.counter));
+        hot_counter.counter = 0;
+        if (ble_connected & conn_connect) hot_notify = NOTIFY_MAX;
 #if UART_PRINT_DEBUG_ENABLE
-            printf("hot counter - %u\r\n", watermeter_config.counters.hot_water_count);
+        printf("hot counter - %u\r\n", watermeter_config.counters.hot_water_count);
 #endif /* UART_PRINT_DEBUG_ENABLE */
-        }
+    }
 
-        if (cold_counter.counter) {
-            save_config = true;
-            /* detect cold counter overflow */
-            watermeter_config.counters.cold_water_count =
-                    check_counter_overflow(watermeter_config.counters.cold_water_count +
-                    (watermeter_config.liters_per_pulse * cold_counter.counter));
-            cold_counter.counter = 0;
-            if (ble_connected & conn_connect) cold_notify = NOTIFY_MAX;
+    if (cold_counter.counter) {
+        save_config = true;
+        /* detect cold counter overflow */
+        watermeter_config.counters.cold_water_count =
+                check_counter_overflow(watermeter_config.counters.cold_water_count +
+                (watermeter_config.liters_per_pulse * cold_counter.counter));
+        cold_counter.counter = 0;
+        if (ble_connected & conn_connect) cold_notify = NOTIFY_MAX;
 #if UART_PRINT_DEBUG_ENABLE
-            printf("cold counter - %u\r\n", watermeter_config.counters.cold_water_count);
+        printf("cold counter - %u\r\n", watermeter_config.counters.cold_water_count);
 #endif /* UART_PRINT_DEBUG_ENABLE */
-        }
+    }
 
-        if (save_config) {
-            write_config();
-        }
-
+    if (save_config) {
+        write_config();
     }
 
 #if 0
